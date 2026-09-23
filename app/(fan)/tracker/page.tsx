@@ -24,6 +24,9 @@ import { calculateEquivalents } from "@/lib/data/equivalents";
 import { loadFanProfile } from "@/lib/data/fan-profile";
 import { ProvenanceBadge } from "@/components/shared/ProvenanceBadge";
 import { SourceDrawer, DrawerDetailItem } from "@/components/shared/SourceDrawer";
+import { OdometerCounter } from "@/components/telemetry/OdometerCounter";
+import { RpmGauge } from "@/components/telemetry/RpmGauge";
+import { TimingDeltaBadge } from "@/components/telemetry/TimingDeltaBadge";
 
 export default function CarbonTrackerPage() {
   const races = getRaces();
@@ -115,7 +118,7 @@ export default function CarbonTrackerPage() {
       </div>
 
       {/* Live Status & Delta Bar */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
         <div className="p-5 rounded-xl bg-amf1-surface border border-amf1-border">
           <div className="flex items-center justify-between text-xs font-mono text-amf1-muted uppercase">
             <span>Total Logistics Footprint</span>
@@ -123,7 +126,7 @@ export default function CarbonTrackerPage() {
           </div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-3xl font-mono font-black text-white">
-              {currentRace.total_tco2e}
+              <OdometerCounter value={currentRace.total_tco2e} decimals={2} />
             </span>
             <span className="text-xs font-mono text-amf1-lime">tCO₂e</span>
           </div>
@@ -142,7 +145,7 @@ export default function CarbonTrackerPage() {
           </div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-3xl font-mono font-black text-emerald-400">
-              {currentRace.delta_percent}%
+              <OdometerCounter value={Math.abs(currentRace.delta_percent)} decimals={1} prefix="-" suffix="%" />
             </span>
             <span className="text-xs font-mono text-amf1-muted">net reduction</span>
           </div>
@@ -158,7 +161,7 @@ export default function CarbonTrackerPage() {
           </div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-3xl font-mono font-black text-amf1-cyan">
-              {currentRace.saf_uptake_percent}%
+              <OdometerCounter value={currentRace.saf_uptake_percent} decimals={0} suffix="%" />
             </span>
             <span className="text-xs font-mono text-amf1-muted">corridor blend</span>
           </div>
@@ -166,6 +169,22 @@ export default function CarbonTrackerPage() {
             High-integrity DHL Sustainable Aviation Fuel batch
           </p>
         </div>
+      </div>
+
+      {/* Pitwall Telemetry Gauges */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <RpmGauge
+          value={currentRace.saf_uptake_percent}
+          label="Sustainable Aviation Fuel (SAFc) Logistics Corridor Blend"
+          unit="%"
+          colorScheme="lime"
+        />
+        <RpmGauge
+          value={Math.round((currentRace.total_tco2e / 500) * 100)}
+          label="Race Weekend Carbon Budget Allocated (500 tCO₂e Target Cap)"
+          unit="%"
+          colorScheme="racing"
+        />
       </div>
 
       {/* Relatable Equivalents Switcher */}

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Flame, Shield, Users, BarChart3, Radio, Sparkles } from "lucide-react";
 import { SITE_CONFIG } from "@/lib/config";
+import { TelemetryRibbon } from "@/components/telemetry/TelemetryRibbon";
 
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
@@ -13,7 +14,8 @@ export const Navbar: React.FC = () => {
   const isFan = pathname === "/" || pathname === "/onboarding" || pathname === "/journey" || pathname === "/tracker" || pathname === "/actions" || pathname === "/share";
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-amf1-border/70 bg-amf1-bg/90 backdrop-blur-md">
+    <header className="sticky top-0 z-40 w-full border-b border-amf1-border/70 bg-amf1-bg/95 backdrop-blur-md">
+      <TelemetryRibbon />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand */}
         <div className="flex items-center gap-6">

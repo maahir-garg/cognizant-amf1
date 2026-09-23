@@ -22,6 +22,7 @@ import { FanProfile, Fact } from "@/lib/data/schemas";
 import { getFacts, getFactById } from "@/lib/data/loaders";
 import { ProvenanceBadge } from "@/components/shared/ProvenanceBadge";
 import { SourceDrawer } from "@/components/shared/SourceDrawer";
+import { SingaporeCircuitMap } from "@/components/telemetry/SingaporeCircuitMap";
 
 interface QuizQuestion {
   id: string;
@@ -358,6 +359,14 @@ export default function FanJourneyPage() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Interactive Marina Bay Circuit Map Telemetry */}
+      <div className="mb-8">
+        <SingaporeCircuitMap
+          activeSector={currentSector + 1}
+          onSelectSector={(s) => setCurrentSector(s - 1)}
+        />
       </div>
 
       {/* Sector Navigation Tabs */}

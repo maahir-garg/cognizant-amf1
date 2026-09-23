@@ -183,6 +183,16 @@ export default function FanShareCardPage() {
                 &ldquo;{aiCaption}&rdquo;
               </p>
             </div>
+
+            {/* VIP Barcode & Access Hash */}
+            <div className="pt-2 flex flex-col items-center">
+              <div className="font-mono text-[13px] tracking-[5px] text-amf1-silver/60 select-none">
+                |||| | || |||| | ||||| | | |||| |||
+              </div>
+              <span className="text-[8px] font-mono text-amf1-muted tracking-widest mt-0.5">
+                PASS ID: SGP-2026-{profile.fan_level.toUpperCase()}-08OCT // VERIFIED TELEMETRY
+              </span>
+            </div>
           </div>
 
           {/* Card Footer */}

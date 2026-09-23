@@ -19,10 +19,14 @@ import {
 import { SITE_CONFIG } from "@/lib/config";
 import { ProvenanceBadge } from "@/components/shared/ProvenanceBadge";
 import { getFacts, getHeroRace } from "@/lib/data/loaders";
+import { SingaporeCircuitMap } from "@/components/telemetry/SingaporeCircuitMap";
+import { TimingDeltaBadge } from "@/components/telemetry/TimingDeltaBadge";
+import { OdometerCounter } from "@/components/telemetry/OdometerCounter";
 
 export default function HomePage() {
   const heroRace = getHeroRace();
   const facts = getFacts();
+  const [activeSector, setActiveSector] = React.useState<number>(1);
 
   return (
     <div className="flex-1 flex flex-col">
@@ -51,6 +55,14 @@ export default function HomePage() {
           <p className="mt-6 text-base sm:text-xl text-amf1-silver max-w-2xl font-sans leading-relaxed">
             AI-driven sustainability and inclusion telemetry. Turning official ESG reports into interactive fan journeys and auditable partner intelligence.
           </p>
+
+          {/* F1 Timing Delta Board */}
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
+            <TimingDeltaBadge delta="-1,188 tCO₂e" type="green" label="SAFc DECARB" />
+            <TimingDeltaBadge delta="-74% CO₂" type="green" label="SUSTAINABLE FUEL" />
+            <TimingDeltaBadge delta="100% REGO" type="purple" label="CAMPUS GREEN POWER" />
+            <TimingDeltaBadge delta="300+ STUDENTS" type="yellow" label="STEM REACH" />
+          </div>
 
           {/* Quick Dual CTAs */}
           <div className="mt-10 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
@@ -131,6 +143,49 @@ export default function HomePage() {
               >
                 Track Live →
               </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Interactive Marina Bay Circuit Telemetry Section */}
+      <section className="py-14 border-b border-amf1-border/40 bg-[#060B0A] relative overflow-hidden">
+        <div className="absolute inset-0 bg-carbon-twill opacity-20 pointer-events-none" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
+            <div className="max-w-md">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amf1-card border border-amf1-lime/30 text-amf1-lime text-xs font-mono mb-4 shadow-[0_0_15px_rgba(0,255,135,0.15)]">
+                <Compass className="w-3.5 h-3.5" />
+                <span>RACE TRACK TELEMETRY // MARINA BAY</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-mono font-black text-white tracking-tight">
+                Every Sector Tells a Story.
+              </h2>
+              <p className="mt-3 text-sm text-amf1-silver font-sans leading-relaxed">
+                Explore the Singapore GP&apos;s 19-turn street circuit through a telemetry lens. Official freight logistics, SAF flight abatement, and local STEM immersion mapped directly to track coordinates.
+              </p>
+              <div className="mt-6 flex flex-wrap items-center gap-3">
+                <Link
+                  href="/journey"
+                  className="px-5 py-2.5 rounded-lg bg-amf1-lime hover:bg-amf1-lime-glow text-amf1-bg font-mono font-bold text-xs flex items-center gap-2 shadow-[0_0_15px_rgba(0,255,135,0.3)] transition-all hover:scale-105 active:scale-95"
+                >
+                  <span>Drive Interactive Story Lap</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+                <Link
+                  href="/tracker"
+                  className="px-4 py-2.5 rounded-lg bg-amf1-card hover:bg-amf1-hover border border-amf1-border text-xs font-mono text-white transition-colors hover:border-amf1-lime/40"
+                >
+                  <span>Track Full Footprint →</span>
+                </Link>
+              </div>
+            </div>
+
+            <div className="w-full lg:max-w-xl">
+              <SingaporeCircuitMap
+                activeSector={activeSector}
+                onSelectSector={setActiveSector}
+              />
             </div>
           </div>
         </div>

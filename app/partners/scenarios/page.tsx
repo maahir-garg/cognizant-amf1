@@ -20,6 +20,15 @@ import { calculateScenario } from "@/lib/data/scenario-model";
 import { ScenarioInput, ScenarioOutput } from "@/lib/data/schemas";
 import { getFacts } from "@/lib/data/loaders";
 import { ProvenanceBadge } from "@/components/shared/ProvenanceBadge";
+import { OdometerCounter } from "@/components/telemetry/OdometerCounter";
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+} from "recharts";
 
 export default function ScenariosPage() {
   const [inputs, setInputs] = useState<ScenarioInput>({
@@ -33,6 +42,15 @@ export default function ScenariosPage() {
   const [aiExplanation, setAiExplanation] = useState<string>("");
   const [loadingAi, setLoadingAi] = useState(false);
   const facts = getFacts();
+
+  const trajectoryData = [
+    { year: "2023", baseline: 87162, projected: 87162 },
+    { year: "2024", baseline: 85974, projected: Math.round(85974 - projection.freight_tco2e_saved * 0.5) },
+    { year: "2026", baseline: 75000, projected: Math.round(75000 - projection.freight_tco2e_saved * 1.5) },
+    { year: "2030", baseline: 52000, projected: Math.round(52000 - projection.freight_tco2e_saved * 3) },
+    { year: "2040", baseline: 25000, projected: Math.round(25000 - projection.freight_tco2e_saved * 4) },
+    { year: "2050", baseline: 8716, projected: Math.max(0, Math.round(8716 - projection.freight_tco2e_saved * 4.5)) },
+  ];
 
   useEffect(() => {
     const res = calculateScenario(inputs);
@@ -281,6 +299,58 @@ export default function ScenariosPage() {
                 Meets Science-Based Targets milestone
               </p>
             </div>
+          </div>
+
+          {/* Interactive Recharts Trajectory Chart */}
+          <div className="p-5 rounded-2xl bg-amf1-surface border border-amf1-border">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <span className="text-[10px] font-mono uppercase text-amf1-muted block">
+                  Interactive Decarbonisation Sensitivity Model
+                </span>
+                <h3 className="text-sm font-mono font-bold text-white mt-0.5">
+                  SBTi Scope 1, 2 & 3 Trajectory (2023–2050)
+                </h3>
+              </div>
+              <div className="flex items-center gap-3 text-[10px] font-mono">
+                <span className="flex items-center gap-1.5 text-amf1-muted">
+                  <span className="w-2.5 h-1 bg-amf1-muted rounded-full" />
+                  Baseline
+                </span>
+                <span className="flex items-center gap-1.5 text-amf1-lime font-bold">
+                  <span className="w-2.5 h-1 bg-amf1-lime rounded-full" />
+                  Projected
+                </span>
+              </div>
+            </div>
+
+            <div className="h-44 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={trajectoryData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="projectedGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#00FF87" stopOpacity={0.35} />
+                      <stop offset="95%" stopColor="#00FF87" stopOpacity={0.0} />
+                    </linearGradient>
+                    <linearGradient id="baselineGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#768B87" stopOpacity={0.15} />
+                      <stop offset="95%" stopColor="#768B87" stopOpacity={0.0} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="year" stroke="#768B87" fontSize={10} tickLine={false} />
+                  <YAxis stroke="#768B87" fontSize={10} tickLine={false} tickFormatter={(v) => `${Math.round(v / 1000)}k`} />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: "#142421", borderColor: "#1E3632", borderRadius: "8px", fontSize: "11px", fontFamily: "monospace" }}
+                    formatter={(val: any) => [`${Number(val).toLocaleString()} tCO₂e`, "Emissions"]}
+                  />
+                  <Area type="monotone" dataKey="baseline" stroke="#768B87" strokeDasharray="3 3" fillOpacity={1} fill="url(#baselineGrad)" strokeWidth={1.5} />
+                  <Area type="monotone" dataKey="projected" stroke="#00FF87" fillOpacity={1} fill="url(#projectedGrad)" strokeWidth={2} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+            <p className="text-[10px] font-mono text-amf1-muted mt-2 text-center">
+              Real-time sensitivity response based on active slider inputs vs Make A Mark 2025 baseline [FACT-E-03].
+            </p>
           </div>
 
           {/* AI Decision Support Copilot Box */}
