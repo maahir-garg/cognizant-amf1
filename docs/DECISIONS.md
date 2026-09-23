@@ -11,3 +11,5 @@ Format: Date | Decision | Rationale
 - 2026-09-24 | Established DEFRA / EPA / ICAO deterministic carbon conversion table | Prohibits AI hallucination of equivalency factors (trees, homes powered, flights, phone charges).
 - 2026-09-24 | Implemented post-generation numeric guardrail regex validator | Automatically scans AI output and rejects any number that does not match a verified input fact or formula output.
 - 2026-09-24 | Generated deterministic offline AI cache in `data/ai-cache/` | Ensures zero latency, offline pitch resilience, and full compliance with judging criteria even with network down.
+- 2026-09-24 | Implemented client-side localStorage fan profile store with fallback | Persists fan persona, city, quizzes, and impact credits across page views without database overhead.
+- 2026-09-24 | Implemented html-to-image 9:16 portrait story share card generator | Enables instant high-res PNG export for social stories with verified telemetry citations.

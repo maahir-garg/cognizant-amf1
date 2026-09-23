@@ -55,7 +55,7 @@ export default function HomePage() {
           {/* Quick Dual CTAs */}
           <div className="mt-10 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
             <Link
-              href="/fan/onboarding"
+              href="/onboarding"
               className="w-full sm:w-auto px-8 py-3.5 rounded-lg bg-amf1-lime hover:bg-amf1-lime-glow text-amf1-bg font-mono font-bold text-sm flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(0,255,135,0.4)] transition-all hover:scale-105 active:scale-95"
             >
               <Users className="w-4 h-4" />
@@ -126,7 +126,7 @@ export default function HomePage() {
                 </span>
               </div>
               <Link
-                href="/fan/tracker"
+                href="/tracker"
                 className="px-4 py-2 rounded bg-amf1-surface hover:bg-amf1-border text-xs font-mono text-white font-medium border border-amf1-border transition-colors"
               >
                 Track Live →
@@ -197,13 +197,13 @@ export default function HomePage() {
 
             <div className="pt-6 border-t border-amf1-border/60 flex items-center justify-between">
               <Link
-                href="/fan/onboarding"
+                href="/onboarding"
                 className="px-5 py-2.5 rounded bg-amf1-lime text-amf1-bg font-mono font-bold text-xs hover:bg-amf1-lime-glow transition-all flex items-center gap-1.5"
               >
                 <span>Start Fan Onboarding (30s)</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
-              <Link href="/fan/journey" className="text-xs font-mono text-amf1-muted hover:text-white transition-colors">
+              <Link href="/journey" className="text-xs font-mono text-amf1-muted hover:text-white transition-colors">
                 Skip to Story Lap →
               </Link>
             </div>

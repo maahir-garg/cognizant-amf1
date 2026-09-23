@@ -10,7 +10,7 @@ export const Navbar: React.FC = () => {
   const pathname = usePathname();
 
   const isPartner = pathname?.startsWith("/partners");
-  const isFan = pathname?.startsWith("/fan") || pathname === "/";
+  const isFan = pathname === "/" || pathname === "/onboarding" || pathname === "/journey" || pathname === "/tracker" || pathname === "/actions" || pathname === "/share";
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-amf1-border/70 bg-amf1-bg/90 backdrop-blur-md">
@@ -34,7 +34,7 @@ export const Navbar: React.FC = () => {
           {/* Primary View Switcher Tabs */}
           <nav className="hidden md:flex items-center gap-1 bg-amf1-surface/90 p-1 rounded-lg border border-amf1-border">
             <Link
-              href="/fan/journey"
+              href="/journey"
               className={`px-3 py-1.5 rounded-md text-xs font-medium font-mono transition-all flex items-center gap-1.5 ${
                 isFan
                   ? "bg-amf1-card text-amf1-lime border border-amf1-lime/30 shadow-sm"
@@ -71,7 +71,7 @@ export const Navbar: React.FC = () => {
           </div>
 
           <Link
-            href="/fan/onboarding"
+            href="/onboarding"
             className="hidden sm:inline-flex items-center gap-1.5 text-xs font-mono px-3 py-1.5 rounded bg-amf1-lime hover:bg-amf1-lime-glow text-amf1-bg font-bold transition-all shadow-[0_0_15px_rgba(0,255,135,0.3)] hover:scale-105 active:scale-95"
           >
             <Sparkles className="w-3.5 h-3.5" />
