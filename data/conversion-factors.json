@@ -1,0 +1,50 @@
+[
+  {
+    "id": "CF-TREE",
+    "key": "trees_annual",
+    "label": "Urban Trees Absorbing Carbon (1 Year)",
+    "factor_per_tco2e": 45.45,
+    "unit_label": "tree-years",
+    "icon": "Trees",
+    "description": "Number of mature urban tree seedlings grown for 10 years needed to sequester 1 metric tonne of CO2.",
+    "source_name": "US EPA Greenhouse Gas Equivalencies Calculator",
+    "source_url": "https://www.epa.gov/energy/greenhouse-gases-equivalencies-calculator-calculations-and-references",
+    "status": "verified"
+  },
+  {
+    "id": "CF-HOME",
+    "key": "homes_electricity_days",
+    "label": "Average Homes' Electricity (Days)",
+    "factor_per_tco2e": 82.5,
+    "unit_label": "home-days",
+    "icon": "Home",
+    "description": "Days of electricity use for an average household based on UK DEFRA average residential consumption.",
+    "source_name": "UK DESNZ Greenhouse Gas Reporting Conversion Factors 2024",
+    "source_url": "https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2024",
+    "status": "verified"
+  },
+  {
+    "id": "CF-FLIGHT",
+    "key": "economy_flights_lon_sg",
+    "label": "London-Singapore Return Economy Flights",
+    "factor_per_tco2e": 0.68,
+    "unit_label": "return flights",
+    "icon": "Plane",
+    "description": "Equivalent passenger return economy flights between London Heathrow (LHR) and Singapore Changi (SIN).",
+    "source_name": "ICAO Carbon Emissions Calculator (Methodology v12)",
+    "source_url": "https://www.icao.int/environmental-protection/CarbonOffset/Pages/default.aspx",
+    "status": "verified"
+  },
+  {
+    "id": "CF-PHONE",
+    "key": "smartphones_charged",
+    "label": "Smartphones Fully Charged",
+    "factor_per_tco2e": 121643,
+    "unit_label": "charges",
+    "icon": "Smartphone",
+    "description": "Number of typical smartphones charged from 0% to 100%.",
+    "source_name": "US EPA GHG Equivalencies Calculator",
+    "source_url": "https://www.epa.gov/energy/greenhouse-gases-equivalencies-calculator-calculations-and-references",
+    "status": "verified"
+  }
+]

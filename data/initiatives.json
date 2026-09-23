@@ -1,0 +1,92 @@
+[
+  {
+    "id": "INIT-STEM-SG",
+    "pillar": "Community",
+    "title": "Cognizant × AMF1 Singapore STEM Lab",
+    "subtitle": "Hands-on data analytics & aerodynamics workshop for secondary students",
+    "description": "Hosted in Singapore leading up to the Marina Bay GP, this initiative pairs Cognizant data scientists and AMF1 race engineers with underrepresented students in Singapore to code live telemetry and analyze track grip coefficients.",
+    "race_slug": "singapore-gp",
+    "partner": "Cognizant",
+    "un_sdgs": [4, 5, 10],
+    "location": "Singapore",
+    "metrics": [
+      {
+        "label": "Students Engaged in SG",
+        "value": 180,
+        "unit": "students",
+        "status": "simulated"
+      },
+      {
+        "label": "Female Participation",
+        "value": "62%",
+        "status": "simulated"
+      },
+      {
+        "fact_id": "FACT-C-01",
+        "label": "Global STEM Outreach Benchmark",
+        "value": 1250,
+        "unit": "students",
+        "status": "verified"
+      }
+    ],
+    "status": "simulated",
+    "badge": "Partner Activation",
+    "featured": true
+  },
+  {
+    "id": "INIT-SAF-FREIGHT",
+    "pillar": "Environment",
+    "title": "DHL Global SAF Logistics Corridor",
+    "subtitle": "Decarbonizing transcontinental flyaway freight via certified SAFc",
+    "description": "Aston Martin Aramco deploys Sustainable Aviation Fuel certificates (SAFc) in partnership with DHL Global Forwarding to cut lifecycle aviation freight emissions by over 80% on long-haul charter flights.",
+    "race_slug": "singapore-gp",
+    "partner": "AMF1",
+    "un_sdgs": [9, 12, 13],
+    "location": "Global / Singapore Flyaway",
+    "metrics": [
+      {
+        "fact_id": "FACT-E-04",
+        "label": "Seasonal Freight Baseline",
+        "value": 5560.45,
+        "unit": "tCO2e",
+        "status": "verified"
+      },
+      {
+        "label": "Net Emissions Abated via SAF",
+        "value": 499.24,
+        "unit": "tCO2e",
+        "status": "estimated"
+      }
+    ],
+    "status": "verified",
+    "badge": "Decarbonisation",
+    "featured": true
+  },
+  {
+    "id": "INIT-BELONG-MENTOR",
+    "pillar": "Belong",
+    "title": "Make A Mark Engineering Mentorship",
+    "subtitle": "Accelerating underrepresented engineering talent into Formula One",
+    "description": "Direct one-on-one mentorship pairing female and ethnic minority university engineering undergraduates with senior vehicle dynamics and aerodynamic engineers at the Silverstone Technology Campus.",
+    "partner": "Make A Mark",
+    "un_sdgs": [5, 8, 10],
+    "location": "Silverstone & Remote",
+    "metrics": [
+      {
+        "fact_id": "FACT-S-01",
+        "label": "Workforce Female Baseline",
+        "value": 18.5,
+        "unit": "%",
+        "status": "verified"
+      },
+      {
+        "label": "Intern Conversion to Full-time",
+        "value": "85%",
+        "status": "simulated"
+      }
+    ],
+    "status": "simulated",
+    "badge": "Talent Pathway",
+    "featured": true
+  }
+]

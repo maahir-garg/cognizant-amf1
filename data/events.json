@@ -1,0 +1,61 @@
+[
+  {
+    "id": "EVT-01",
+    "timestamp": "2026-10-06T08:30:00Z",
+    "elapsed_min": 10,
+    "type": "freight",
+    "title": "Regional Sea Freight Preposition Arrives",
+    "description": "5 sea-freight sea-can modules arrive at Marina Bay Circuit via Singapore Port, avoiding 140 tCO2e of air cargo routing.",
+    "badge": "Logistics",
+    "pillar": "Environment",
+    "fact_ref": "FACT-E-04",
+    "status": "simulated"
+  },
+  {
+    "id": "EVT-02",
+    "timestamp": "2026-10-07T14:15:00Z",
+    "elapsed_min": 25,
+    "type": "freight",
+    "title": "Changi Air Charter SAFc Batch Verified",
+    "description": "DHL confirms 34% Sustainable Aviation Fuel certificate allocation for AMF1 chassis transport flight from UK.",
+    "badge": "Decarbonisation",
+    "pillar": "Environment",
+    "fact_ref": "FACT-E-04",
+    "status": "simulated"
+  },
+  {
+    "id": "EVT-03",
+    "timestamp": "2026-10-08T10:00:00Z",
+    "elapsed_min": 45,
+    "type": "community",
+    "title": "Cognizant × AMF1 STEM Lab Initiates",
+    "description": "60 Singapore polytechnic & JC students start live telemetry modeling session at Marina Bay Pit Building.",
+    "badge": "Education",
+    "pillar": "Community",
+    "fact_ref": "FACT-C-01",
+    "status": "simulated"
+  },
+  {
+    "id": "EVT-04",
+    "timestamp": "2026-10-08T16:45:00Z",
+    "elapsed_min": 60,
+    "type": "milestone",
+    "title": "Milestone: 1,400+ STEM Students Reached in 2026",
+    "description": "With the Singapore cohort onboarded, the joint Cognizant and Make A Mark STEM programme exceeds its annual target.",
+    "badge": "Milestone Crossed",
+    "pillar": "Community",
+    "fact_ref": "FACT-C-01",
+    "status": "simulated"
+  },
+  {
+    "id": "EVT-05",
+    "timestamp": "2026-10-09T18:00:00Z",
+    "elapsed_min": 80,
+    "type": "session",
+    "title": "FP1 Completed: Clean Energy Pitwall Online",
+    "description": "Trackside motorhome and engineering data centers powered via temporary solar battery hybrid bank.",
+    "badge": "Circuit Ops",
+    "pillar": "Environment",
+    "status": "simulated"
+  }
+]
