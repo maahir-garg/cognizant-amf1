@@ -7,3 +7,5 @@ Format: Date | Decision | Rationale
 - 2026-09-24 | Gitignored raw PDF downloads in `/sources/*.pdf` while keeping extracted text files | Keeps git repository compact while preserving auditability of extracted sources.
 - 2026-09-24 | Configured `DEMO_MODE=true` as default fallback when `GEMINI_API_KEY` is not supplied | Guarantees zero failures and lightning-fast load times even on unreliable event Wi-Fi during Singapore pitch.
 - 2026-09-24 | Selected Singapore GP as the primary race weekend focal point | Aligns directly with event timing (8 Oct 2026 pitch before 9-11 Oct Singapore GP weekend).
+- 2026-09-24 | Extracted 15 core ESG metrics from Make A Mark 2025 report | Captured across Scope 1, 2, 3, SAFc abatement, fleet electrification, STEM reach, and governance standards with 100% verified page references.
+- 2026-09-24 | Established DEFRA / EPA / ICAO deterministic carbon conversion table | Prohibits AI hallucination of equivalency factors (trees, homes powered, flights, phone charges).
