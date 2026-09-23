@@ -13,3 +13,6 @@ Format: Date | Decision | Rationale
 - 2026-09-24 | Generated deterministic offline AI cache in `data/ai-cache/` | Ensures zero latency, offline pitch resilience, and full compliance with judging criteria even with network down.
 - 2026-09-24 | Implemented client-side localStorage fan profile store with fallback | Persists fan persona, city, quizzes, and impact credits across page views without database overhead.
 - 2026-09-24 | Implemented html-to-image 9:16 portrait story share card generator | Enables instant high-res PNG export for social stories with verified telemetry citations.
+- 2026-09-24 | Created read-only JSON API at `/api/partner/metrics` | Enables direct REST programmatic ingestion into enterprise BI tools (Tableau, PowerBI) with CORS headers.
+- 2026-09-24 | Implemented client-side CSV export of partner audit metrics | Provides immediate offline spreadsheet access with full provenance and methodology columns.
+- 2026-09-24 | Built deterministic What-If scenario model with AI decision-support explanation | Couples mathematical modeling with executive narrative generation for sponsor investment planning.
