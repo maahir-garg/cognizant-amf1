@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "extract-sources": "npx tsx scripts/extract-sources.ts",
+    "warm-cache": "npx tsx scripts/warm-cache.ts",
     "test:guardrail": "npx tsx lib/ai/guardrail.test.ts"
   },
   "dependencies": {

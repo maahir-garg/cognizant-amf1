@@ -1,0 +1,26 @@
+{
+  "content": "• SBTi-Validated Climate Trajectory: Independently audited commitment to achieve a 42% Scope 1/2 reduction and 25% Scope 3 reduction by 2030, advancing toward 90% net zero by 2050 [FACT-G-02].\n• Direct Decarbonisation: -74% progress in Scope 1 and 2 emissions from baseline [FACT-E-06], with 23% solar energy gains [FACT-E-07].\n• Freight Risk Abatement: 1,188 tCO₂e abated via SAF contracts [FACT-E-05], insulating against rising aviation carbon compliance costs.\n• Governance Excellence: FIA 3-Star Environmental Accreditation maintained [FACT-G-01], providing sponsor brand safety.",
+  "cited_fact_ids": [
+    "FACT-G-02",
+    "FACT-E-06",
+    "FACT-E-07",
+    "FACT-E-05",
+    "FACT-G-01"
+  ],
+  "guardrail_passed": true,
+  "verified_numbers": [
+    42,
+    25,
+    2030,
+    90,
+    2050,
+    74,
+    23,
+    1188,
+    3
+  ],
+  "unverified_numbers": [],
+  "cached": true,
+  "model": "gemini-1.5-flash",
+  "status": "verified"
+}

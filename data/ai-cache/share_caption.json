@@ -1,0 +1,14 @@
+{
+  "content": "Trackside speed, zero emissions compromise: I just powered through AMF1's 1,188 tCO₂e SAF impact lap! 🏎️⚡ [FACT-E-05]",
+  "cited_fact_ids": [
+    "FACT-E-05"
+  ],
+  "guardrail_passed": true,
+  "verified_numbers": [
+    1188
+  ],
+  "unverified_numbers": [],
+  "cached": true,
+  "model": "gemini-1.5-flash",
+  "status": "verified"
+}

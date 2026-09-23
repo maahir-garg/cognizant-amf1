@@ -1,0 +1,19 @@
+{
+  "content": "Scenario Projections & Strategic Takeaways:\n\nExpanding Sustainable Aviation Fuel (SAF) to 50% across long-haul freight corridors directly abates critical Scope 3 logistics emissions [FACT-E-04]. Coupled with road freight biofuel conversion, this operational shift shields the team from escalating aviation fuel carbon surcharges while demonstrating tangible progress against SBTi near-term milestones [FACT-G-02].\n\nOn the human capital front, expanding joint STEM cohorts by 100% multiplies community reach beyond the baseline 300+ students [FACT-C-01], scaling diverse engineering mentorship [FACT-S-01] and providing Cognizant and AMF1 with a measurable social return on investment.",
+  "cited_fact_ids": [
+    "FACT-E-04",
+    "FACT-G-02",
+    "FACT-C-01",
+    "FACT-S-01"
+  ],
+  "guardrail_passed": true,
+  "verified_numbers": [
+    50,
+    100,
+    300
+  ],
+  "unverified_numbers": [],
+  "cached": true,
+  "model": "gemini-1.5-flash",
+  "status": "verified"
+}

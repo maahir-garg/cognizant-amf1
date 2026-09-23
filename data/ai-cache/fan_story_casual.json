@@ -1,0 +1,19 @@
+{
+  "content": "Balancing peak race pace with planet impact: Across the 2024 season, AMF1 recorded 5,560.45 tCO₂e across global freight logistics [FACT-E-04]. By adopting Sustainable Aviation Fuel certificates (SAFc), the team abated 1,188 tCO₂e [FACT-E-05]. Back at base, campus solar generation drove a 23% emissions decrease [FACT-E-07], showing how smart trackside logistics and smart factory design accelerate together.",
+  "cited_fact_ids": [
+    "FACT-E-04",
+    "FACT-E-05",
+    "FACT-E-07"
+  ],
+  "guardrail_passed": true,
+  "verified_numbers": [
+    2024,
+    5560.45,
+    1188,
+    23
+  ],
+  "unverified_numbers": [],
+  "cached": true,
+  "model": "gemini-1.5-flash",
+  "status": "verified"
+}

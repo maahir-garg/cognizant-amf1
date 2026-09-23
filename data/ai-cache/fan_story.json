@@ -1,0 +1,23 @@
+{
+  "content": "Welcome to the Impact Lap! At Aston Martin Aramco, pushing for performance goes hand-in-hand with cutting our carbon footprint. In our operations [FACT-E-06], we have already achieved a 74% reduction in Scope 1 and 2 emissions against our 2023 baseline, powering our headquarters with 23% solar and renewable reductions [FACT-E-07]. When freight heads to flyaway races like the Singapore GP [FACT-E-04], our certified Sustainable Aviation Fuel deployments have successfully avoided 1,188 tCO₂e [FACT-E-05]—equal to 88,153 laps of Silverstone Circuit. Every lap counts toward net zero by 2050 [FACT-G-02].",
+  "cited_fact_ids": [
+    "FACT-E-06",
+    "FACT-E-07",
+    "FACT-E-04",
+    "FACT-E-05",
+    "FACT-G-02"
+  ],
+  "guardrail_passed": true,
+  "verified_numbers": [
+    74,
+    2023,
+    23,
+    1188,
+    88153,
+    2050
+  ],
+  "unverified_numbers": [],
+  "cached": true,
+  "model": "gemini-1.5-flash",
+  "status": "verified"
+}

@@ -1,0 +1,28 @@
+{
+  "content": "Telemetry Analysis: AMR Technology Campus emissions telemetry confirms a 74% reduction in Scope 1 & 2 market-based emissions [FACT-E-06] (Scope 1: 156.57 tCO₂e [FACT-E-01], Scope 2: 343.08 tCO₂e [FACT-E-02]). Transcontinental logistics across 24 Grands Prix generated 5,560.45 tCO₂e [FACT-E-04]. SAFc credit integration abated 1,188 tCO₂e [FACT-E-05], targeting an SBTi-validated 25% Scope 3 reduction by 2030 and 90% by 2050 [FACT-G-02].",
+  "cited_fact_ids": [
+    "FACT-E-06",
+    "FACT-E-01",
+    "FACT-E-02",
+    "FACT-E-04",
+    "FACT-E-05",
+    "FACT-G-02"
+  ],
+  "guardrail_passed": true,
+  "verified_numbers": [
+    74,
+    156.57,
+    343.08,
+    24,
+    5560.45,
+    1188,
+    25,
+    2030,
+    90,
+    2050
+  ],
+  "unverified_numbers": [],
+  "cached": true,
+  "model": "gemini-1.5-flash",
+  "status": "verified"
+}

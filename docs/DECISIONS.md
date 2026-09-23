@@ -9,3 +9,5 @@ Format: Date | Decision | Rationale
 - 2026-09-24 | Selected Singapore GP as the primary race weekend focal point | Aligns directly with event timing (8 Oct 2026 pitch before 9-11 Oct Singapore GP weekend).
 - 2026-09-24 | Extracted 15 core ESG metrics from Make A Mark 2025 report | Captured across Scope 1, 2, 3, SAFc abatement, fleet electrification, STEM reach, and governance standards with 100% verified page references.
 - 2026-09-24 | Established DEFRA / EPA / ICAO deterministic carbon conversion table | Prohibits AI hallucination of equivalency factors (trees, homes powered, flights, phone charges).
+- 2026-09-24 | Implemented post-generation numeric guardrail regex validator | Automatically scans AI output and rejects any number that does not match a verified input fact or formula output.
+- 2026-09-24 | Generated deterministic offline AI cache in `data/ai-cache/` | Ensures zero latency, offline pitch resilience, and full compliance with judging criteria even with network down.

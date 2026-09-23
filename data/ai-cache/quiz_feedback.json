@@ -1,0 +1,15 @@
+{
+  "content": "Spot on telemetry review! Aston Martin Aramco abated 1,188 tCO₂e [FACT-E-05] purely through certified Sustainable Aviation Fuel deployments on flyaway routes. In F1 terms, that is equal to 88,153 laps around Silverstone Circuit [FACT-E-05]—proving that drop-in sustainable fuels deliver massive emissions reductions without altering track performance.",
+  "cited_fact_ids": [
+    "FACT-E-05"
+  ],
+  "guardrail_passed": true,
+  "verified_numbers": [
+    1188,
+    88153
+  ],
+  "unverified_numbers": [],
+  "cached": true,
+  "model": "gemini-1.5-flash",
+  "status": "verified"
+}

@@ -1,0 +1,20 @@
+{
+  "content": "Welcome to Formula One through a sustainable lens! Did you know racing isn't just about speed—it's about engineering efficiency? Aston Martin Aramco has cut its direct operational carbon by 74% [FACT-E-06] and introduced 72,000 m² of wild meadow at its headquarters [FACT-E-09]. For flyaway races like Singapore, using certified Sustainable Aviation Fuel has avoided 1,188 tCO₂e [FACT-E-05]—the carbon equivalent of driving 88,153 laps around Silverstone! You're now part of our journey to net zero [FACT-G-02].",
+  "cited_fact_ids": [
+    "FACT-E-06",
+    "FACT-E-09",
+    "FACT-E-05",
+    "FACT-G-02"
+  ],
+  "guardrail_passed": true,
+  "verified_numbers": [
+    74,
+    72000,
+    1188,
+    88153
+  ],
+  "unverified_numbers": [],
+  "cached": true,
+  "model": "gemini-1.5-flash",
+  "status": "verified"
+}
