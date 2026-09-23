@@ -61,9 +61,7 @@ export default function FanOnboardingPage() {
     };
     saveFanProfile(profile);
     setSaved(true);
-    setTimeout(() => {
-      router.push("/fan/journey");
-    }, 400);
+    router.push("/journey");
   };
 
   const levelConfigs: {

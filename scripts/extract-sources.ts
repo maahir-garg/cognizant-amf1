@@ -21,12 +21,16 @@ const auditList: ExtractedFactCheck[] = [
   { id: "FACT-E-07", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 21, expectedTerm: "23%" },
   { id: "FACT-E-08", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 21, expectedTerm: "60%" },
   { id: "FACT-E-09", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 36, expectedTerm: "122%" },
+  { id: "FACT-E-10", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 21, expectedTerm: "16%" },
   { id: "FACT-S-01", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 84, expectedTerm: "48%" },
   { id: "FACT-S-02", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 48, expectedTerm: "35" },
+  { id: "FACT-S-03", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 48, expectedTerm: "10%" },
   { id: "FACT-C-01", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 11, expectedTerm: "300+" },
   { id: "FACT-C-02", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 62, expectedTerm: "Cognizant" },
   { id: "FACT-C-03", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 10, expectedTerm: "300K" },
-  { id: "FACT-G-01", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 15, expectedTerm: "SBTi" },
+  { id: "FACT-C-04", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 10, expectedTerm: "95.5%" },
+  { id: "FACT-G-01", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 81, expectedTerm: "ACCREDITATION" },
+  { id: "FACT-G-02", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 15, expectedTerm: "SBTi" },
 ];
 
 export function runSourceAudit() {

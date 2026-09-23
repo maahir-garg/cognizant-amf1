@@ -9,7 +9,9 @@
     "lint": "next lint",
     "extract-sources": "npx tsx scripts/extract-sources.ts",
     "warm-cache": "npx tsx scripts/warm-cache.ts",
-    "test:guardrail": "npx tsx lib/ai/guardrail.test.ts"
+    "test:guardrail": "npx tsx lib/ai/guardrail.test.ts",
+    "test:e2e": "playwright test",
+    "record-demo": "playwright test tests/record.spec.ts --project=\"Desktop Chrome\""
   },
   "dependencies": {
     "@google/generative-ai": "^0.20.0",
@@ -25,6 +27,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@types/node": "^20.16.5",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
