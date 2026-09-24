@@ -11,6 +11,7 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "verify:data": "tsx scripts/verify-data.ts",
+    "warm-cache": "tsx scripts/warm-cache.ts",
     "extract:sources": "tsx scripts/extract-sources.ts",
     "format": "prettier --write .",
     "check": "npm run lint && npm run typecheck && npm run test && npm run verify:data"

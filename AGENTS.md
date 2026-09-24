@@ -86,7 +86,8 @@ docs/                    architecture, data-sources, DECISIONS, DEMO_SCRIPT, ROI
 - Request/response: `AiRequest` / `AiResponse` in `lib/data/schemas.ts`. Client code uses `useAiText()` from `lib/ai/client.ts` and renders with `<AiText>`.
 - The model only ever receives the facts named in `factIds` (plus `derived` values) and must cite them inline as `[F:fact-id]` or `[D:derived-id]`.
 - `lib/ai/guardrail.ts` rejects any output whose numbers don't match a **cited** fact or derived value, or that cites unknown ids. Rejected output is regenerated once, then replaced by the grounded template (`lib/ai/templates.ts`). The UI never shows unguarded text.
-- Demo mode (`isDemoMode()` in `lib/config.ts`) is on unless `DEMO_MODE=false` **and** `GEMINI_API_KEY` is set. In demo mode responses come from `data/ai-cache/<task>/<cacheKey>.json`, falling back to templates. `npm run warm-cache` fills the cache for every demo persona and path.
+- Demo mode (`isDemoMode()` in `lib/config.ts`) is on unless `DEMO_MODE=false` **and** `GEMINI_API_KEY` is set. In demo mode responses come from `data/ai-cache/<task>.json` (one file per task, statically imported, mapping `cacheKey -> AiResponse`), falling back to the deterministic templates for any request outside the warmed set. `npm run warm-cache` fills the cache for every demo persona and path (`lib/ai/demo-requests.ts` enumerates them); without `GEMINI_API_KEY` it exits without writing, since the templates already cover the offline demo.
+- In live mode (`GEMINI_API_KEY` set, `DEMO_MODE=false`) the engine tries the model up to twice, feeding a failed guardrail's reasons back into the retry prompt, then falls back to the template. `lib/ai/engine.ts` never throws to the route.
 - Generated text records who drafted it (`generator.kind: "model" | "template"`); the UI shows it.
 
 ## Workstreams and ownership

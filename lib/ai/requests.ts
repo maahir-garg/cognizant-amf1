@@ -49,6 +49,9 @@ export function shareCaptionRequest(fan: FanProfile, factIds: string[], raceId: 
   return { task: "share-caption", factIds, derived: [], fan, params: { raceId } };
 }
 
+/** Default figures printed on the fan share card / used by the warm-cache script. */
+export const DEFAULT_SHARE_FACT_IDS = ["est-freight-per-round", "e25-saf-airfreight-cut", "c25-mam-day-students"];
+
 /* -------------------------------------------------------------- partner */
 
 export const NARRATIVE_FORMATS = ["linkedin-post", "quarterly-brief", "investor-summary"] as const;
@@ -63,7 +66,11 @@ export function partnerNarrativeFactIds(partnerId: string, pillars: Pillar[]): s
   const hero = facts
     .filter((f) => f.tags.includes("hero") && pillars.includes(f.pillar) && !partnerFacts.includes(f.id))
     .map((f) => f.id);
-  return [...partnerFacts, ...hero].slice(0, 10);
+  // Reserve room for hero facts so a narrower `pillars` selection actually
+  // changes the fact set instead of being swamped by partner-tagged facts
+  // from every pillar (the partner tag isn't itself pillar-filtered).
+  const partnerBudget = Math.max(4, 10 - hero.length);
+  return [...partnerFacts.slice(0, partnerBudget), ...hero].slice(0, 10);
 }
 
 export function narrativeRequest(format: NarrativeFormat, opts: { partnerId: string; pillars: Pillar[]; tone: NarrativeTone }): Built {
