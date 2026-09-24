@@ -117,3 +117,6 @@ export function assertFactIds(req: Built): Built {
   req.factIds.forEach(getFact);
   return req;
 }
+
+/** Figures printed on the default /share card. Added by the fan workstream; see AGENTS.md ownership note. */
+export const DEFAULT_SHARE_FACT_IDS = ["est-freight-per-round", "e25-saf-airfreight-cut", "c25-mam-day-students"];
