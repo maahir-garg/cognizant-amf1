@@ -49,7 +49,7 @@ export function TracksideChart({ rows }: { rows: TracksideRow[] }) {
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={rows} margin={{ top: 4, right: 4, bottom: 0, left: 0 }} barCategoryGap={rows.length > 1 ? "24%" : "60%"}>
             <CartesianGrid vertical={false} stroke="var(--line)" />
-            <XAxis dataKey="label" tick={{ fill: "var(--ink-3)", fontSize: 11, fontFamily: "var(--font-mono)" }} axisLine={{ stroke: "var(--line)" }} tickLine={false} interval={0} angle={rows.length > 4 ? -35 : 0} textAnchor={rows.length > 4 ? "end" : "middle"} height={rows.length > 4 ? 52 : 24} />
+            <XAxis dataKey="label" tick={{ fill: "var(--ink-3)", fontSize: 11, fontFamily: "var(--font-mono)" }} axisLine={{ stroke: "var(--line)" }} tickLine={false} interval={0} angle={rows.length > 4 ? -35 : 0} textAnchor={rows.length > 4 ? "end" : "middle"} height={rows.length > 4 ? 64 : 24} />
             <YAxis tick={{ fill: "var(--ink-3)", fontSize: 11, fontFamily: "var(--font-mono)" }} axisLine={false} tickLine={false} width={44} unit=" kWh" />
             <Tooltip content={<TracksideTooltip />} cursor={{ fill: "var(--surface-2)" }} />
             {SERIES.map((s) => (
