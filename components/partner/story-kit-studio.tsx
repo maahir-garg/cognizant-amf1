@@ -56,7 +56,7 @@ export function StoryKitStudio() {
         <div className="flex flex-col gap-2">
           <p className="label">Community or charity partner</p>
           <Select value={initiative.id} onValueChange={setInitiativeId}>
-            <SelectTrigger className="w-full sm:w-80">
+            <SelectTrigger className="w-full sm:w-80" aria-label="Community or charity partner">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
