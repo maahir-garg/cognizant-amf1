@@ -1,0 +1,7 @@
+ID,Scope,Level 1,Level 2,Level 3,Level 4,Column Text,UOM,GHG/Unit,GHG Conversion Factor 2025
+1_101_1018_8_1,Scope 1,Fuels,Liquid fuels,Petrol (100% mineral petrol),,,litres,kg CO2e,2.33984
+4_301_3074_4_1,Scope 1,Passenger vehicles,Cars (by size),Average car,,Unknown,km,kg CO2e,0.16725
+25_313_3141_11_1,Scope 3,Business travel- land,Taxis,Regular taxi,,,passenger.km,kg CO2e,0.14861
+25_314_3145_11_1,Scope 3,Business travel- land,Bus,Average local bus,,,passenger.km,kg CO2e,0.10385
+25_315_3147_11_1,Scope 3,Business travel- land,Rail,National rail,,,passenger.km,kg CO2e,0.03546
+25_315_3149_11_1,Scope 3,Business travel- land,Rail,Light rail and tram,,,passenger.km,kg CO2e,0.0286

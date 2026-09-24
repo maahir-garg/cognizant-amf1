@@ -1,0 +1,6 @@
+[
+  { "id": "sg-stem-students", "label": "Students in race-week STEM sessions", "unit": "students", "start": 0, "milestones": [100, 250], "status": "simulated", "notes": "Demo counter for the illustrative Pit Lane Classroom sessions. Not real attendance." },
+  { "id": "sg-low-carbon-trips", "label": "Fans pledging a low-carbon trip to the circuit", "unit": "fans", "start": 1180, "milestones": [1500, 2000], "status": "simulated", "notes": "Demo counter standing in for in-app pledges. Not real data." },
+  { "id": "sg-volunteer-hours", "label": "Volunteer hours logged", "unit": "hours", "start": 0, "milestones": [50, 120], "status": "simulated", "notes": "Demo counter for the illustrative volunteering slots." },
+  { "id": "sg-share-cards", "label": "Impact cards shared", "unit": "cards", "start": 310, "milestones": [500], "status": "simulated", "notes": "Demo counter standing in for share-card analytics." }
+]

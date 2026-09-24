@@ -1,0 +1,7 @@
+[
+  { "id": "walk", "label": "Walk or cycle", "kgCO2ePerPassengerKm": 0, "status": "verified", "sourceId": "defra-2025", "ref": "n/a", "notes": "Zero tailpipe emissions by definition." },
+  { "id": "mrt", "label": "MRT", "kgCO2ePerPassengerKm": 0.0286, "status": "estimated", "sourceId": "defra-2025", "ref": "25_315_3149_11_1", "notes": "UK 'Light rail and tram' factor used as a proxy for Singapore's MRT." },
+  { "id": "bus", "label": "Public bus", "kgCO2ePerPassengerKm": 0.10385, "status": "estimated", "sourceId": "defra-2025", "ref": "25_314_3145_11_1", "notes": "UK 'Average local bus' factor used as a proxy." },
+  { "id": "taxi", "label": "Taxi or ride-hail", "kgCO2ePerPassengerKm": 0.14861, "status": "estimated", "sourceId": "defra-2025", "ref": "25_313_3141_11_1", "notes": "UK 'Regular taxi' per-passenger factor used as a proxy." },
+  { "id": "car", "label": "Drive yourself", "kgCO2ePerPassengerKm": 0.16725, "status": "estimated", "sourceId": "defra-2025", "ref": "4_301_3074_4_1", "notes": "UK average car (unknown fuel) per vehicle-km, assuming one occupant." }
+]

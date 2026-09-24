@@ -1,0 +1,101 @@
+[
+  {
+    "id": "silverstone-lap",
+    "label": "laps of Silverstone",
+    "singular": "lap of Silverstone",
+    "kgCO2ePerUnit": 13.4766,
+    "status": "estimated",
+    "sourceId": "esg-2025",
+    "page": 9,
+    "derivation": {
+      "formula": "1,188 tCO2e SAF saving = 88,153 laps (AMF1 2025 report), so 1 lap = 1,188,000 kg / 88,153",
+      "expression": "{e25-saf-avoided} * 1000 / {e25-saf-laps}",
+      "inputs": ["e25-saf-avoided", "e25-saf-laps"],
+      "assumptions": ["Uses the team's own 2025 equivalence (petrol car lapping Silverstone, 2025 DEFRA factors). The 2024 report's lap equivalence is inconsistent and is not used."]
+    },
+    "region": "UK",
+    "audience": "fan"
+  },
+  {
+    "id": "lon-nyc-return",
+    "label": "London–New York return flights",
+    "singular": "London–New York return flight",
+    "kgCO2ePerUnit": 2899.7,
+    "status": "estimated",
+    "sourceId": "esg-2024",
+    "page": 25,
+    "derivation": {
+      "formula": "214.58 tCO2e = 74 London–New York round trips (AMF1 2024 report), so 1 round trip = 214,580 kg / 74",
+      "expression": "{e24-solar-saving} * 1000 / {e24-solar-flights}",
+      "inputs": ["e24-solar-saving", "e24-solar-flights"],
+      "assumptions": ["Per-passenger economy trip, as implied by the report. The Manifesto's 2023 equivalence gives 2.92 t, within 1%."]
+    },
+    "region": "UK/US",
+    "audience": "both"
+  },
+  {
+    "id": "car-year",
+    "label": "petrol cars driven for a year",
+    "singular": "petrol car driven for a year",
+    "kgCO2ePerUnit": 4290,
+    "status": "verified",
+    "sourceId": "epa-equivalencies",
+    "page": 1,
+    "ref": "Gasoline-powered passenger vehicles per year",
+    "quote": "4.29 metric tons CO2e/vehicle/year",
+    "region": "US average",
+    "audience": "both"
+  },
+  {
+    "id": "tree-year",
+    "label": "urban trees absorbing CO₂ for a year",
+    "singular": "urban tree absorbing CO₂ for a year",
+    "kgCO2ePerUnit": 60,
+    "status": "verified",
+    "sourceId": "epa-equivalencies",
+    "page": 1,
+    "ref": "Urban tree seedlings grown for 10 years",
+    "quote": "0.060 metric ton CO2 per urban tree planted per year",
+    "region": "US average",
+    "audience": "fan"
+  },
+  {
+    "id": "phone-charge",
+    "label": "smartphone charges",
+    "singular": "smartphone charge",
+    "kgCO2ePerUnit": 0.0124,
+    "status": "verified",
+    "sourceId": "epa-equivalencies",
+    "page": 1,
+    "ref": "Number of smartphones charged",
+    "quote": "1.24 x 10-5 metric tons CO2/smartphone charged",
+    "region": "US average",
+    "audience": "fan"
+  },
+  {
+    "id": "home-electricity-year",
+    "label": "homes' electricity for a year",
+    "singular": "home's electricity for a year",
+    "kgCO2ePerUnit": 4798,
+    "status": "verified",
+    "sourceId": "epa-equivalencies",
+    "page": 1,
+    "ref": "Home electricity use",
+    "quote": "4.798 metric tons CO2/home",
+    "region": "US average",
+    "audience": "both"
+  },
+  {
+    "id": "car-km",
+    "label": "km driven in an average car",
+    "singular": "km driven in an average car",
+    "kgCO2ePerUnit": 0.16725,
+    "status": "verified",
+    "sourceId": "defra-2025",
+    "page": 1,
+    "ref": "4_301_3074_4_1",
+    "quote": "4_301_3074_4_1,Scope 1,Passenger vehicles,Cars (by size),Average car,,Unknown,km,kg CO2e,0.16725",
+    "region": "UK",
+    "audience": "both"
+  }
+]

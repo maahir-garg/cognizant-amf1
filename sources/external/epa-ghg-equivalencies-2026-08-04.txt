@@ -1,0 +1,9 @@
+Source: US EPA, "Greenhouse Gas Equivalencies Calculator - Calculations and References"
+URL: https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator-calculations-and-references
+Page footer: "Last updated on August 4, 2026". Retrieved 2026-09-24. eGRID data year 2022.
+
+Verbatim result lines used by Impact Lap:
+- "4.29 metric tons CO2e/vehicle/year" (Gasoline-powered passenger vehicles per year)
+- "0.060 metric ton CO2 per urban tree planted per year" (Urban tree seedlings grown for 10 years section)
+- "1.24 x 10-5 metric tons CO2/smartphone charged" (Number of smartphones charged)
+- "4.798 metric tons CO2/home" (Home electricity use, per year)
