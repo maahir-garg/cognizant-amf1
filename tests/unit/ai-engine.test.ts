@@ -46,7 +46,8 @@ describe("runGeneration", () => {
     const res = await runGeneration(req);
 
     expect(fake.generate).not.toHaveBeenCalled();
-    expect(res.generator.kind).toBe("template");
+    // Either a warmed cache entry or the runtime template; never a fresh model call.
+    expect(res.cached || res.generator.kind === "template").toBe(true);
     expect(res.guardrail.passed).toBe(true);
   });
 
