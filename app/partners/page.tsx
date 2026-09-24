@@ -17,9 +17,9 @@ export default function PartnerOverviewPage() {
         <p className="label">{PARTNER_NAME} × Aston Martin Aramco</p>
         <h1 className="display text-4xl sm:text-6xl">Partner Impact Intelligence</h1>
         <p className="max-w-2xl text-ink-2">
-          A single, sourced view of the partnership across environment, belonging, community and governance, built for
-          comms, sustainability and investor-relations use. Reporting period: the 2025 season, plus a simulated Singapore
-          Grand Prix 2026 race-weekend panel below.
+          A single, sourced view of the partnership across environment, belonging, community and governance, built for comms,
+          sustainability and investor-relations use. Reporting period: the 2025 season, plus a simulated Singapore Grand Prix 2026
+          race-weekend panel.
         </p>
         <StatusLegend />
         <div className="flex flex-wrap gap-3 pt-2">
@@ -41,10 +41,19 @@ export default function PartnerOverviewPage() {
         </div>
       </header>
 
-      <JointStrip />
-      <KpiGrid />
-      <DataQualityPanel />
-      <LivePanel raceId={HERO_RACE_ID} speed={4} />
+      <div className="grid gap-12 xl:grid-cols-[minmax(0,1fr)_26rem] xl:gap-10">
+        <div className="flex min-w-0 flex-col gap-12">
+          <JointStrip />
+          <KpiGrid />
+          <DataQualityPanel />
+        </div>
+        {/* The live panel is the demo's moving part: keep it in view on wide screens. */}
+        <aside className="order-first xl:order-none">
+          <div className="xl:sticky xl:top-20 xl:max-h-[calc(100dvh-6rem)] xl:overflow-y-auto xl:pr-1">
+            <LivePanel raceId={HERO_RACE_ID} speed={4} />
+          </div>
+        </aside>
+      </div>
     </div>
   );
 }

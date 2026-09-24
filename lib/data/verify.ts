@@ -103,6 +103,20 @@ export function verifyData(): Issue[] {
       }
     }
 
+    if (f.phrase) {
+      const bare = f.phrase.replace(/\{(v|n|abs)\}/g, "");
+      // Same extraction as the guardrail, so names like "F1" or "Scope 3" are fine.
+      if (extractNumbers(bare).length) {
+        issues.push({ level: "error", where, message: `phrase contains numbers outside placeholders: "${f.phrase}"` });
+      }
+      if (f.value === null && /\{(v|n|abs)\}/.test(f.phrase)) {
+        issues.push({ level: "error", where, message: "qualitative fact phrase cannot use a value placeholder" });
+      }
+      if (f.value !== null && !/\{(v|n|abs)\}/.test(f.phrase)) {
+        issues.push({ level: "error", where, message: "numeric fact phrase must include {v}, {n} or {abs}" });
+      }
+    }
+
     for (const flag of f.flags) {
       for (const id of flag.relatedFactIds) {
         if (!factById.has(id)) issues.push({ level: "error", where, message: `flag references unknown fact "${id}"` });
