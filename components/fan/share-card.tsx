@@ -99,7 +99,8 @@ export const ShareCard = forwardRef<HTMLDivElement, {
             <Check className="size-5" strokeWidth={3} /> Verified
           </span>
         </div>
-        <div className="flex items-center justify-between text-[24px] text-ink-3">
+        {/* ink-3 doesn't meet contrast against the racing-green ground; ink-2 does (see docs/DECISIONS.md). */}
+        <div className="flex items-center justify-between text-[24px] text-ink-2">
           <span>
             {FAN_LEVEL_COPY[profile.level].label} · {city?.name ?? profile.cityId}
           </span>

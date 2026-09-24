@@ -65,7 +65,7 @@ export default function Home() {
           <span className="num text-ink">{verified}</span> facts are quoted from the team&apos;s reports with page references and checked
           automatically. <span className="num text-ink">{estimated}</span> are calculated from those, with the formula shown.{" "}
           <span className="num text-ink">{flagged}</span> carry data-quality flags where the reports disagree with themselves.{" "}
-          <Link href="/sources" className="text-lime underline-offset-4 hover:underline">
+          <Link href="/sources" className="text-lime underline underline-offset-4">
             Browse every source
           </Link>
           .

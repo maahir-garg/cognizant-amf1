@@ -37,7 +37,8 @@ export const ShareCard = forwardRef<HTMLDivElement, { initiativeName: string; fa
           )}
         </div>
 
-        <p className="text-lg text-ink-3">{sourceTitle ? `Source: ${sourceTitle}` : "Source: Aston Martin Aramco impact report"}</p>
+        {/* ink-3 doesn't meet contrast against the racing-green ground; ink-2 does (see docs/DECISIONS.md). */}
+        <p className="text-lg text-ink-2">{sourceTitle ? `Source: ${sourceTitle}` : "Source: Aston Martin Aramco impact report"}</p>
       </div>
     );
   },

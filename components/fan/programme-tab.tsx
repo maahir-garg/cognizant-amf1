@@ -32,7 +32,7 @@ export function ProgrammeTab() {
             </>
           )}
         </p>
-        <Progress value={progress} />
+        <Progress value={progress} aria-label={next ? `Progress to ${next.name}` : "All tiers unlocked"} />
       </div>
 
       <div className="flex flex-col gap-2">

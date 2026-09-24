@@ -38,7 +38,17 @@ export function GetToCircuitTab() {
           </label>
           <span className="num text-sm text-ink">{km}km one way</span>
         </div>
-        <Slider id="km-slider" min={1} max={40} step={1} value={[km]} onValueChange={([v]) => setKm(v)} />
+        {/* `role="slider"` is a <span>, not a labelable element, so `<label for>` alone
+            doesn't give it an accessible name even though the ids match — pass one directly. */}
+        <Slider
+          id="km-slider"
+          aria-label="Distance to the circuit"
+          min={1}
+          max={40}
+          step={1}
+          value={[km]}
+          onValueChange={([v]) => setKm(v)}
+        />
       </div>
 
       <div className="flex flex-col divide-y divide-line rounded-md border border-line">

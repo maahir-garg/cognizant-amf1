@@ -3,7 +3,8 @@
  * same profile always sees the same matches and the AI only rewrites copy.
  *
  * Score = city match (4) + home-race match (3) + shared interests (2 each)
- *       + global programme (1) + verified bonus (1).
+ *       + global programme (1) + verified bonus (3). The verified bonus keeps
+ *       real programmes above illustrative ones with the same local fit.
  */
 import { getCity, initiatives } from "./load";
 import type { FanProfile, Initiative } from "./schemas";
@@ -36,12 +37,17 @@ export function matchInitiatives(profile: FanProfile, limit = 4): Match[] {
       score += 1;
       reasons.push("Runs across race locations");
     }
-    if (initiative.status === "verified") score += 1;
+    if (initiative.status === "verified") score += 3;
     return { initiative, score, reasons };
   });
 
   return matches
     .filter((m) => m.score > 1)
-    .sort((a, b) => b.score - a.score || a.initiative.name.localeCompare(b.initiative.name))
+    .sort(
+      (a, b) =>
+        b.score - a.score ||
+        Number(b.initiative.status === "verified") - Number(a.initiative.status === "verified") ||
+        a.initiative.name.localeCompare(b.initiative.name),
+    )
     .slice(0, limit);
 }

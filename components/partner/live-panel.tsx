@@ -53,7 +53,7 @@ export function LivePanel({ raceId, speed = 4 }: { raceId: string; speed?: numbe
             <div key={c.id} className="flex flex-col gap-2 bg-surface p-4">
               <span className="num text-2xl font-semibold text-ink">{Math.round(value).toLocaleString("en-GB")}</span>
               <span className="text-xs text-ink-2">{c.label}</span>
-              <Progress value={pct} className="mt-1" />
+              <Progress value={pct} className="mt-1" aria-label={`${c.label}: progress to next milestone`} />
               <span className="label">
                 {nextMilestone
                   ? `${Math.max(0, Math.round(nextMilestone - value)).toLocaleString("en-GB")} to next milestone (${nextMilestone.toLocaleString("en-GB")})`

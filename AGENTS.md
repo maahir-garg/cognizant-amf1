@@ -75,6 +75,7 @@ docs/                    architecture, data-sources, DECISIONS, DEMO_SCRIPT, ROI
 
 - Schemas: `lib/data/schemas.ts`. All JSON is parsed at import time; a bad file fails the build.
 - **Adding a verified fact**: find the figure in `sources/text/<source>.json` (page index = array index + 1; for the AMF1 reports this equals the printed page number). Add an entry to `data/facts.json` with `sourceId`, `page`, and a verbatim `quote` that contains the value. Table cells the text layer splits apart can be quoted as fragments joined by ` … `. Run `npm run verify:data`.
+- **Copy phrase**: facts used in generated text should carry a `phrase`, a hand-written sentence with `{v}` (formatted value), `{n}` (bare number) or `{abs}` (absolute value) placeholders and no other numbers. Templates build their sentences from these; the verifier rejects phrases with stray numbers.
 - **Adding an estimated fact**: give a `derivation` with a human `formula`, a machine `expression` over `{fact-id}` references, `inputs`, and `assumptions`. The verifier recomputes it.
 - **Simulated anything** must say why in `notes`, and the UI must label it.
 - **Quality flags** (`source-conflict`, `restated`, `not-comparable`, `inconsistent-equivalence`) record where the reports disagree with themselves. Keep them; they are a feature (Governance).

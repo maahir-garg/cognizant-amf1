@@ -12,6 +12,11 @@ function Progress({
   return (
     <ProgressPrimitive.Root
       data-slot="progress"
+      // Radix computes aria-valuenow/aria-valuemax (and the determinate
+      // state) from `value` on the root itself; it was only being read below
+      // for the indicator's transform, so every progress bar reported
+      // data-state="indeterminate" with no accessible value.
+      value={value}
       className={cn(
         "relative flex h-1 w-full items-center overflow-x-hidden rounded-full bg-muted",
         className

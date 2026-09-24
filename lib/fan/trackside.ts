@@ -33,7 +33,7 @@ export function tracksideRow(raceId: string): TracksideRow {
   const find = (suffix: string) => factsOnRace.find((f) => f!.id.endsWith(suffix))?.value ?? null;
   return {
     raceId,
-    label: race.name.replace(/ Grand Prix.*/, " GP"),
+    label: SHORT_LABELS[race.id] ?? race.name.replace(/ Grand Prix.*/, ""),
     hvo: find("-hvo"),
     grid: find("-grid"),
     solar: find("-solar"),
@@ -50,3 +50,16 @@ export function missingLabel(rows: TracksideRow[], key: "hvo" | "grid" | "solar"
   if (!missing.length) return null;
   return missing.join(", ");
 }
+
+/** Circuit names are shorter than race names and still read as F1 to fans. */
+const SHORT_LABELS: Record<string, string> = {
+  "gbr-2025": "Silverstone",
+  "ned-2025": "Zandvoort",
+  "bel-2025": "Spa",
+  "esp-2025": "Barcelona",
+  "mon-2025": "Monaco",
+  "aut-2025": "Spielberg",
+  "hun-2025": "Budapest",
+  "ita-2025": "Monza",
+  "emi-2025": "Imola",
+};
