@@ -9,6 +9,8 @@ Impact Lap turns the team's published sustainability, inclusion and community da
 
 Underneath both is a **trust layer**: every number is Verified (quoted from a report page and auto-checked), Estimated (calculated with a visible formula) or Simulated (labelled demo data), and every AI sentence passes a numeric guardrail before anyone sees it.
 
+**Live demo:** https://cognizant-amf1.vercel.app (offline demo mode, no sign-in). Backup video: `docs/demo-video/impact-lap-demo.mp4`.
+
 ## Run it
 
 ```bash
