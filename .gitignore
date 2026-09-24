@@ -1,0 +1,35 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+
+# next.js / build
+/.next/
+/out/
+/build
+*.tsbuildinfo
+next-env.d.ts
+
+# testing
+/coverage
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# env
+.env*
+!.env.example
+
+# source binaries (download instructions in docs/data-sources.md)
+sources/*.pdf
+
+# demo recordings are large; the final one is copied to docs/demo-video/
+/recordings/
+
+# misc
+.DS_Store
+*.pem
+npm-debug.log*
+.vercel
+.claude/

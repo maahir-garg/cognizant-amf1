@@ -1,0 +1,4 @@
+sources/
+data/ai-cache/
+package-lock.json
+.next/
