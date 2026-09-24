@@ -8,12 +8,15 @@ import { cn } from "@/lib/utils";
 import { useProvenance } from "./provenance";
 import { StatusBadge } from "./status-badge";
 
+const PAGE = 30;
+
 type Filter = { pillar: Pillar | "all"; status: Status | "all"; flagged: boolean; q: string };
 
 /** Searchable list of every fact. Rows open the provenance drawer. */
 export function FactTable() {
   const { openFact } = useProvenance();
   const [f, setF] = useState<Filter>({ pillar: "all", status: "all", flagged: false, q: "" });
+  const [showAll, setShowAll] = useState(false);
 
   const rows = useMemo(() => {
     const q = f.q.trim().toLowerCase();
@@ -54,9 +57,11 @@ export function FactTable() {
           flagged only
         </button>
       </div>
-      <p className="label">{rows.length} facts</p>
+      <p className="label" aria-live="polite">
+        {rows.length} facts
+      </p>
       <ul className="divide-y divide-line rounded-md border border-line">
-        {rows.map((x) => (
+        {(showAll ? rows : rows.slice(0, PAGE)).map((x) => (
           <li key={x.id}>
             <button
               onClick={() => openFact(x.id)}
@@ -74,6 +79,11 @@ export function FactTable() {
           </li>
         ))}
       </ul>
+      {rows.length > PAGE && (
+        <button onClick={() => setShowAll(!showAll)} className="label self-start rounded-sm border border-line px-3 py-2 hover:border-lime">
+          {showAll ? "Show fewer" : `Show all ${rows.length}`}
+        </button>
+      )}
     </div>
   );
 }
