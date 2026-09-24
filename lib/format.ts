@@ -31,7 +31,7 @@ export function factParts(f: Fact): { value: string; unit: string; prefix: strin
   if (f.unit === "%") return { prefix: approx, value: nf(1).format(f.value), unit: "%", suffix: plus };
   if (f.unit === "year") return { prefix: "", value: String(f.value), unit: "", suffix: "" };
   if (f.unit === "x") return { prefix: "", value: nf(1).format(f.value), unit: "×", suffix: "" };
-  const big = f.value >= 1e5 && /impressions|students|kg|litres|cups|laps|young people/.test(f.unit);
+  const big = f.value >= 1e5 && /impressions|students|cups|young people/.test(f.unit);
   return {
     prefix: approx,
     value: big ? compact(f.value) : nf(f.value < 10 ? 2 : f.value < 1000 ? 2 : 0).format(f.value),
@@ -49,8 +49,9 @@ function compactMoney(v: number): string {
 export function formatFact(f: Fact): string {
   if (f.display) return f.display;
   const p = factParts(f);
-  const unit = p.unit && p.unit !== "%" && p.unit !== "×" ? ` ${p.unit}` : p.unit;
-  return `${p.prefix}${p.value}${unit}${p.suffix}`;
+  // Symbols hug the number ("16%", "3×"); words follow the qualifier ("1,000+ children").
+  if (p.unit === "%" || p.unit === "×") return `${p.prefix}${p.value}${p.unit}${p.suffix}`;
+  return `${p.prefix}${p.value}${p.suffix}${p.unit ? ` ${p.unit}` : ""}`;
 }
 
 export function formatDate(iso: string): string {

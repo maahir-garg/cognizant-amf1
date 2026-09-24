@@ -102,6 +102,12 @@ export const Fact = z
     quote: z.string().optional(),
     derivation: Derivation.optional(),
     flags: z.array(QualityFlag).default([]),
+    /**
+     * Hand-written sentence for generated copy. Placeholders: {v} formatted value
+     * with unit, {n} bare number, {abs} formatted absolute value. It must contain
+     * no other digits (the verifier checks), so templates can't leak numbers.
+     */
+    phrase: z.string().optional(),
     /** Interests and partner tags used by the relevance engine, e.g. "stem", "partner:cognizant". */
     tags: z.array(z.string()).default([]),
     extractedAt: IsoDate,

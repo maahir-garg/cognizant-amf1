@@ -15,11 +15,17 @@
       {
         "kind": "source-conflict",
         "note": "The appendix table labels 87,162.40 as the SBTi-aligned total, but footnote 8 (p91) describes 85,974 tCO2e (the total with SAF certificates) as \"the market-based, SBTi-aligned footprint\". Both figures are published; we show 87,162.40 as the headline and 85,974.41 as the with-SAFc figure.",
-        "relatedFactIds": ["e25-ghg-total-safc"]
+        "relatedFactIds": [
+          "e25-ghg-total-safc"
+        ]
       }
     ],
-    "tags": ["environment", "hero"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "hero"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The team's whole footprint for the year, from suppliers to flights, came to {v}."
   },
   {
     "id": "e25-ghg-total-safc",
@@ -37,11 +43,16 @@
       {
         "kind": "source-conflict",
         "note": "Footnote 8 (p91) calls this the SBTi-aligned footprint; the appendix table gives that label to 87,162.40.",
-        "relatedFactIds": ["e25-ghg-total-sbti"]
+        "relatedFactIds": [
+          "e25-ghg-total-sbti"
+        ]
       }
     ],
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Counting its Sustainable Aviation Fuel certificates, the footprint was {v}."
   },
   {
     "id": "e23-ghg-baseline",
@@ -59,11 +70,16 @@
       {
         "kind": "restated",
         "note": "The 2023 baseline was restated after SBTi validation (esg-2025 p85). The Manifesto reported 94,252.85 tCO2e for 2023 under the earlier methodology.",
-        "relatedFactIds": ["m23-ghg-total-original"]
+        "relatedFactIds": [
+          "m23-ghg-total-original"
+        ]
       }
     ],
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The restated baseline the team now measures itself against is {v}."
   },
   {
     "id": "m23-ghg-total-original",
@@ -81,11 +97,16 @@
       {
         "kind": "restated",
         "note": "Superseded by the restated 2023 baseline of 97,216.47 tCO2e in the 2025 report. Not comparable with 2025 figures.",
-        "relatedFactIds": ["e23-ghg-baseline"]
+        "relatedFactIds": [
+          "e23-ghg-baseline"
+        ]
       }
     ],
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "As first reported, the baseline year's footprint was {v}, a figure since restated."
   },
   {
     "id": "e24-ghg-total-original",
@@ -103,11 +124,16 @@
       {
         "kind": "restated",
         "note": "The 2025 report restates 2024 (hotel stays removed from business travel, Scope 3 method refined) and says previous figures are \"not directly comparable\" (esg-2025 p85).",
-        "relatedFactIds": ["g25-restatement"]
+        "relatedFactIds": [
+          "g25-restatement"
+        ]
       }
     ],
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "As first reported, the previous year's footprint was {v}, a figure since restated."
   },
   {
     "id": "e25-scope1",
@@ -121,8 +147,11 @@
     "sourceId": "esg-2025",
     "page": 83,
     "quote": "Gross direct (Scope 1) GHG emissions … 156.57",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Direct emissions, from the team's own trucks, cars and paint booths, were just {v}."
   },
   {
     "id": "e25-scope2",
@@ -136,8 +165,11 @@
     "sourceId": "esg-2025",
     "page": 20,
     "quote": "Scope 2 1,726.13 444.78 343.08",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Electricity emissions, counted on a market basis, were {v}."
   },
   {
     "id": "e25-scope3",
@@ -151,8 +183,11 @@
     "sourceId": "esg-2025",
     "page": 20,
     "quote": "Scope 3 without SAFc 86,662.75",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Emissions across the wider value chain came to {v}."
   },
   {
     "id": "e23-scope1",
@@ -173,7 +208,9 @@
         "relatedFactIds": []
       }
     ],
-    "tags": ["environment"],
+    "tags": [
+      "environment"
+    ],
     "extractedAt": "2026-09-24"
   },
   {
@@ -188,7 +225,9 @@
     "sourceId": "esg-2025",
     "page": 20,
     "quote": "Scope 2 1,726.13 444.78 343.08",
-    "tags": ["environment"],
+    "tags": [
+      "environment"
+    ],
     "extractedAt": "2026-09-24"
   },
   {
@@ -207,10 +246,15 @@
       {
         "kind": "source-conflict",
         "note": "Three different 2023 Scope 3 values appear in the same report: 95,933.5587 (p20 table), 95,924 (p20 chart) and 95,323.76 (p83 appendix). The p20 table also prints 2024 Scope 3 as 563.08, which looks like a truncated 86,563.08; the appendix gives 86,680.34.",
-        "relatedFactIds": ["e23-scope3-appendix"]
+        "relatedFactIds": [
+          "e23-scope3-appendix"
+        ]
       }
     ],
-    "tags": ["environment", "data-quality"],
+    "tags": [
+      "environment",
+      "data-quality"
+    ],
     "extractedAt": "2026-09-24"
   },
   {
@@ -229,10 +273,15 @@
       {
         "kind": "source-conflict",
         "note": "Differs from the 95,933.5587 printed in the p20 table for the same year.",
-        "relatedFactIds": ["e23-scope3-table"]
+        "relatedFactIds": [
+          "e23-scope3-table"
+        ]
       }
     ],
-    "tags": ["environment", "data-quality"],
+    "tags": [
+      "environment",
+      "data-quality"
+    ],
     "extractedAt": "2026-09-24"
   },
   {
@@ -247,11 +296,22 @@
     "derivation": {
       "formula": "(Scope 1 2025 + Scope 2 2025) / (Scope 1 2023 + Scope 2 2023) - 1",
       "expression": "(({e25-scope1} + {e25-scope2}) / ({e23-scope1} + {e23-scope2}) - 1) * 100",
-      "inputs": ["e25-scope1", "e25-scope2", "e23-scope1", "e23-scope2"],
-      "assumptions": ["Uses the report's own Scope 1 and 2 figures. The report's chart on p15 shows the same change rounded to -74%."]
+      "inputs": [
+        "e25-scope1",
+        "e25-scope2",
+        "e23-scope1",
+        "e23-scope2"
+      ],
+      "assumptions": [
+        "Uses the report's own Scope 1 and 2 figures. The report's chart on p15 shows the same change rounded to -74%."
+      ]
     },
-    "tags": ["environment", "hero"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "hero"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Emissions the team controls directly have fallen {abs} against its baseline year."
   },
   {
     "id": "e25-target-scope12",
@@ -266,8 +326,11 @@
     "sourceId": "esg-2025",
     "page": 9,
     "quote": "Our near-term targets include a 42% reduction in Scope 1 and 2 emissions",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "By the end of the decade the team has committed to cutting its direct and electricity emissions by {v}."
   },
   {
     "id": "e25-target-scope3",
@@ -283,8 +346,11 @@
     "page": 9,
     "quote": "and a 25% reduction in Scope 3 emissions by 2030",
     "notes": "The target panel on p15 scopes this to \"purchased goods and services and capital goods\".",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Value-chain emissions are due to fall {v} by the end of the decade."
   },
   {
     "id": "e25-target-netzero-year",
@@ -299,8 +365,12 @@
     "sourceId": "esg-2025",
     "page": 9,
     "quote": "achieving net zero greenhouse gas emissions across our value chain by 2050",
-    "tags": ["environment", "hero"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "hero"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The team has committed to net zero across its whole value chain by {n}."
   },
   {
     "id": "e25-target-netzero-cut",
@@ -315,8 +385,11 @@
     "sourceId": "esg-2025",
     "page": 15,
     "quote": "Reduce Scope 3 GHG emissions by 90%",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Net zero means cutting absolute emissions by {v}, with carbon removals covering only what's left."
   },
   {
     "id": "e25-supply-chain",
@@ -330,8 +403,11 @@
     "sourceId": "esg-2025",
     "page": 19,
     "quote": "81% Supply Chain: 69,837.00",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Suppliers account for the biggest slice: {v} from the parts, materials and services the team buys."
   },
   {
     "id": "e25-supply-chain-share",
@@ -345,8 +421,12 @@
     "sourceId": "esg-2025",
     "page": 19,
     "quote": "81% Supply Chain: 69,837.00",
-    "tags": ["environment", "hero"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "hero"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "{v} of the footprint sits in the supply chain, not on the track."
   },
   {
     "id": "e25-freight-logistics",
@@ -364,11 +444,18 @@
       {
         "kind": "not-comparable",
         "note": "The 2024 report's 'Logistics' figure (5,943.35 tCO2e) was calculated before the 2025 restatement. Comparing the two directly would mix methodologies; use the report's own 14% travel-and-logistics reduction instead.",
-        "relatedFactIds": ["e24-logistics", "e25-travel-logistics-cut"]
+        "relatedFactIds": [
+          "e24-logistics",
+          "e25-travel-logistics-cut"
+        ]
       }
     ],
-    "tags": ["environment", "hero"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "hero"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Moving cars, parts and garage kit around the world produced {v} before Sustainable Aviation Fuel certificates."
   },
   {
     "id": "e25-business-travel",
@@ -382,8 +469,11 @@
     "sourceId": "esg-2025",
     "page": 19,
     "quote": "Business Travel: 5,124.32",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Flying people to races and events accounted for {v}."
   },
   {
     "id": "e25-commuting",
@@ -397,8 +487,11 @@
     "sourceId": "esg-2025",
     "page": 19,
     "quote": "Employee Commuting: 5,717.30",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Getting colleagues to and from work added {v}."
   },
   {
     "id": "e25-hq-energy",
@@ -412,8 +505,11 @@
     "sourceId": "esg-2025",
     "page": 19,
     "quote": "HQ Energy: 772.91",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Running the AMR Technology Campus accounted for {v}."
   },
   {
     "id": "e25-travel-logistics-cut",
@@ -428,8 +524,12 @@
     "page": 9,
     "quote": "14% REDUCTION IN TRAVEL AND LOGISTICS EMISSIONS",
     "notes": "Attributed by the report to more efficient logistics and investment in Sustainable Aviation Fuel (SAF).",
-    "tags": ["environment", "hero"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "hero"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Travel and logistics emissions fell {v} on the previous year, helped by smarter freight planning and Sustainable Aviation Fuel."
   },
   {
     "id": "e25-saf-avoided",
@@ -444,8 +544,14 @@
     "page": 24,
     "quote": "avoiding 1,188 tCO₂e of air freight emissions",
     "notes": "Book-and-claim SAF certificates bought through F1's SAF programme; logistics partner Atlas Air Worldwide (p24).",
-    "tags": ["environment", "hero", "tech", "partner:atlas-air"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "hero",
+      "tech",
+      "partner:atlas-air"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The team's first Sustainable Aviation Fuel purchase avoided {v} of air-freight emissions."
   },
   {
     "id": "e25-saf-airfreight-cut",
@@ -459,8 +565,12 @@
     "sourceId": "esg-2025",
     "page": 24,
     "quote": "supporting a 31% reduction in associated emissions",
-    "tags": ["environment", "hero"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "hero"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "That fuel cut the emissions tied to its air freight by {v}."
   },
   {
     "id": "e25-saf-laps",
@@ -475,8 +585,11 @@
     "page": 9,
     "quote": "is equivalent to 88,153 laps around Silverstone Circuit",
     "notes": "Footnote 2 (p91): laps calculated with 2025 DEFRA petrol conversion factors and the length of one Silverstone lap.",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The team puts that saving at {v} around Silverstone."
   },
   {
     "id": "e25-f1-saf-programme",
@@ -492,8 +605,11 @@
     "page": 23,
     "quote": "delivered around 20,000 tCO₂e reduction in 2025",
     "notes": "Formula One's figure for the whole sport, quoted in the AMF1 report (footnote 13 cites the F1 2025 Sustainability Report).",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Across the whole sport, F1's shared fuel programme delivered about {abs} of reductions."
   },
   {
     "id": "e25-removals",
@@ -508,8 +624,12 @@
     "page": 26,
     "quote": "2,124 TONNES OF CARBON ELIMINATED",
     "notes": "The highlights page (p9) rounds this to \"more than 2,000\". Projects purchased through and quality-assured by Climate Impact Partners (footnote 3).",
-    "tags": ["environment", "community"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "community"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Carbon removal projects in Ethiopia, Kenya and the USA took {v} out of the atmosphere."
   },
   {
     "id": "e25-removals-vs-scope12",
@@ -523,8 +643,11 @@
     "sourceId": "esg-2025",
     "page": 26,
     "quote": "we successfully removed 137% of our Scope 1 and 2 market-based emissions",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "That's {v} of the team's direct and electricity emissions, removed for good."
   },
   {
     "id": "e25-ethiopia-children",
@@ -539,8 +662,12 @@
     "sourceId": "esg-2025",
     "page": 26,
     "quote": "construction of eight primary schools benefiting more than 1,000 children",
-    "tags": ["environment", "community"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "community"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The Ethiopian woodland project has also helped build primary schools for {v}."
   },
   {
     "id": "e25-pool-car-cut",
@@ -554,8 +681,12 @@
     "sourceId": "esg-2025",
     "page": 21,
     "quote": "We achieved a 25-tonne reduction in tCO₂e emissions from our pool car fleet",
-    "tags": ["environment", "tech"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "tech"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Switching the pool car fleet from petrol to electric saved {v}."
   },
   {
     "id": "e25-flight-cut",
@@ -569,8 +700,11 @@
     "sourceId": "esg-2025",
     "page": 21,
     "quote": "Smarter flight choices, including fewer flights and greater use of economy travel, cut emissions by 193 tonnes",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Fewer flights and more economy seats saved {v}."
   },
   {
     "id": "e25-waste-emissions-cut",
@@ -584,8 +718,11 @@
     "sourceId": "esg-2025",
     "page": 21,
     "quote": "achieved a 16% reduction in waste emissions",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Sending more waste to recycling cut waste emissions by {v}."
   },
   {
     "id": "e25-circularity",
@@ -600,8 +737,13 @@
     "page": 31,
     "quote": "32% material circularity",
     "notes": "A perfectly circular car would score 100% (p31). Calculated with the F1 Constructors' Circularity Handbook v1.1 (footnote 15).",
-    "tags": ["environment", "tech", "stem"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "tech",
+      "stem"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The latest car scored {v} on the sport's new circularity measure, where a perfectly circular car would score full marks."
   },
   {
     "id": "e25-cups-removed",
@@ -616,8 +758,11 @@
     "sourceId": "esg-2025",
     "page": 32,
     "quote": "In 2025, we saved more than 200,000 cups",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Scrapping disposable coffee cups at the factory took {v} out of the bin."
   },
   {
     "id": "e25-cups-tco2e",
@@ -631,8 +776,11 @@
     "sourceId": "esg-2025",
     "page": 32,
     "quote": "This saved a total of 508 tCO₂e which is equivalent to 37,950 laps of Silverstone Circuit",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Losing those disposable cups saved {v}."
   },
   {
     "id": "e25-cups-laps",
@@ -646,8 +794,11 @@
     "sourceId": "esg-2025",
     "page": 32,
     "quote": "508 tCO₂e which is equivalent to 37,950 laps of Silverstone Circuit",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The team equates the cup saving to {v} of Silverstone."
   },
   {
     "id": "e25-kit-recycled",
@@ -661,8 +812,11 @@
     "sourceId": "esg-2025",
     "page": 32,
     "quote": "47% … TEAM KIT RECYCLED",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "{v} of old team kit was recycled into new material."
   },
   {
     "id": "e25-carbon-fibre-recycled",
@@ -676,8 +830,12 @@
     "sourceId": "esg-2025",
     "page": 32,
     "quote": "1.3 … TONNES OF CARBON FIBRE RECYCLED",
-    "tags": ["environment", "tech"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "tech"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "{v} of carbon fibre was recycled instead of being thrown away."
   },
   {
     "id": "e25-waste-recycled-share",
@@ -691,8 +849,11 @@
     "sourceId": "esg-2025",
     "page": 33,
     "quote": "2025 PROGRESS … 54% … RECYCLED",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "{v} of the team's waste was recycled."
   },
   {
     "id": "e25-biodiversity-net-gain",
@@ -706,8 +867,11 @@
     "sourceId": "esg-2025",
     "page": 36,
     "quote": "support a 122% biodiversity net gain",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The factory grounds now show a {v} biodiversity net gain."
   },
   {
     "id": "e25-wild-meadow",
@@ -721,8 +885,11 @@
     "sourceId": "esg-2025",
     "page": 36,
     "quote": "the creation of 72,000 m2 of wild meadow",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The team has planted {v} of wild meadow around its factory."
   },
   {
     "id": "e25-honey-jars",
@@ -737,8 +904,11 @@
     "sourceId": "esg-2025",
     "page": 36,
     "quote": "Our hives produced more than 100 jars of honey in their first year",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Its new beehives produced {v} of honey in their first year."
   },
   {
     "id": "e25-event-energy-cut",
@@ -753,8 +923,13 @@
     "sourceId": "esg-2025",
     "page": 37,
     "quote": "have demonstrated reductions of more than 90% in event energy emissions in paddock areas compared with previous setups",
-    "tags": ["environment", "tech", "hero"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "tech",
+      "hero"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "At European races, F1's shared paddock power has cut event energy emissions by {v}."
   },
   {
     "id": "e25-energy-total",
@@ -768,8 +943,11 @@
     "sourceId": "esg-2025",
     "page": 83,
     "quote": "Total energy consumption GJ 62,566.85",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The team used {v} of energy across the year."
   },
   {
     "id": "e25-solar-gj",
@@ -783,8 +961,12 @@
     "sourceId": "esg-2025",
     "page": 83,
     "quote": "Electricity consumption – on-site solar GJ 4,489.55",
-    "tags": ["environment", "tech"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "tech"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Solar panels on the factory roof generated {v} of electricity."
   },
   {
     "id": "e25-rego-gj",
@@ -798,8 +980,11 @@
     "sourceId": "esg-2025",
     "page": 83,
     "quote": "REGO certified: 48,852.00",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Renewable-certified grid supply provided {v} of electricity."
   },
   {
     "id": "e25-grid-total-gj",
@@ -813,8 +998,11 @@
     "sourceId": "esg-2025",
     "page": 83,
     "quote": "Total grid supply: 55,829.96",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The team drew {v} of electricity from the grid."
   },
   {
     "id": "est-rego-share",
@@ -828,37 +1016,432 @@
     "derivation": {
       "formula": "REGO-certified grid electricity / total grid electricity",
       "expression": "{e25-rego-gj} / {e25-grid-total-gj} * 100",
-      "inputs": ["e25-rego-gj", "e25-grid-total-gj"],
+      "inputs": [
+        "e25-rego-gj",
+        "e25-grid-total-gj"
+      ],
       "assumptions": []
     },
-    "tags": ["environment"],
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "About {v} of the grid electricity the team buys is backed by renewable certificates."
+  },
+  {
+    "id": "e25-trackside-gbr-hvo",
+    "pillar": "environment",
+    "topic": "trackside-energy",
+    "metric": "Trackside electricity from HVO generators, British GP",
+    "value": 10089,
+    "unit": "kWh",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 37,
+    "quote": "1. UNITED KINGDOM … HVO Generators: 10,089",
+    "notes": "The text layer scrambles the race-to-number layout on p37; the mapping was checked against the rendered page.",
+    "tags": [
+      "environment"
+    ],
     "extractedAt": "2026-09-24"
   },
-
-  { "id": "e25-trackside-gbr-hvo", "pillar": "environment", "topic": "trackside-energy", "metric": "Trackside electricity from HVO generators, British GP", "value": 10089, "unit": "kWh", "period": "2025", "status": "verified", "sourceId": "esg-2025", "page": 37, "quote": "1. UNITED KINGDOM … HVO Generators: 10,089", "notes": "The text layer scrambles the race-to-number layout on p37; the mapping was checked against the rendered page.", "tags": ["environment"], "extractedAt": "2026-09-24" },
-  { "id": "e25-trackside-gbr-grid", "pillar": "environment", "topic": "trackside-energy", "metric": "Trackside renewable grid electricity, British GP", "value": 164, "unit": "kWh", "period": "2025", "status": "verified", "sourceId": "esg-2025", "page": 37, "quote": "1. UNITED KINGDOM … Renewable Grid Supply: 164", "notes": "Mapping checked against the rendered page.", "tags": ["environment"], "extractedAt": "2026-09-24" },
-  { "id": "e25-trackside-gbr-solar", "pillar": "environment", "topic": "trackside-energy", "metric": "Trackside solar electricity, British GP", "value": 184, "unit": "kWh", "period": "2025", "status": "verified", "sourceId": "esg-2025", "page": 37, "quote": "1. UNITED KINGDOM … Solar: 184", "notes": "Mapping checked against the rendered page.", "tags": ["environment"], "extractedAt": "2026-09-24" },
-  { "id": "e25-trackside-ned-hvo", "pillar": "environment", "topic": "trackside-energy", "metric": "Trackside electricity from HVO generators, Dutch GP", "value": 7190, "unit": "kWh", "period": "2025", "status": "verified", "sourceId": "esg-2025", "page": 37, "quote": "2. NETHERLANDS … HVO Generators: 7,190", "notes": "Mapping checked against the rendered page.", "tags": ["environment"], "extractedAt": "2026-09-24" },
-  { "id": "e25-trackside-ned-grid", "pillar": "environment", "topic": "trackside-energy", "metric": "Trackside renewable grid electricity, Dutch GP", "value": 1503, "unit": "kWh", "period": "2025", "status": "verified", "sourceId": "esg-2025", "page": 37, "quote": "2. NETHERLANDS … Renewable Grid Supply: 1,503", "notes": "Mapping checked against the rendered page.", "tags": ["environment"], "extractedAt": "2026-09-24" },
-  { "id": "e25-trackside-bel-hvo", "pillar": "environment", "topic": "trackside-energy", "metric": "Trackside electricity from HVO generators, Belgian GP", "value": 9314, "unit": "kWh", "period": "2025", "status": "verified", "sourceId": "esg-2025", "page": 37, "quote": "3. BELGIUM … HVO Generators: 9,314", "notes": "Mapping checked against the rendered page.", "tags": ["environment"], "extractedAt": "2026-09-24" },
-  { "id": "e25-trackside-bel-grid", "pillar": "environment", "topic": "trackside-energy", "metric": "Trackside renewable grid electricity, Belgian GP", "value": 488, "unit": "kWh", "period": "2025", "status": "verified", "sourceId": "esg-2025", "page": 37, "quote": "3. BELGIUM … Renewable Grid Supply: 488", "notes": "Mapping checked against the rendered page.", "tags": ["environment"], "extractedAt": "2026-09-24" },
-  { "id": "e25-trackside-bel-solar", "pillar": "environment", "topic": "trackside-energy", "metric": "Trackside solar electricity, Belgian GP", "value": 93, "unit": "kWh", "period": "2025", "status": "verified", "sourceId": "esg-2025", "page": 37, "quote": "3. BELGIUM … Solar: 93", "notes": "Mapping checked against the rendered page.", "tags": ["environment"], "extractedAt": "2026-09-24" },
-  { "id": "e25-trackside-esp-hvo", "pillar": "environment", "topic": "trackside-energy", "metric": "Trackside electricity from HVO generators, Spanish GP", "value": 9563, "unit": "kWh", "period": "2025", "status": "verified", "sourceId": "esg-2025", "page": 37, "quote": "4. SPAIN … HVO Generators: 9,563", "notes": "Mapping checked against the rendered page.", "tags": ["environment"], "extractedAt": "2026-09-24" },
-  { "id": "e25-trackside-esp-grid", "pillar": "environment", "topic": "trackside-energy", "metric": "Trackside renewable grid electricity, Spanish GP", "value": 140, "unit": "kWh", "period": "2025", "status": "verified", "sourceId": "esg-2025", "page": 37, "quote": "4. SPAIN … Renewable Grid Supply: 140", "notes": "Mapping checked against the rendered page.", "tags": ["environment"], "extractedAt": "2026-09-24" },
-  { "id": "e25-trackside-mon-hvo", "pillar": "environment", "topic": "trackside-energy", "metric": "Trackside electricity from HVO generators, Monaco GP", "value": 2852, "unit": "kWh", "period": "2025", "status": "verified", "sourceId": "esg-2025", "page": 37, "quote": "5. MONACO … HVO Generators: 2,852", "notes": "Mapping checked against the rendered page.", "tags": ["environment"], "extractedAt": "2026-09-24" },
-  { "id": "e25-trackside-mon-grid", "pillar": "environment", "topic": "trackside-energy", "metric": "Trackside renewable grid electricity, Monaco GP", "value": 403, "unit": "kWh", "period": "2025", "status": "verified", "sourceId": "esg-2025", "page": 37, "quote": "5. MONACO … Renewable Grid Supply: 403", "notes": "Mapping checked against the rendered page.", "tags": ["environment"], "extractedAt": "2026-09-24" },
-  { "id": "e25-trackside-aut-hvo", "pillar": "environment", "topic": "trackside-energy", "metric": "Trackside electricity from HVO generators, Austrian GP", "value": 10751, "unit": "kWh", "period": "2025", "status": "verified", "sourceId": "esg-2025", "page": 37, "quote": "6. AUSTRIA … HVO Generators: 10,751", "notes": "Mapping checked against the rendered page.", "tags": ["environment"], "extractedAt": "2026-09-24" },
-  { "id": "e25-trackside-aut-grid", "pillar": "environment", "topic": "trackside-energy", "metric": "Trackside renewable grid electricity, Austrian GP", "value": 846, "unit": "kWh", "period": "2025", "status": "verified", "sourceId": "esg-2025", "page": 37, "quote": "6. AUSTRIA … Renewable Grid Supply: 846", "notes": "Mapping checked against the rendered page.", "tags": ["environment"], "extractedAt": "2026-09-24" },
-  { "id": "e25-trackside-aut-solar", "pillar": "environment", "topic": "trackside-energy", "metric": "Trackside solar electricity, Austrian GP", "value": 219, "unit": "kWh", "period": "2025", "status": "verified", "sourceId": "esg-2025", "page": 37, "quote": "6. AUSTRIA … Solar: 219", "notes": "Mapping checked against the rendered page.", "tags": ["environment"], "extractedAt": "2026-09-24" },
-  { "id": "e25-trackside-hun-hvo", "pillar": "environment", "topic": "trackside-energy", "metric": "Trackside electricity from HVO generators, Hungarian GP", "value": 7431, "unit": "kWh", "period": "2025", "status": "verified", "sourceId": "esg-2025", "page": 37, "quote": "7. HUNGARY … HVO Generators: 7,431", "notes": "Mapping checked against the rendered page.", "tags": ["environment"], "extractedAt": "2026-09-24" },
-  { "id": "e25-trackside-hun-grid", "pillar": "environment", "topic": "trackside-energy", "metric": "Trackside renewable grid electricity, Hungarian GP", "value": 657, "unit": "kWh", "period": "2025", "status": "verified", "sourceId": "esg-2025", "page": 37, "quote": "7. HUNGARY … Renewable Grid Supply: 657", "notes": "Mapping checked against the rendered page.", "tags": ["environment"], "extractedAt": "2026-09-24" },
-  { "id": "e25-trackside-hun-solar", "pillar": "environment", "topic": "trackside-energy", "metric": "Trackside solar electricity, Hungarian GP", "value": 145, "unit": "kWh", "period": "2025", "status": "verified", "sourceId": "esg-2025", "page": 37, "quote": "7. HUNGARY … Solar: 145", "notes": "Mapping checked against the rendered page.", "tags": ["environment"], "extractedAt": "2026-09-24" },
-  { "id": "e25-trackside-ita-hvo", "pillar": "environment", "topic": "trackside-energy", "metric": "Trackside electricity from HVO generators, Italian GP (Monza)", "value": 9441, "unit": "kWh", "period": "2025", "status": "verified", "sourceId": "esg-2025", "page": 37, "quote": "8. MONZA … HVO Generators: 9,441", "notes": "Mapping checked against the rendered page.", "tags": ["environment"], "extractedAt": "2026-09-24" },
-  { "id": "e25-trackside-ita-grid", "pillar": "environment", "topic": "trackside-energy", "metric": "Trackside renewable grid electricity, Italian GP (Monza)", "value": 382, "unit": "kWh", "period": "2025", "status": "verified", "sourceId": "esg-2025", "page": 37, "quote": "8. MONZA … Renewable Grid Supply: 382", "notes": "Mapping checked against the rendered page.", "tags": ["environment"], "extractedAt": "2026-09-24" },
-  { "id": "e25-trackside-ita-solar", "pillar": "environment", "topic": "trackside-energy", "metric": "Trackside solar electricity, Italian GP (Monza)", "value": 104, "unit": "kWh", "period": "2025", "status": "verified", "sourceId": "esg-2025", "page": 37, "quote": "8. MONZA … Solar: 104", "notes": "Mapping checked against the rendered page.", "tags": ["environment"], "extractedAt": "2026-09-24" },
-  { "id": "e25-trackside-emi-hvo", "pillar": "environment", "topic": "trackside-energy", "metric": "Trackside electricity from HVO generators, Emilia-Romagna GP (Imola)", "value": 8945, "unit": "kWh", "period": "2025", "status": "verified", "sourceId": "esg-2025", "page": 37, "quote": "9. IMOLA … HVO Generators: 8,945", "notes": "Mapping checked against the rendered page.", "tags": ["environment"], "extractedAt": "2026-09-24" },
-  { "id": "e25-trackside-emi-grid", "pillar": "environment", "topic": "trackside-energy", "metric": "Trackside renewable grid electricity, Emilia-Romagna GP (Imola)", "value": 929, "unit": "kWh", "period": "2025", "status": "verified", "sourceId": "esg-2025", "page": 37, "quote": "9. IMOLA … Renewable Grid Supply: 929", "notes": "Mapping checked against the rendered page.", "tags": ["environment"], "extractedAt": "2026-09-24" },
-
+  {
+    "id": "e25-trackside-gbr-grid",
+    "pillar": "environment",
+    "topic": "trackside-energy",
+    "metric": "Trackside renewable grid electricity, British GP",
+    "value": 164,
+    "unit": "kWh",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 37,
+    "quote": "1. UNITED KINGDOM … Renewable Grid Supply: 164",
+    "notes": "Mapping checked against the rendered page.",
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24"
+  },
+  {
+    "id": "e25-trackside-gbr-solar",
+    "pillar": "environment",
+    "topic": "trackside-energy",
+    "metric": "Trackside solar electricity, British GP",
+    "value": 184,
+    "unit": "kWh",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 37,
+    "quote": "1. UNITED KINGDOM … Solar: 184",
+    "notes": "Mapping checked against the rendered page.",
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24"
+  },
+  {
+    "id": "e25-trackside-ned-hvo",
+    "pillar": "environment",
+    "topic": "trackside-energy",
+    "metric": "Trackside electricity from HVO generators, Dutch GP",
+    "value": 7190,
+    "unit": "kWh",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 37,
+    "quote": "2. NETHERLANDS … HVO Generators: 7,190",
+    "notes": "Mapping checked against the rendered page.",
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24"
+  },
+  {
+    "id": "e25-trackside-ned-grid",
+    "pillar": "environment",
+    "topic": "trackside-energy",
+    "metric": "Trackside renewable grid electricity, Dutch GP",
+    "value": 1503,
+    "unit": "kWh",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 37,
+    "quote": "2. NETHERLANDS … Renewable Grid Supply: 1,503",
+    "notes": "Mapping checked against the rendered page.",
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24"
+  },
+  {
+    "id": "e25-trackside-bel-hvo",
+    "pillar": "environment",
+    "topic": "trackside-energy",
+    "metric": "Trackside electricity from HVO generators, Belgian GP",
+    "value": 9314,
+    "unit": "kWh",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 37,
+    "quote": "3. BELGIUM … HVO Generators: 9,314",
+    "notes": "Mapping checked against the rendered page.",
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24"
+  },
+  {
+    "id": "e25-trackside-bel-grid",
+    "pillar": "environment",
+    "topic": "trackside-energy",
+    "metric": "Trackside renewable grid electricity, Belgian GP",
+    "value": 488,
+    "unit": "kWh",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 37,
+    "quote": "3. BELGIUM … Renewable Grid Supply: 488",
+    "notes": "Mapping checked against the rendered page.",
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24"
+  },
+  {
+    "id": "e25-trackside-bel-solar",
+    "pillar": "environment",
+    "topic": "trackside-energy",
+    "metric": "Trackside solar electricity, Belgian GP",
+    "value": 93,
+    "unit": "kWh",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 37,
+    "quote": "3. BELGIUM … Solar: 93",
+    "notes": "Mapping checked against the rendered page.",
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24"
+  },
+  {
+    "id": "e25-trackside-esp-hvo",
+    "pillar": "environment",
+    "topic": "trackside-energy",
+    "metric": "Trackside electricity from HVO generators, Spanish GP",
+    "value": 9563,
+    "unit": "kWh",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 37,
+    "quote": "4. SPAIN … HVO Generators: 9,563",
+    "notes": "Mapping checked against the rendered page.",
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24"
+  },
+  {
+    "id": "e25-trackside-esp-grid",
+    "pillar": "environment",
+    "topic": "trackside-energy",
+    "metric": "Trackside renewable grid electricity, Spanish GP",
+    "value": 140,
+    "unit": "kWh",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 37,
+    "quote": "4. SPAIN … Renewable Grid Supply: 140",
+    "notes": "Mapping checked against the rendered page.",
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24"
+  },
+  {
+    "id": "e25-trackside-mon-hvo",
+    "pillar": "environment",
+    "topic": "trackside-energy",
+    "metric": "Trackside electricity from HVO generators, Monaco GP",
+    "value": 2852,
+    "unit": "kWh",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 37,
+    "quote": "5. MONACO … HVO Generators: 2,852",
+    "notes": "Mapping checked against the rendered page.",
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24"
+  },
+  {
+    "id": "e25-trackside-mon-grid",
+    "pillar": "environment",
+    "topic": "trackside-energy",
+    "metric": "Trackside renewable grid electricity, Monaco GP",
+    "value": 403,
+    "unit": "kWh",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 37,
+    "quote": "5. MONACO … Renewable Grid Supply: 403",
+    "notes": "Mapping checked against the rendered page.",
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24"
+  },
+  {
+    "id": "e25-trackside-aut-hvo",
+    "pillar": "environment",
+    "topic": "trackside-energy",
+    "metric": "Trackside electricity from HVO generators, Austrian GP",
+    "value": 10751,
+    "unit": "kWh",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 37,
+    "quote": "6. AUSTRIA … HVO Generators: 10,751",
+    "notes": "Mapping checked against the rendered page.",
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24"
+  },
+  {
+    "id": "e25-trackside-aut-grid",
+    "pillar": "environment",
+    "topic": "trackside-energy",
+    "metric": "Trackside renewable grid electricity, Austrian GP",
+    "value": 846,
+    "unit": "kWh",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 37,
+    "quote": "6. AUSTRIA … Renewable Grid Supply: 846",
+    "notes": "Mapping checked against the rendered page.",
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24"
+  },
+  {
+    "id": "e25-trackside-aut-solar",
+    "pillar": "environment",
+    "topic": "trackside-energy",
+    "metric": "Trackside solar electricity, Austrian GP",
+    "value": 219,
+    "unit": "kWh",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 37,
+    "quote": "6. AUSTRIA … Solar: 219",
+    "notes": "Mapping checked against the rendered page.",
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24"
+  },
+  {
+    "id": "e25-trackside-hun-hvo",
+    "pillar": "environment",
+    "topic": "trackside-energy",
+    "metric": "Trackside electricity from HVO generators, Hungarian GP",
+    "value": 7431,
+    "unit": "kWh",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 37,
+    "quote": "7. HUNGARY … HVO Generators: 7,431",
+    "notes": "Mapping checked against the rendered page.",
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24"
+  },
+  {
+    "id": "e25-trackside-hun-grid",
+    "pillar": "environment",
+    "topic": "trackside-energy",
+    "metric": "Trackside renewable grid electricity, Hungarian GP",
+    "value": 657,
+    "unit": "kWh",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 37,
+    "quote": "7. HUNGARY … Renewable Grid Supply: 657",
+    "notes": "Mapping checked against the rendered page.",
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24"
+  },
+  {
+    "id": "e25-trackside-hun-solar",
+    "pillar": "environment",
+    "topic": "trackside-energy",
+    "metric": "Trackside solar electricity, Hungarian GP",
+    "value": 145,
+    "unit": "kWh",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 37,
+    "quote": "7. HUNGARY … Solar: 145",
+    "notes": "Mapping checked against the rendered page.",
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24"
+  },
+  {
+    "id": "e25-trackside-ita-hvo",
+    "pillar": "environment",
+    "topic": "trackside-energy",
+    "metric": "Trackside electricity from HVO generators, Italian GP (Monza)",
+    "value": 9441,
+    "unit": "kWh",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 37,
+    "quote": "8. MONZA … HVO Generators: 9,441",
+    "notes": "Mapping checked against the rendered page.",
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24"
+  },
+  {
+    "id": "e25-trackside-ita-grid",
+    "pillar": "environment",
+    "topic": "trackside-energy",
+    "metric": "Trackside renewable grid electricity, Italian GP (Monza)",
+    "value": 382,
+    "unit": "kWh",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 37,
+    "quote": "8. MONZA … Renewable Grid Supply: 382",
+    "notes": "Mapping checked against the rendered page.",
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24"
+  },
+  {
+    "id": "e25-trackside-ita-solar",
+    "pillar": "environment",
+    "topic": "trackside-energy",
+    "metric": "Trackside solar electricity, Italian GP (Monza)",
+    "value": 104,
+    "unit": "kWh",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 37,
+    "quote": "8. MONZA … Solar: 104",
+    "notes": "Mapping checked against the rendered page.",
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24"
+  },
+  {
+    "id": "e25-trackside-emi-hvo",
+    "pillar": "environment",
+    "topic": "trackside-energy",
+    "metric": "Trackside electricity from HVO generators, Emilia-Romagna GP (Imola)",
+    "value": 8945,
+    "unit": "kWh",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 37,
+    "quote": "9. IMOLA … HVO Generators: 8,945",
+    "notes": "Mapping checked against the rendered page.",
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24"
+  },
+  {
+    "id": "e25-trackside-emi-grid",
+    "pillar": "environment",
+    "topic": "trackside-energy",
+    "metric": "Trackside renewable grid electricity, Emilia-Romagna GP (Imola)",
+    "value": 929,
+    "unit": "kWh",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 37,
+    "quote": "9. IMOLA … Renewable Grid Supply: 929",
+    "notes": "Mapping checked against the rendered page.",
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24"
+  },
   {
     "id": "e24-logistics",
     "pillar": "environment",
@@ -875,11 +1458,16 @@
       {
         "kind": "not-comparable",
         "note": "Reported under the pre-2025 methodology. Not directly comparable with the 2025 freight and logistics figure.",
-        "relatedFactIds": ["e25-freight-logistics"]
+        "relatedFactIds": [
+          "e25-freight-logistics"
+        ]
       }
     ],
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Under the old method, logistics emissions were reported as {v}."
   },
   {
     "id": "e24-airfreight-cut",
@@ -893,8 +1481,11 @@
     "sourceId": "esg-2024",
     "page": 25,
     "quote": "air freight emissions between 2023 to 2024 by 290 TCO2e",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Trimming air freight further saved {v} the following year."
   },
   {
     "id": "e24-airfreight-laps",
@@ -912,11 +1503,18 @@
       {
         "kind": "inconsistent-equivalence",
         "note": "Implies about 0.97 kg CO2e per lap. The 2025 report's equivalences imply about 13.4 kg per lap, roughly 14 times more. At least one of the two lap conversions is wrong, so Impact Lap only uses the 2025 figure.",
-        "relatedFactIds": ["est-kg-per-lap-2024", "est-kg-per-lap-2025"]
+        "relatedFactIds": [
+          "est-kg-per-lap-2024",
+          "est-kg-per-lap-2025"
+        ]
       }
     ],
-    "tags": ["environment", "data-quality"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "data-quality"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The earlier report equated that to {v} around Silverstone, a conversion that doesn't match the later report's."
   },
   {
     "id": "e24-sea-freight-shift",
@@ -931,8 +1529,12 @@
     "sourceId": "esg-2024",
     "page": 25,
     "quote": "due to transitioning to sea freight saved over 1,500 TCO2e",
-    "tags": ["environment", "hero"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "hero"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Shifting freight from air to sea saved {v} in a single year."
   },
   {
     "id": "e24-solar-saving",
@@ -946,8 +1548,12 @@
     "sourceId": "esg-2024",
     "page": 25,
     "quote": "cutting emissions by a further 214.58 TCO2e",
-    "tags": ["environment", "tech"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "tech"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The factory's solar panels saved {v} in a year."
   },
   {
     "id": "e24-solar-flights",
@@ -961,8 +1567,11 @@
     "sourceId": "esg-2024",
     "page": 25,
     "quote": "equivalent to the emissions generated by 74 round-trip flights from London to New York",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "That's the same as {v} between London and New York."
   },
   {
     "id": "e24-solar-panels",
@@ -976,8 +1585,12 @@
     "sourceId": "esg-2024",
     "page": 25,
     "quote": "We have 3,434 solar panels covering 7,659m2",
-    "tags": ["environment", "tech"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "tech"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The factory roof carries {v}."
   },
   {
     "id": "e24-solar-kwh",
@@ -991,8 +1604,12 @@
     "sourceId": "esg-2024",
     "page": 26,
     "quote": "779,682 kWh … Of renewable solar energy generated",
-    "tags": ["environment", "tech"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "tech"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Those panels generated {v} of solar power."
   },
   {
     "id": "e24-suppliers-engaged",
@@ -1006,8 +1623,12 @@
     "sourceId": "esg-2024",
     "page": 24,
     "quote": "We engaged with 70% of key suppliers",
-    "tags": ["environment", "tech"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "tech"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The team worked with {v} of its key suppliers to get better emissions data."
   },
   {
     "id": "m23-solar-saving",
@@ -1021,8 +1642,11 @@
     "sourceId": "manifesto-2025",
     "page": 14,
     "quote": "The solar panels cut annual CO2 emissions by 163.29 TCO2e in 2023",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "In their first year, the solar panels saved {v}."
   },
   {
     "id": "m23-solar-flights",
@@ -1036,8 +1660,11 @@
     "sourceId": "manifesto-2025",
     "page": 14,
     "quote": "56 return flights from London to New York",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "That's about {v} between London and New York."
   },
   {
     "id": "m22-food-donated",
@@ -1051,8 +1678,12 @@
     "sourceId": "manifesto-2025",
     "page": 10,
     "quote": "donated 800,000kg of food to local charities",
-    "tags": ["community", "environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "community",
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Post-race food donations sent {v} of food to local charities."
   },
   {
     "id": "m22-materials-recycled",
@@ -1066,10 +1697,12 @@
     "sourceId": "manifesto-2025",
     "page": 10,
     "quote": "recycled 400,000 litres of materials",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Trackside, the team recycled {v} of materials."
   },
-
   {
     "id": "est-kg-per-lap-2025",
     "pillar": "environment",
@@ -1082,11 +1715,19 @@
     "derivation": {
       "formula": "SAF saving (t) x 1,000 / laps of Silverstone quoted for it",
       "expression": "{e25-saf-avoided} * 1000 / {e25-saf-laps}",
-      "inputs": ["e25-saf-avoided", "e25-saf-laps"],
-      "assumptions": ["The report's cup-saving equivalence (508 t = 37,950 laps) implies 13.39 kg per lap, within 1% of this value."]
+      "inputs": [
+        "e25-saf-avoided",
+        "e25-saf-laps"
+      ],
+      "assumptions": [
+        "The report's cup-saving equivalence (508 t = 37,950 laps) implies 13.39 kg per lap, within 1% of this value."
+      ]
     },
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The team's own figures imply {v} for each lap of Silverstone."
   },
   {
     "id": "est-kg-per-lap-2024",
@@ -1100,17 +1741,25 @@
     "derivation": {
       "formula": "2024 air-freight saving (t) x 1,000 / laps quoted for it",
       "expression": "{e24-airfreight-cut} * 1000 / {e24-airfreight-laps}",
-      "inputs": ["e24-airfreight-cut", "e24-airfreight-laps"],
+      "inputs": [
+        "e24-airfreight-cut",
+        "e24-airfreight-laps"
+      ],
       "assumptions": []
     },
     "flags": [
       {
         "kind": "inconsistent-equivalence",
         "note": "About 14 times smaller than the 2025 report's implied value. Not used for equivalents.",
-        "relatedFactIds": ["est-kg-per-lap-2025"]
+        "relatedFactIds": [
+          "est-kg-per-lap-2025"
+        ]
       }
     ],
-    "tags": ["environment", "data-quality"],
+    "tags": [
+      "environment",
+      "data-quality"
+    ],
     "extractedAt": "2026-09-24"
   },
   {
@@ -1125,13 +1774,20 @@
     "derivation": {
       "formula": "2024 solar saving (t) / return flights quoted for it",
       "expression": "{e24-solar-saving} / {e24-solar-flights}",
-      "inputs": ["e24-solar-saving", "e24-solar-flights"],
-      "assumptions": ["The Manifesto's 2023 equivalence (163.29 t = 56 flights) implies 2.92 t per flight, within 1% of this value."]
+      "inputs": [
+        "e24-solar-saving",
+        "e24-solar-flights"
+      ],
+      "assumptions": [
+        "The Manifesto's 2023 equivalence (163.29 t = 56 flights) implies 2.92 t per flight, within 1% of this value."
+      ]
     },
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "A London–New York return flight works out at {v} in the team's figures."
   },
-
   {
     "id": "f1-rounds-2025",
     "pillar": "environment",
@@ -1145,7 +1801,8 @@
     "page": 1,
     "quote": "The 2025 season calendar lists 24 Grand Prix rounds",
     "tags": [],
-    "extractedAt": "2026-09-24"
+    "extractedAt": "2026-09-24",
+    "phrase": "The season ran to {v}."
   },
   {
     "id": "f1-sg-2026-round",
@@ -1159,8 +1816,11 @@
     "sourceId": "f1-calendar-2026",
     "page": 1,
     "quote": "ROUND 17 Singapore 09 - 11 OCT",
-    "tags": ["singapore"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "singapore"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Singapore is round {n} of the season."
   },
   {
     "id": "est-freight-per-round",
@@ -1174,15 +1834,23 @@
     "derivation": {
       "formula": "2025 freight and logistics emissions / 24 Grand Prix rounds",
       "expression": "{e25-freight-logistics} / {f1-rounds-2025}",
-      "inputs": ["e25-freight-logistics", "f1-rounds-2025"],
+      "inputs": [
+        "e25-freight-logistics",
+        "f1-rounds-2025"
+      ],
       "assumptions": [
         "AMF1 publishes annual totals only; per-race freight is not disclosed.",
         "An even split ignores distance: fly-away rounds such as Singapore very likely carry more than European rounds reached by road.",
         "The annual figure also includes non-race logistics (supplier deliveries), so this is an upper bound for race freight alone."
       ]
     },
-    "tags": ["environment", "singapore", "hero"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "singapore",
+      "hero"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Spread evenly across the calendar, moving the team's cars and kit comes to roughly {v} per race weekend."
   },
   {
     "id": "est-travel-per-round",
@@ -1196,14 +1864,21 @@
     "derivation": {
       "formula": "2025 business travel emissions / 24 Grand Prix rounds",
       "expression": "{e25-business-travel} / {f1-rounds-2025}",
-      "inputs": ["e25-business-travel", "f1-rounds-2025"],
+      "inputs": [
+        "e25-business-travel",
+        "f1-rounds-2025"
+      ],
       "assumptions": [
         "Business travel also covers non-race trips (events, supplier visits), so this overstates race travel.",
         "An even split ignores distance from the UK base."
       ]
     },
-    "tags": ["environment", "singapore"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "singapore"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Flights and travel add roughly {v} per race weekend on the same even split."
   },
   {
     "id": "est-saf-per-round",
@@ -1217,11 +1892,20 @@
     "derivation": {
       "formula": "SAF emissions avoided / 24 Grand Prix rounds",
       "expression": "{e25-saf-avoided} / {f1-rounds-2025}",
-      "inputs": ["e25-saf-avoided", "f1-rounds-2025"],
-      "assumptions": ["SAF certificates are book-and-claim and not tied to specific flights; the split is illustrative of scale only."]
+      "inputs": [
+        "e25-saf-avoided",
+        "f1-rounds-2025"
+      ],
+      "assumptions": [
+        "SAF certificates are book-and-claim and not tied to specific flights; the split is illustrative of scale only."
+      ]
     },
-    "tags": ["environment", "singapore"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "singapore"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "On that split, Sustainable Aviation Fuel takes roughly {v} off each weekend."
   },
   {
     "id": "est-airfreight-before-saf",
@@ -1235,13 +1919,20 @@
     "derivation": {
       "formula": "SAF emissions avoided / SAF percentage reduction",
       "expression": "{e25-saf-avoided} / ({e25-saf-airfreight-cut} / 100)",
-      "inputs": ["e25-saf-avoided", "e25-saf-airfreight-cut"],
-      "assumptions": ["Assumes the 31% reduction is measured against the same air-freight total the 1,188 t was avoided from."]
+      "inputs": [
+        "e25-saf-avoided",
+        "e25-saf-airfreight-cut"
+      ],
+      "assumptions": [
+        "Assumes the 31% reduction is measured against the same air-freight total the 1,188 t was avoided from."
+      ]
     },
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Before the fuel, the team's air freight implied roughly {v} of emissions."
   },
-
   {
     "id": "b25-colleagues",
     "pillar": "belong",
@@ -1254,8 +1945,11 @@
     "sourceId": "esg-2025",
     "page": 55,
     "quote": "Based on 952 relevant colleagues",
-    "tags": ["inclusion"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "inclusion"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The pay snapshot covers {v} across the team."
   },
   {
     "id": "b25-women-share",
@@ -1269,8 +1963,12 @@
     "sourceId": "esg-2025",
     "page": 55,
     "quote": "our workforce is 84% men and 16% women",
-    "tags": ["inclusion", "hero"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "inclusion",
+      "hero"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Women make up {v} of the team's workforce."
   },
   {
     "id": "b25-pay-gap-median",
@@ -1284,8 +1982,11 @@
     "sourceId": "esg-2025",
     "page": 55,
     "quote": "Our gender pay gap is 20.6% (median)",
-    "tags": ["inclusion"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "inclusion"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The median gender pay gap is {v}, which the team says shows the need for more women across roles and levels."
   },
   {
     "id": "b25-pay-gap-mean",
@@ -1299,8 +2000,11 @@
     "sourceId": "esg-2025",
     "page": 55,
     "quote": "20.6% (median) and 54.3% (mean)",
-    "tags": ["inclusion"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "inclusion"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "On the mean measure the pay gap is {v}."
   },
   {
     "id": "b25-aleto-cohort",
@@ -1318,11 +2022,18 @@
       {
         "kind": "source-conflict",
         "note": "The highlights page (p10) and the Make A Mark web page say 15 students for the same cohort.",
-        "relatedFactIds": ["b25-aleto-cohort-highlights"]
+        "relatedFactIds": [
+          "b25-aleto-cohort-highlights"
+        ]
       }
     ],
-    "tags": ["inclusion", "stem", "charity:aleto"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "inclusion",
+      "stem",
+      "charity:aleto"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The Aleto Foundation programme mentored {v} from under-represented backgrounds."
   },
   {
     "id": "b25-aleto-cohort-highlights",
@@ -1340,11 +2051,17 @@
       {
         "kind": "source-conflict",
         "note": "The programme page (p42) says 14 students.",
-        "relatedFactIds": ["b25-aleto-cohort"]
+        "relatedFactIds": [
+          "b25-aleto-cohort"
+        ]
       }
     ],
-    "tags": ["inclusion", "charity:aleto"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "inclusion",
+      "charity:aleto"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The report's highlights page counts the same cohort as {v}."
   },
   {
     "id": "b25-aleto-network",
@@ -1358,8 +2075,14 @@
     "sourceId": "esg-2025",
     "page": 10,
     "quote": "93% of the group felt they grew their professional network",
-    "tags": ["inclusion", "stem", "charity:aleto", "hero"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "inclusion",
+      "stem",
+      "charity:aleto",
+      "hero"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "{v} of mentees said the programme grew their professional network."
   },
   {
     "id": "b25-aleto-leadership",
@@ -1373,8 +2096,12 @@
     "sourceId": "esg-2025",
     "page": 10,
     "quote": "90% felt they grew their leadership skills, public speaking and confidence",
-    "tags": ["inclusion", "charity:aleto"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "inclusion",
+      "charity:aleto"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "{v} said they grew in leadership, public speaking and confidence."
   },
   {
     "id": "b25-aleto-stem-interest",
@@ -1388,8 +2115,13 @@
     "sourceId": "esg-2025",
     "page": 42,
     "quote": "90% … Reported greater interest in STEM pathways, especially motorsport",
-    "tags": ["inclusion", "stem", "charity:aleto"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "inclusion",
+      "stem",
+      "charity:aleto"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "{v} came away more interested in STEM careers, especially motorsport."
   },
   {
     "id": "b25-accelerate-pairs",
@@ -1403,8 +2135,13 @@
     "sourceId": "esg-2025",
     "page": 10,
     "quote": "10 mentee-mentor pairs from Arm and Aston Martin Aramco Formula One",
-    "tags": ["inclusion", "tech", "partner:arm"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "inclusion",
+      "tech",
+      "partner:arm"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Arm and the team matched women mentors and mentees in {v}."
   },
   {
     "id": "b25-accelerate-valuable",
@@ -1422,11 +2159,17 @@
       {
         "kind": "source-conflict",
         "note": "The programme page (p45) uses the same 71% for a different claim: mentees and mentors \"highly likely to continue the relationship beyond the programme\". One survey figure appears to be reused for two questions.",
-        "relatedFactIds": ["b25-accelerate-continue"]
+        "relatedFactIds": [
+          "b25-accelerate-continue"
+        ]
       }
     ],
-    "tags": ["inclusion", "partner:arm"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "inclusion",
+      "partner:arm"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "{v} of mentees rated the sessions highly valuable."
   },
   {
     "id": "b25-accelerate-continue",
@@ -1444,11 +2187,17 @@
       {
         "kind": "source-conflict",
         "note": "Same 71% as the \"highly valuable\" rating on p10, attached to a different question.",
-        "relatedFactIds": ["b25-accelerate-valuable"]
+        "relatedFactIds": [
+          "b25-accelerate-valuable"
+        ]
       }
     ],
-    "tags": ["inclusion", "partner:arm"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "inclusion",
+      "partner:arm"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "{v} of mentees and mentors plan to keep the relationship going."
   },
   {
     "id": "b25-accelerate-impressions",
@@ -1462,8 +2211,12 @@
     "sourceId": "esg-2025",
     "page": 10,
     "quote": "generating 0.7 million impressions",
-    "tags": ["inclusion", "partner:arm"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "inclusion",
+      "partner:arm"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The programme reached {v} on social media."
   },
   {
     "id": "b25-accelerate-interactions",
@@ -1477,8 +2230,12 @@
     "sourceId": "esg-2025",
     "page": 10,
     "quote": "12,300 interactions",
-    "tags": ["inclusion", "partner:arm"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "inclusion",
+      "partner:arm"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "It drew {v} online."
   },
   {
     "id": "b25-accelerate-sentiment",
@@ -1492,8 +2249,12 @@
     "sourceId": "esg-2025",
     "page": 10,
     "quote": "95.5% positive sentiment",
-    "tags": ["inclusion", "partner:arm"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "inclusion",
+      "partner:arm"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Online reaction was {v} positive."
   },
   {
     "id": "b25-afbe-students",
@@ -1507,8 +2268,13 @@
     "sourceId": "esg-2025",
     "page": 46,
     "quote": "The initiative brought together 16 undergraduate and postgraduate students",
-    "tags": ["inclusion", "stem", "charity:afbe-uk"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "inclusion",
+      "stem",
+      "charity:afbe-uk"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The AFBE-UK Transition Event hosted {v} from under-represented ethnic backgrounds."
   },
   {
     "id": "b25-afbe-helpful",
@@ -1522,8 +2288,12 @@
     "sourceId": "esg-2025",
     "page": 46,
     "quote": "100% OF ATTENDEES FOUND THE EVENT HELPFUL",
-    "tags": ["inclusion", "charity:afbe-uk"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "inclusion",
+      "charity:afbe-uk"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "{v} of attendees found it helpful."
   },
   {
     "id": "b25-inclusion-participants",
@@ -1538,8 +2308,12 @@
     "sourceId": "esg-2025",
     "page": 11,
     "quote": "welcoming over 300 participants across events",
-    "tags": ["inclusion", "charity:racing-pride"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "inclusion",
+      "charity:racing-pride"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Inclusion events through the year welcomed {v}."
   },
   {
     "id": "b25-hidden-disability",
@@ -1553,8 +2327,11 @@
     "sourceId": "esg-2025",
     "page": 48,
     "quote": "10% OF COLLEAGUES HAVE AN INVISIBLE OR HIDDEN DISABILITY",
-    "tags": ["inclusion"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "inclusion"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "{v} of colleagues have an invisible or hidden disability, according to the team's own survey."
   },
   {
     "id": "b25-neuro-erg",
@@ -1569,8 +2346,12 @@
     "sourceId": "esg-2025",
     "page": 48,
     "quote": "has already engaged around 35 colleagues",
-    "tags": ["inclusion", "charity:adhd-foundation"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "inclusion",
+      "charity:adhd-foundation"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The new neurodiversity network has already brought together {v}."
   },
   {
     "id": "b25-iwd-students",
@@ -1584,8 +2365,13 @@
     "sourceId": "esg-2025",
     "page": 45,
     "quote": "We also welcomed 40 students from Kingsthorpe College, Weavers Academy and Milton Keynes College",
-    "tags": ["inclusion", "stem", "partner:arm"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "inclusion",
+      "stem",
+      "partner:arm"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "On International Women's Day the team welcomed {v} from local colleges."
   },
   {
     "id": "b25-movember-hike",
@@ -1599,8 +2385,12 @@
     "sourceId": "esg-2025",
     "page": 52,
     "quote": "35 colleagues and friends came together to hike Kinder Scout",
-    "tags": ["community", "charity:movember"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "community",
+      "charity:movember"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The Movember hike up Kinder Scout brought together {v}."
   },
   {
     "id": "b25-racing-pride-award",
@@ -1615,10 +2405,14 @@
     "sourceId": "esg-2025",
     "page": 51,
     "quote": "once again sponsored the Formula Student Diversity and Inclusion Award",
-    "tags": ["inclusion", "stem", "charity:racing-pride"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "inclusion",
+      "stem",
+      "charity:racing-pride"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The team again sponsored the Formula Student Diversity and Inclusion Award with Racing Pride."
   },
-
   {
     "id": "c25-mam-day-students",
     "pillar": "community",
@@ -1631,8 +2425,19 @@
     "sourceId": "esg-2025",
     "page": 59,
     "quote": "257 … STUDENTS ENGAGED ACROSS TWO DAYS",
-    "tags": ["stem", "tech", "community", "partner:cognizant", "partner:arm", "partner:xerox", "partner:elemis", "partner:citi", "hero"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "stem",
+      "tech",
+      "community",
+      "partner:cognizant",
+      "partner:arm",
+      "partner:xerox",
+      "partner:elemis",
+      "partner:citi",
+      "hero"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Make A Mark Day brought {v} to the factory for AI, coding and careers sessions with partners including Cognizant."
   },
   {
     "id": "c25-mam-day-schools",
@@ -1646,8 +2451,13 @@
     "sourceId": "esg-2025",
     "page": 59,
     "quote": "14 … SCHOOLS AND COMMUNITY GROUPS REPRESENTED",
-    "tags": ["stem", "community", "partner:cognizant"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "stem",
+      "community",
+      "partner:cognizant"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "They came from {v}."
   },
   {
     "id": "c25-mam-day-early-careers",
@@ -1661,8 +2471,13 @@
     "sourceId": "esg-2025",
     "page": 59,
     "quote": "120 … STUDENTS CONNECTED DIRECTLY WITH THE ASTON MARTIN ARAMCO EARLY CAREERS TEAM",
-    "tags": ["stem", "community", "partner:cognizant"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "stem",
+      "community",
+      "partner:cognizant"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "{v} connected directly with the team's early careers staff."
   },
   {
     "id": "c25-mam-day-cognizant",
@@ -1677,8 +2492,13 @@
     "sourceId": "esg-2025",
     "page": 59,
     "quote": "future careers discussions with Cognizant",
-    "tags": ["stem", "tech", "partner:cognizant"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "stem",
+      "tech",
+      "partner:cognizant"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Cognizant ran the future-careers sessions at Make A Mark Day."
   },
   {
     "id": "c25-ai-skills-gap",
@@ -1692,8 +2512,14 @@
     "sourceId": "esg-2025",
     "page": 61,
     "quote": "68% OF STUDENTS REPORTED BEING UNCLEAR ABOUT THE SKILLS NEEDED TO WORK IN AI AT THE START OF THE DAY",
-    "tags": ["stem", "tech", "partner:cognizant", "hero"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "stem",
+      "tech",
+      "partner:cognizant",
+      "hero"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "At the start of the day, {v} of students weren't sure what skills a career in AI needs."
   },
   {
     "id": "c25-mcgill-ideathon",
@@ -1708,8 +2534,13 @@
     "sourceId": "esg-2025",
     "page": 62,
     "quote": "Cognizant, for a second consecutive year, delivered a global generative AI Ideathon with Aston Martin Aramco Formula One Team",
-    "tags": ["stem", "tech", "partner:cognizant"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "stem",
+      "tech",
+      "partner:cognizant"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Cognizant has run a global generative-AI Ideathon with the team for a second year running."
   },
   {
     "id": "c25-mmu-students",
@@ -1724,8 +2555,12 @@
     "sourceId": "esg-2025",
     "page": 63,
     "quote": "welcomed more than 3,000 students at Manchester Metropolitan University",
-    "tags": ["stem", "community"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "stem",
+      "community"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The team met {v} at Manchester Metropolitan University's induction festival."
   },
   {
     "id": "c25-gp-trust-students",
@@ -1739,8 +2574,13 @@
     "sourceId": "esg-2025",
     "page": 65,
     "quote": "The Grand Prix Trust brought together 475 students from schools, colleges and universities",
-    "tags": ["stem", "community", "charity:grand-prix-trust"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "stem",
+      "community",
+      "charity:grand-prix-trust"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The Grand Prix Trust careers day brought together {v}."
   },
   {
     "id": "c25-stem-racing-students",
@@ -1755,8 +2595,15 @@
     "sourceId": "esg-2025",
     "page": 68,
     "quote": "engaging more than 600 students from 35 countries",
-    "tags": ["stem", "tech", "community", "partner:maaden", "singapore"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "stem",
+      "tech",
+      "community",
+      "partner:maaden",
+      "singapore"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "At the STEM Racing World Finals the team reached {v}."
   },
   {
     "id": "c25-stem-racing-countries",
@@ -1770,8 +2617,12 @@
     "sourceId": "esg-2025",
     "page": 68,
     "quote": "engaging more than 600 students from 35 countries",
-    "tags": ["stem", "partner:maaden"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "stem",
+      "partner:maaden"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Those students came from {v}."
   },
   {
     "id": "c25-stem-racing-singapore",
@@ -1786,8 +2637,14 @@
     "sourceId": "esg-2025",
     "page": 68,
     "quote": "we also welcomed the Canadian STEM Racing Team at the World Finals in Singapore",
-    "tags": ["stem", "singapore", "partner:bombardier", "hero"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "stem",
+      "singapore",
+      "partner:bombardier",
+      "hero"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The STEM Racing World Finals were held in Singapore, where the team hosted Canada's STEM Racing team with Bombardier."
   },
   {
     "id": "c25-maaden-target",
@@ -1802,8 +2659,13 @@
     "sourceId": "esg-2025",
     "page": 68,
     "quote": "reaching more than 100,000 students in the next three years",
-    "tags": ["stem", "tech", "partner:maaden"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "stem",
+      "tech",
+      "partner:maaden"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "With Maaden, the team aims to reach {v} through a free STEM learning platform over the next few years."
   },
   {
     "id": "c25-aramco-interns",
@@ -1821,11 +2683,17 @@
       {
         "kind": "source-conflict",
         "note": "The internship page (p67) describes \"Eight talented Mechanical Engineering students\".",
-        "relatedFactIds": ["c25-aramco-interns-p67"]
+        "relatedFactIds": [
+          "c25-aramco-interns-p67"
+        ]
       }
     ],
-    "tags": ["stem", "partner:aramco"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "stem",
+      "partner:aramco"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The Aramco summer internship grew to {v}."
   },
   {
     "id": "c25-aramco-interns-p67",
@@ -1843,11 +2711,17 @@
       {
         "kind": "source-conflict",
         "note": "The highlights page (p11) says the programme grew to nine students.",
-        "relatedFactIds": ["c25-aramco-interns"]
+        "relatedFactIds": [
+          "c25-aramco-interns"
+        ]
       }
     ],
-    "tags": ["stem", "partner:aramco"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "stem",
+      "partner:aramco"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The internship page describes {v}."
   },
   {
     "id": "c25-charity-2025",
@@ -1863,8 +2737,12 @@
     "sourceId": "esg-2025",
     "page": 72,
     "quote": "£140,000 RAISED IN 2025",
-    "tags": ["community", "hero"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "community",
+      "hero"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The team raised {v} for charity over the year."
   },
   {
     "id": "c25-charity-since-2023",
@@ -1880,8 +2758,11 @@
     "sourceId": "esg-2025",
     "page": 10,
     "quote": "Over the past three years we have raised more than £300,000",
-    "tags": ["community"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "community"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Over the last few seasons the charity total has passed {v}."
   },
   {
     "id": "c25-northants-health",
@@ -1896,8 +2777,12 @@
     "sourceId": "esg-2025",
     "page": 72,
     "quote": "where we generated more than £47,000",
-    "tags": ["community", "charity:northamptonshire-health-charity"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "community",
+      "charity:northamptonshire-health-charity"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Northamptonshire Health Charity received {v} for its maternity garden and baby-loss suite."
   },
   {
     "id": "c25-campus-tours",
@@ -1912,8 +2797,11 @@
     "sourceId": "esg-2025",
     "page": 74,
     "quote": "In 2025, the tours collectively helped raise more than £42,000",
-    "tags": ["community"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "community"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Auctioning factory tours raised {v} for charities."
   },
   {
     "id": "c25-tom-penzer",
@@ -1927,8 +2815,11 @@
     "sourceId": "esg-2025",
     "page": 70,
     "quote": "raising an amazing £28,500",
-    "tags": ["community"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "community"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Ultra-runner Tom Penzer Adams, backed by the team, raised {v} for Birmingham Children's Hospital."
   },
   {
     "id": "c25-football-helen-douglas",
@@ -1942,10 +2833,12 @@
     "sourceId": "esg-2025",
     "page": 71,
     "quote": "£3,757.15 RAISED FOR HELEN AND DOUGLAS HOUSE",
-    "tags": ["community"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "community"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The charity football match with Mercedes raised {v} for Helen and Douglas House."
   },
-
   {
     "id": "c24-mam-day-students",
     "pillar": "community",
@@ -1959,8 +2852,12 @@
     "sourceId": "esg-2024",
     "page": 12,
     "quote": "reaching and inspiring more than 300 students",
-    "tags": ["stem", "partner:cognizant"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "stem",
+      "partner:cognizant"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The previous Make A Mark Day reached {v}."
   },
   {
     "id": "c24-trackside-stem-singapore",
@@ -1975,8 +2872,13 @@
     "sourceId": "esg-2024",
     "page": 12,
     "quote": "Strengthened our trackside STEM outreach programme in UK, China, Canada, USA, and Singapore",
-    "tags": ["stem", "singapore", "hero"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "stem",
+      "singapore",
+      "hero"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The team's trackside STEM outreach has run in the UK, China, Canada, the USA and Singapore."
   },
   {
     "id": "c24-school-events",
@@ -1991,8 +2893,12 @@
     "sourceId": "esg-2024",
     "page": 76,
     "quote": "In 2024, we delivered more than 25 impactful events",
-    "tags": ["stem", "community"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "stem",
+      "community"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Local partner schools hosted {v} with the team."
   },
   {
     "id": "c24-sra-raised",
@@ -2007,8 +2913,11 @@
     "sourceId": "esg-2024",
     "page": 82,
     "quote": "Across the team, we raised more than £70,000",
-    "tags": ["community"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "community"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The team raised {v} to rebuild the Silverstone village clubhouse."
   },
   {
     "id": "c24-movember",
@@ -2023,8 +2932,12 @@
     "sourceId": "esg-2024",
     "page": 81,
     "quote": "raising close to £25,000 for Movember",
-    "tags": ["community", "charity:movember"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "community",
+      "charity:movember"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Colleagues raised {v} for Movember."
   },
   {
     "id": "c24-esg-impressions",
@@ -2038,8 +2951,12 @@
     "sourceId": "esg-2024",
     "page": 13,
     "quote": "ESG content generated 144.8m impressions",
-    "tags": ["community", "hero"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "community",
+      "hero"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The team's sustainability and inclusion posts earned {v} across social media."
   },
   {
     "id": "c24-esg-impressions-team",
@@ -2053,8 +2970,11 @@
     "sourceId": "esg-2024",
     "page": 13,
     "quote": "47.6m from Aston Martin Aramco Formula One Team posts",
-    "tags": ["community"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "community"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "{v} came from the team's own posts."
   },
   {
     "id": "c24-esg-impressions-partners",
@@ -2070,8 +2990,13 @@
     "page": 13,
     "quote": "these partners generated over 97m additional impressions",
     "notes": "Partners named as co-creators: Aston Martin, Aramco, Valvoline, Citi, Cognizant, JCB, SentinelOne, Spinal Track, The Aleto Foundation and Racing Pride.",
-    "tags": ["community", "partner:cognizant", "hero"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "community",
+      "partner:cognizant",
+      "hero"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Partners sharing the same stories, Cognizant among them, added {v}."
   },
   {
     "id": "c24-esg-posts-multiplier",
@@ -2085,8 +3010,11 @@
     "sourceId": "esg-2024",
     "page": 13,
     "quote": "generated 3x the impressions of a typical race weekend",
-    "tags": ["community"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "community"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Those posts drew {v} the impressions of a typical race weekend."
   },
   {
     "id": "c24-esg-conversations",
@@ -2100,8 +3028,11 @@
     "sourceId": "esg-2024",
     "page": 14,
     "quote": "our ESG posts prompted 4.8k social conversations",
-    "tags": ["community"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "community"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "They sparked {v}."
   },
   {
     "id": "c24-esg-interactions-growth",
@@ -2115,8 +3046,11 @@
     "sourceId": "esg-2024",
     "page": 14,
     "quote": "average interactions per post increasing by 33% compared to 2023",
-    "tags": ["community"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "community"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Interactions per post rose {v} on the year before."
   },
   {
     "id": "c24-citi-wfp",
@@ -2130,8 +3064,12 @@
     "sourceId": "esg-2024",
     "page": 78,
     "quote": "Citi contributing $200,000 to begin the campaign",
-    "tags": ["community", "partner:citi"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "community",
+      "partner:citi"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Citi opened its World Food Programme campaign with {v}."
   },
   {
     "id": "m-stem-programme-reach",
@@ -2146,8 +3084,14 @@
     "sourceId": "manifesto-2025",
     "page": 19,
     "quote": "reaching over 1,000 young people - both in the UK and at global race locations, including the USA, Canada, and Singapore",
-    "tags": ["stem", "singapore", "partner:cognizant", "hero"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "stem",
+      "singapore",
+      "partner:cognizant",
+      "hero"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The team's STEM programme has reached {v} in the UK and at race locations including Singapore."
   },
   {
     "id": "m-cognizant-online-stem",
@@ -2162,8 +3106,13 @@
     "sourceId": "manifesto-2025",
     "page": 19,
     "quote": "teaming up with Cognizant to provide additional online STEM learning",
-    "tags": ["stem", "tech", "partner:cognizant"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "stem",
+      "tech",
+      "partner:cognizant"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Cognizant has added online STEM learning to the team's schools programme."
   },
   {
     "id": "m22-charity",
@@ -2178,8 +3127,11 @@
     "sourceId": "manifesto-2025",
     "page": 19,
     "quote": "In 2022, we also raised more than £100,000 for local and international charities",
-    "tags": ["community"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "community"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "In its early seasons the team raised {v} for charity in a single year."
   },
   {
     "id": "m22-volunteers",
@@ -2194,10 +3146,13 @@
     "sourceId": "manifesto-2025",
     "page": 19,
     "quote": "with more than 300 team members and their families coming together",
-    "tags": ["community", "environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "community",
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Its first volunteering day brought out {v} to plant trees at the factory."
   },
-
   {
     "id": "g25-cdp",
     "pillar": "governance",
@@ -2211,8 +3166,12 @@
     "sourceId": "esg-2025",
     "page": 28,
     "quote": "achieved a CDP score of B in our climate change disclosure",
-    "tags": ["environment", "hero"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "hero"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The team earned a B from CDP for its climate disclosure."
   },
   {
     "id": "g25-cdp-percentile",
@@ -2226,8 +3185,11 @@
     "sourceId": "mam-web",
     "page": 1,
     "quote": "in the top 35 per cent of all companies disclosing through CDP",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "That places it in the top {v} of companies reporting to CDP."
   },
   {
     "id": "g25-assurance",
@@ -2242,8 +3204,12 @@
     "sourceId": "esg-2025",
     "page": 85,
     "quote": "THG Eco and MyCarbon were engaged by Aston Martin Aramco Formula One Team to provide limited assurance",
-    "tags": ["environment", "hero"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "hero"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Independent assurers checked the carbon inventory to a limited-assurance standard."
   },
   {
     "id": "g25-sbti",
@@ -2258,8 +3224,11 @@
     "sourceId": "esg-2025",
     "page": 15,
     "quote": "Our targets are independently validated by the Science Based Targets Initiative (SBTi)",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Its climate targets are independently validated by the Science Based Targets initiative."
   },
   {
     "id": "g25-restatement",
@@ -2274,8 +3243,12 @@
     "sourceId": "esg-2025",
     "page": 85,
     "quote": "These changes have resulted in the restatement of our 2023 baseline and 2024 footprint",
-    "tags": ["environment", "data-quality"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "data-quality"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "When the method changed, the team restated its earlier carbon figures, so older numbers aren't directly comparable."
   },
   {
     "id": "g25-hs-fatalities",
@@ -2290,7 +3263,8 @@
     "page": 84,
     "quote": "FATALITIES … Number: 0",
     "tags": [],
-    "extractedAt": "2026-09-24"
+    "extractedAt": "2026-09-24",
+    "phrase": "Work-related fatalities for the year: {n}."
   },
   {
     "id": "g25-hs-committee",
@@ -2305,7 +3279,8 @@
     "page": 84,
     "quote": "COMMITTEE MEETINGS … Number: 5",
     "tags": [],
-    "extractedAt": "2026-09-24"
+    "extractedAt": "2026-09-24",
+    "phrase": "The health and safety committee met {n} times."
   },
   {
     "id": "g25-new-hires",
@@ -2319,8 +3294,11 @@
     "sourceId": "esg-2025",
     "page": 84,
     "quote": "Total new employee hires (from Jan 2025 to Dec 2025) … 26.2%",
-    "tags": ["inclusion"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "inclusion"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "New hires made up {v} of the workforce."
   },
   {
     "id": "g25-turnover",
@@ -2334,8 +3312,11 @@
     "sourceId": "esg-2025",
     "page": 84,
     "quote": "Total employee turnover (from Jan 2025 to Dec 2025) … 18.3%",
-    "tags": ["inclusion"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "inclusion"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Staff turnover was {v}."
   },
   {
     "id": "g25-learning-modules",
@@ -2349,8 +3330,11 @@
     "sourceId": "esg-2025",
     "page": 84,
     "quote": "Number of learning modules available to all employees … 539",
-    "tags": ["tech"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "tech"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Colleagues can choose from {v}."
   },
   {
     "id": "g25-reporting-period",
@@ -2366,7 +3350,8 @@
     "page": 86,
     "quote": "FOR THE PERIOD 1 JANUARY 2025 TO 31 DECEMBER 2025 WITH REFERENCE TO THE GRI STANDARDS",
     "tags": [],
-    "extractedAt": "2026-09-24"
+    "extractedAt": "2026-09-24",
+    "phrase": "The report covers a full calendar year and follows the GRI reporting standards."
   },
   {
     "id": "g24-certifications",
@@ -2381,8 +3366,11 @@
     "sourceId": "esg-2024",
     "page": 38,
     "quote": "we celebrated the team's achievement of ISO 9001 and ISO 20121 certifications",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "The team holds FIA Three-Star environmental accreditation and several ISO management-system certifications."
   },
   {
     "id": "g-iso50001-first",
@@ -2397,8 +3385,12 @@
     "sourceId": "mam-web",
     "page": 1,
     "quote": "We are the first F1 team to comply with ISO standard 50001",
-    "tags": ["environment", "tech"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment",
+      "tech"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "It was the first F1 team to comply with the ISO energy-management standard."
   },
   {
     "id": "m23-audits-internal",
@@ -2412,8 +3404,11 @@
     "sourceId": "manifesto-2025",
     "page": 9,
     "quote": "Internal Audits Conducted: 20",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Its environmental management system ran {n} internal audits in a year."
   },
   {
     "id": "m23-audits-external",
@@ -2427,8 +3422,11 @@
     "sourceId": "manifesto-2025",
     "page": 9,
     "quote": "External Audits Conducted: 3",
-    "tags": ["environment"],
-    "extractedAt": "2026-09-24"
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "External auditors checked it {n} times."
   },
   {
     "id": "g-cognizant-role",
@@ -2443,7 +3441,92 @@
     "sourceId": "mam-web",
     "page": 1,
     "quote": "Cognizant, our Global AI Services Partner",
-    "tags": ["partner:cognizant", "tech"],
+    "tags": [
+      "partner:cognizant",
+      "tech"
+    ],
+    "extractedAt": "2026-09-24",
+    "phrase": "Cognizant is the team's Global AI Services Partner."
+  },
+  {
+    "id": "b25-paddle-seat",
+    "pillar": "belong",
+    "topic": "accessibility",
+    "metric": "Prototypes of the bespoke para-canoe seat built with Paddle UK",
+    "value": 3,
+    "unit": "prototypes",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 47,
+    "quote": "Over a nine-month period, Taylor's custom seat went through three prototypes",
+    "phrase": "The team's composite engineers took Paralympian Taylor Gough's custom seat through {v} to improve his stability and paddling.",
+    "tags": [
+      "inclusion",
+      "tech",
+      "charity:paddle-uk"
+    ],
+    "extractedAt": "2026-09-24"
+  },
+  {
+    "id": "c25-miami-xerox",
+    "pillar": "community",
+    "topic": "education",
+    "metric": "Miami school outreach with Xerox",
+    "value": null,
+    "valueText": "Make A Mark school programme at Booker T. Washington Senior High School",
+    "unit": "text",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 64,
+    "quote": "Working with global partner Xerox, the team delivered a Make A Mark school outreach programme",
+    "phrase": "With Xerox, the team ran a Make A Mark school programme in Miami, with hands-on workshops and careers advice.",
+    "tags": [
+      "stem",
+      "community",
+      "partner:xerox"
+    ],
+    "extractedAt": "2026-09-24"
+  },
+  {
+    "id": "c25-aspiring-mechanics",
+    "pillar": "community",
+    "topic": "education",
+    "metric": "Aspiring Mechanics Programme with Valvoline",
+    "value": null,
+    "valueText": "Hands-on motorsport training for young people from under-represented backgrounds",
+    "unit": "text",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 75,
+    "quote": "The Aspiring Mechanics Programme, delivered in partnership with Valvoline Global Operations",
+    "phrase": "The Aspiring Mechanics Programme with Valvoline gives young people from under-represented backgrounds hands-on motorsport training.",
+    "tags": [
+      "stem",
+      "inclusion",
+      "partner:valvoline"
+    ],
+    "extractedAt": "2026-09-24"
+  },
+  {
+    "id": "c25-hospital-tour",
+    "pillar": "community",
+    "topic": "wellbeing",
+    "metric": "Children's hospital tour",
+    "value": null,
+    "valueText": "Royal Aberdeen, Leeds, Alder Hey, Birmingham and Evelina children's hospitals",
+    "unit": "text",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 70,
+    "quote": "this year's hospital tour saw us visit Royal Aberdeen, Leeds, Alder Hey, Birmingham and The Evelina Children's hospitals",
+    "phrase": "Jessica Hawkins and Jak Crawford took a car, steering wheel and helmet to children's hospitals from Aberdeen to London.",
+    "tags": [
+      "community"
+    ],
     "extractedAt": "2026-09-24"
   }
 ]

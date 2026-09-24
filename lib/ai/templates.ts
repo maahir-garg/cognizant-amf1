@@ -1,76 +1,97 @@
 /**
  * Deterministic, grounded copy for every AI task. Used when no model is
- * configured, when the model output fails the guardrail twice, and as the
- * baseline the cache is warmed with - so for most judges this IS the AI
- * layer. Every sentence cites the fact or derived value it uses; every
- * figure is copied verbatim from formatFact()/the derived value so the
- * guardrail always passes.
+ * configured, when model output fails the guardrail twice, and in offline
+ * demo mode, so for most viewers this IS the AI layer.
+ *
+ * Sentences come from each fact's hand-written `phrase` (data/facts.json),
+ * filled with the fact's own value and followed by its citation. Phrases are
+ * checked by verify:data to contain no other numbers, so templates cannot
+ * leak an unsourced figure.
  */
 import { getCity, initiatives } from "@/lib/data/load";
-import type { AiRequest, DerivedValue, Fact, FanLevel, Interest, Pillar } from "@/lib/data/schemas";
-import { formatFact } from "@/lib/format";
+import type { AiRequest, DerivedValue, Fact, Interest, Pillar } from "@/lib/data/schemas";
+import { unitLabel } from "@/lib/format";
 
-/* ------------------------------------------------------------- helpers */
+/* ------------------------------------------------------------- values */
 
-function cap(s: string): string {
-  return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+const nf = (max = 2) => new Intl.NumberFormat("en-GB", { maximumFractionDigits: max });
+
+/** A fact's value written for prose: "more than £140,000", "about 20,000 tCO₂e", "16%". */
+export function proseValue(f: Fact, abs = false): string {
+  if (f.value === null) return f.valueText ?? "";
+  const v = abs ? Math.abs(f.value) : f.value;
+  const lead = f.qualifier === "at-least" ? "more than " : f.qualifier === "approximately" ? "about " : "";
+  let body: string;
+  if (f.unit === "GBP" || f.unit === "USD") body = `${f.unit === "GBP" ? "£" : "$"}${nf(2).format(v)}`;
+  else if (f.unit === "%") body = `${nf(1).format(v)}%`;
+  else if (f.unit === "x") body = `${nf(1).format(v)} times`;
+  else if (["year", "count", "round"].includes(f.unit)) body = nf(0).format(v);
+  else {
+    const unit = unitLabel(f.unit).split(" / ")[0];
+    const num = v >= 1e6 ? `${nf(1).format(v / 1e6)} million` : nf(v < 10 ? 2 : v < 1000 ? 1 : 0).format(v);
+    body = `${num} ${unit}`;
+  }
+  return lead + body;
 }
+
+function fill(f: Fact): string {
+  if (!f.phrase) return "";
+  return f.phrase
+    .replace("{v}", proseValue(f))
+    .replace("{abs}", proseValue(f, true))
+    .replace("{n}", f.value === null ? "" : f.unit === "year" ? String(f.value) : nf(0).format(f.value));
+}
+
+/** One cited sentence for a fact. Falls back to a plain construction when no phrase exists. */
+export function factSentence(f: Fact): string {
+  const text =
+    fill(f) ||
+    (f.value === null ? `${f.metric}: ${f.valueText}.` : `The team reports ${lowerFirst(f.metric)} at ${proseValue(f)}.`);
+  return cite(text, `F:${f.id}`);
+}
+
+/** Insert the citation before the sentence's final punctuation. */
+function cite(sentence: string, ref: string): string {
+  const m = sentence.match(/^(.*?)([.!?])?$/s);
+  return `${m?.[1] ?? sentence} [${ref}]${m?.[2] ?? "."}`;
+}
+
+function derivedValue(d: DerivedValue): string {
+  return d.unit === "%" ? `${nf(1).format(d.value)}%` : `${nf(0).format(d.value)} ${unitLabel(d.unit)}`;
+}
+
+/* ------------------------------------------------------------- casing */
+
+const PROPER_FIRST = new Set(["Cognizant", "Arm", "Make", "Singapore", "Citi", "Northamptonshire", "Ultra-runner", "F1's", "AFBE-UK"]);
 
 function lowerFirst(s: string): string {
-  return s ? s.charAt(0).toLowerCase() + s.slice(1) : s;
+  const first = s.split(/\s/)[0];
+  if (PROPER_FIRST.has(first) || /^[A-Z]{2,}/.test(first) || /^\d/.test(first)) return s;
+  return s.charAt(0).toLowerCase() + s.slice(1);
 }
 
-const nf = new Intl.NumberFormat("en-GB", { maximumFractionDigits: 2 });
-
-function formatDerived(d: DerivedValue): string {
-  const num = nf.format(d.value);
-  return d.unit === "%" ? `${num}%` : `${num} ${d.unit}`;
+function stripFinal(s: string): string {
+  return s.replace(/[.!?]$/, "");
 }
 
-function statusPrefix(status: Fact["status"]): string {
-  if (status === "estimated") return "an estimated ";
-  if (status === "simulated") return "a simulated ";
-  return "";
-}
-
-const FACT_VERBS = ["reached", "came to", "now stands at", "totalled", "landed at"];
-
-/** One grounded, cited sentence for a fact: "<Metric> <verb> <value> [F:id]." */
-function factSentence(f: Fact, seed: number): string {
-  const value = `${statusPrefix(f.status)}${formatFact(f)}`;
-  if (f.value === null) {
-    // Qualitative facts (valueText) usually read as their own clause or
-    // phrase, so a "verb + value" construction reads as nonsense; use a
-    // plain appositive instead.
-    return `${cap(f.metric)} - ${value} [F:${f.id}].`;
-  }
-  const verb = FACT_VERBS[seed % FACT_VERBS.length];
-  return `${cap(f.metric)} ${verb} ${value} [F:${f.id}].`;
-}
-
-/** One grounded, cited sentence for a derived value. */
-function derivedSentence(d: DerivedValue, seed: number, opener?: string): string {
-  const lead = opener ?? (seed % 2 === 0 ? "That would mean" : "On top of that,");
-  return `${lead} ${lowerFirst(d.label)} - ${formatDerived(d)} [D:${d.id}] - based on ${d.formula}.`;
-}
-
-function wordCount(s: string): string[] {
-  return s
-    .replace(/\[(F|D):[a-z0-9-]+\]/g, "")
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
-}
+/* --------------------------------------------------------------- labels */
 
 const INTEREST_LABELS: Record<Interest, string> = {
-  environment: "sustainability",
-  community: "community impact",
+  environment: "the environment",
+  community: "community work",
   inclusion: "inclusion",
   stem: "STEM",
-  tech: "tech",
+  tech: "technology",
 };
 
-const PILLAR_LABELS: Record<Pillar, string> = {
+const SECTOR_OPENERS: Record<Pillar, string> = {
+  environment: "Sector one: the carbon behind a Formula One season.",
+  belong: "Sector two: who gets a seat at the table.",
+  community: "Sector three: what the team does away from the track.",
+  governance: "Scrutineering: how you can tell any of this is true.",
+};
+
+const PILLAR_TITLES: Record<Pillar, string> = {
   environment: "Environment",
   belong: "Belong",
   community: "Community",
@@ -79,233 +100,246 @@ const PILLAR_LABELS: Record<Pillar, string> = {
 
 const PILLAR_ORDER: Pillar[] = ["environment", "belong", "community", "governance"];
 
+function words(s: string): number {
+  return s.replace(/\[(F|D):[a-z0-9-]+\]/g, "").trim().split(/\s+/).filter(Boolean).length;
+}
+
 /* -------------------------------------------------------------- fan-story */
 
 function fanStoryTemplate(req: AiRequest, facts: Fact[]): string {
   const fan = req.fan;
-  if (!fan || facts.length === 0) return facts.map((f, i) => factSentence(f, i)).join(" ");
-  const city = getCity(fan.cityId);
+  const pillar = (req.params.pillar as Pillar) ?? facts[0]?.pillar ?? "environment";
+  const opener = SECTOR_OPENERS[pillar];
+  if (!fan || facts.length === 0) return [opener, ...facts.map(factSentence)].join(" ");
+
   const interest = INTEREST_LABELS[fan.interests[0]] ?? fan.interests[0];
-  const level: FanLevel = fan.level;
+  const city = getCity(fan.cityId);
+  const lines = facts.map(factSentence);
 
-  if (level === "new") {
-    const sentences = [`Here's one for you: ${lowerFirst(factSentence(facts[0], 0))}`];
-    if (facts[1]) sentences.push(`Put simply, ${lowerFirst(factSentence(facts[1], 1))}`);
-    sentences.push(
-      `Following the team as someone into ${interest}${city ? ` from ${city.name}` : ""}, that's the sort of detail worth knowing before the next race.`,
-    );
-    return sentences.join(" ");
+  if (fan.level === "die-hard") return [opener, ...lines].join(" ");
+
+  if (fan.level === "casual") {
+    return [opener, `Picked for someone into ${interest}: ${lowerFirst(lines[0])}`, ...lines.slice(1, 2)].join(" ");
   }
 
-  if (level === "die-hard") {
-    const sentences = [`You'll want the detail: ${lowerFirst(factSentence(facts[0], 3))}`];
-    if (facts[1]) sentences.push(factSentence(facts[1], 4));
-    return sentences.join(" ");
-  }
-
-  // casual
-  const sentences = [`For you as a fan who follows ${interest}, ${lowerFirst(factSentence(facts[0], 1))}`];
-  if (facts[1]) sentences.push(factSentence(facts[1], 2));
-  return sentences.join(" ");
+  // New fans: fewer facts, a friendlier frame, and a pointer to the sources.
+  const where = city ? ` in ${city.name}` : "";
+  return [
+    opener,
+    `Because you follow ${interest}${where}, we've started here: ${lowerFirst(lines[0])}`,
+    ...lines.slice(1, 2),
+    "Tap any number to see the page it comes from.",
+  ].join(" ");
 }
 
 /* ------------------------------------------------------------ quiz-reveal */
 
 function quizRevealTemplate(req: AiRequest, facts: Fact[]): string {
   const f = facts[0];
-  const correct = Boolean(req.params.correct);
-  const reaction = correct ? "Spot on" : "Not quite, but now you know";
-  return `${reaction} - ${lowerFirst(factSentence(f, 0))}`;
+  const body = stripFinal(lowerFirst(fill(f) || `the answer is ${proseValue(f)}`));
+  return cite(`${req.params.correct ? "Right" : "Not quite"}: ${body}.`, `F:${f.id}`);
 }
 
 /* ---------------------------------------------------------- share-caption */
 
-function shareCaptionTemplate(_req: AiRequest, facts: Fact[]): string {
-  const f = facts[0];
-  const value = `${statusPrefix(f.status)}${formatFact(f)}`;
-  const candidates = [
-    `I just found out my race weekend links to ${value} [F:${f.id}] of impact.`,
-    `Turns out my race weekend is worth ${value} [F:${f.id}] of impact.`,
-    `${value} [F:${f.id}] - that's my race weekend impact.`,
-  ];
-  for (const c of candidates) if (c.length <= 110) return c;
-  return candidates[candidates.length - 1];
+function shareCaptionTemplate(req: AiRequest, facts: Fact[]): string {
+  const byId = new Map(facts.map((f) => [f.id, f]));
+  const interests = req.fan?.interests ?? [];
+  const peopleFirst = interests.some((i) => i === "community" || i === "stem" || i === "inclusion");
+
+  const saf = byId.get("e25-saf-airfreight-cut");
+  const students = byId.get("c25-mam-day-students");
+  const freight = byId.get("est-freight-per-round");
+
+  const candidates: string[] = [];
+  const push = (f: Fact | undefined, text: (v: string) => string) => f && candidates.push(text(`${proseValue(f)} [F:${f.id}]`));
+  if (peopleFirst) push(students, (v) => `I did my Impact Lap: ${v} came to Make A Mark Day. I'm in.`);
+  push(saf, (v) => `I did my Impact Lap: cleaner fuel cut the team's air-freight emissions by ${v}.`);
+  push(freight, (v) => `I did my Impact Lap: one race weekend of freight is roughly ${v}.`);
+  push(students, (v) => `I did my Impact Lap: ${v} came to Make A Mark Day.`);
+  for (const f of facts) push(f, (v) => `I did my Impact Lap. My number: ${v}.`);
+
+  return candidates.find((c) => c.length <= 110) ?? `I did my Impact Lap [F:${facts[0].id}].`;
 }
 
 /* --------------------------------------------------------- linkedin-post */
 
 const TONE_INTROS: Record<string, string> = {
-  confident: "Cognizant and Aston Martin Aramco Formula One Team keep turning shared ambition into results people can see.",
-  warm: "There's a lot to be proud of in how Cognizant and Aston Martin Aramco Formula One Team are working together.",
-  formal: "Cognizant is pleased to share the latest results from its partnership with Aston Martin Aramco Formula One Team.",
+  confident: "Impact stories are only as good as the data behind them. Here's what Cognizant and Aston Martin Aramco have to show.",
+  warm: "Some of our favourite work with Aston Martin Aramco happens well away from the track.",
+  formal: "An update on Cognizant's partnership with the Aston Martin Aramco Formula One Team.",
 };
 
 const TONE_CLOSINGS: Record<string, string> = {
-  confident: "This is what a technology partnership looks like when it is built to last beyond a single season.",
-  warm: "Thank you to everyone across both organisations making this happen, on and off the track.",
-  formal: "Cognizant remains committed to supporting the team's programme through the seasons ahead.",
-};
-
-const PILLAR_HASHTAGS: Record<Pillar, string> = {
-  environment: "#SustainableRacing",
-  belong: "#InclusionInMotion",
-  community: "#CommunityInGear",
-  governance: "#TrustedData",
+  confident: "Every figure here links back to the team's published report. That's the standard we hold ourselves to.",
+  warm: "Thank you to every student, mentor and engineer who made these moments happen.",
+  formal: "All figures are drawn from the team's published ESG reporting, with sources cited.",
 };
 
 function linkedinPostTemplate(req: AiRequest, facts: Fact[]): string {
-  const tone = typeof req.params.tone === "string" ? req.params.tone : "confident";
+  const tone = typeof req.params.tone === "string" && TONE_INTROS[req.params.tone] ? req.params.tone : "confident";
   const simulated = Boolean(req.params.simulated);
-  const intro = TONE_INTROS[tone] ?? TONE_INTROS.confident;
-  const closing = simulated
-    ? "This milestone is drawn from a simulated demo feed built for this prototype, standing in for the kind of live moment the partnership could celebrate."
-    : (TONE_CLOSINGS[tone] ?? TONE_CLOSINGS.confident);
+  const parts: string[] = [];
 
-  const items = [...req.derived.map((d, i) => () => derivedSentence(d, i)), ...facts.map((f, i) => () => factSentence(f, i))];
-
-  const included: string[] = [];
-  for (const build of items) {
-    included.push(build());
-    if (wordCount([intro, ...included, closing].join(" ")).length >= 90) break;
+  if (simulated && req.derived[0]) {
+    const d = req.derived[0];
+    parts.push(
+      cite(`Race-weekend milestone from our Impact Lap demo: ${lowerFirst(d.label)} just passed ${derivedValue(d)}`, `D:${d.id}`),
+      "It's a simulated feed built for this prototype, but it shows the moments a live version would catch.",
+      "The real story behind it:",
+    );
+  } else {
+    parts.push(TONE_INTROS[tone]);
   }
 
-  const pillarsParam = typeof req.params.pillars === "string" ? req.params.pillars : "";
-  const firstPillar = pillarsParam.split(",").find((p): p is Pillar => PILLAR_ORDER.includes(p as Pillar));
-  const hashtags = ["#ImpactLap", firstPillar ? PILLAR_HASHTAGS[firstPillar] : "#RacingWithPurpose", "#TeamCognizant"];
+  const closing = simulated
+    ? "In production, this post would draft itself the moment a real milestone lands, with every figure sourced."
+    : TONE_CLOSINGS[tone];
 
-  return `${[intro, ...included, closing].join(" ")}\n\n${hashtags.join(" ")}`;
+  for (const f of facts) {
+    parts.push(factSentence(f));
+    if (words([...parts, closing].join(" ")) >= 90) break;
+  }
+
+  return `${[...parts, closing].join(" ")}\n\n#MakeAMark #Cognizant #Motorsport`;
 }
 
-/* ------------------------------------------------------------- brief kit */
+/* ------------------------------------------------------ quarterly brief */
 
-const TOPIC_TITLES: Record<string, string> = {
-  emissions: "Emissions",
-  freight: "Freight and logistics",
-  energy: "Event energy",
-  education: "Education and STEM",
-  mentoring: "Mentoring",
-  fundraising: "Fundraising",
-  recognition: "Recognition",
-  methodology: "Methodology and disclosure",
-  targets: "Targets",
+const SECTION_INTROS: Record<string, string> = {
+  Environment: "Carbon, freight and energy across the team's operations.",
+  Belong: "Mentoring, representation and wellbeing inside the team.",
+  Community: "Education, outreach and fundraising, including the programmes Cognizant helps run.",
+  Governance: "How the numbers are checked, and what the team discloses.",
+  "Also of note": "Further figures from the same reports.",
+  Education: "Programmes that bring students into STEM and motorsport.",
+  Emissions: "The team's carbon footprint and how it is moving.",
+  Targets: "What the team has committed to, and by when.",
+  Freight: "Getting cars, parts and people around the calendar.",
+  Mentoring: "Structured routes into the sport for under-represented talent.",
+  Fundraising: "Money raised for charities close to the team.",
+  Reach: "How far the team's impact stories travel.",
+  Workforce: "Who works at the team.",
 };
 
-const GENERIC_SECTION_TITLES = ["Highlights", "Impact in numbers", "People and community", "Trust and disclosure"];
-
-const SECTION_LEAD_INS: Record<string, string> = {
-  Environment: "On the environmental side of the partnership:",
-  Belong: "On inclusion and belonging:",
-  Community: "In the community:",
-  Governance: "On governance and disclosure:",
-  "Also of note": "A few more figures worth flagging:",
-};
-
-function sectionLeadIn(title: string): string {
-  return SECTION_LEAD_INS[title] ?? `${title}, in brief:`;
-}
-
-/**
- * Groups the supplied facts into 3-4 short sections for the quarterly
- * brief, keeping every fact (never dropping one to fit a section cap).
- * Prefers pillar groups; falls back to topic groups, then a plain
- * round-robin split, so a narrow request (e.g. one pillar) still reads as
- * several short sections rather than one long list.
- */
 function groupForBrief(facts: Fact[]): { title: string; facts: Fact[] }[] {
   const byPillar = new Map<Pillar, Fact[]>();
-  for (const f of facts) {
-    if (!byPillar.has(f.pillar)) byPillar.set(f.pillar, []);
-    byPillar.get(f.pillar)!.push(f);
-  }
-  const pillarGroups = PILLAR_ORDER.filter((p) => byPillar.has(p)).map((p) => ({ title: PILLAR_LABELS[p], facts: byPillar.get(p)! }));
-  if (pillarGroups.length >= 3) return pillarGroups.slice(0, 4);
+  for (const f of facts) byPillar.set(f.pillar, [...(byPillar.get(f.pillar) ?? []), f]);
+  const groups = PILLAR_ORDER.filter((p) => byPillar.has(p)).map((p) => ({ title: PILLAR_TITLES[p], facts: byPillar.get(p)! }));
+  if (groups.length >= 3) return groups.slice(0, 4);
 
+  // Narrow requests (one pillar): split by topic so the brief still has sections.
   const byTopic = new Map<string, Fact[]>();
-  for (const f of facts) {
-    const key = f.topic || f.pillar;
-    if (!byTopic.has(key)) byTopic.set(key, []);
-    byTopic.get(key)!.push(f);
-  }
-  const topicGroups = [...byTopic.entries()].map(([topic, fs]) => ({ title: TOPIC_TITLES[topic] ?? cap(topic), facts: fs }));
-  if (topicGroups.length >= 3) {
-    if (topicGroups.length <= 4) return topicGroups;
-    const kept = topicGroups.slice(0, 3);
-    const overflow = topicGroups.slice(3).flatMap((g) => g.facts);
-    kept.push({ title: "Also of note", facts: overflow });
-    return kept;
-  }
-
-  // Not enough natural groups: spread the facts round-robin across 3-4
-  // generic sections so the brief still has several short sections.
-  const sectionCount = Math.min(4, Math.max(3, facts.length));
-  const buckets: Fact[][] = Array.from({ length: sectionCount }, () => []);
-  facts.forEach((f, i) => buckets[i % sectionCount].push(f));
-  return buckets.filter((b) => b.length > 0).map((fs, i) => ({ title: GENERIC_SECTION_TITLES[i], facts: fs }));
+  for (const f of facts) byTopic.set(f.topic, [...(byTopic.get(f.topic) ?? []), f]);
+  const topics = [...byTopic.entries()].map(([t, fs]) => ({ title: t.charAt(0).toUpperCase() + t.slice(1).replace(/-/g, " "), facts: fs }));
+  if (topics.length <= 4) return topics;
+  return [...topics.slice(0, 3), { title: "Also of note", facts: topics.slice(3).flatMap((g) => g.facts) }];
 }
 
 function quarterlyBriefTemplate(req: AiRequest, facts: Fact[]): string {
-  const pillarsParam = typeof req.params.pillars === "string" ? req.params.pillars : "";
-  const headline =
-    pillarsParam === "community"
-      ? "Community impact this quarter: measurable, cited, growing."
-      : "Partnership impact this quarter: the numbers behind the collaboration.";
-  const groups = groupForBrief(facts);
-  const sections = groups.map((g) => {
-    const bullets = g.facts.map((f, i) => `- ${factSentence(f, i)}`);
-    return `${g.title}\n${sectionLeadIn(g.title)}\n${bullets.join("\n")}`;
+  const narrow = req.params.pillars === "community";
+  const title = narrow
+    ? "Community impact brief: Cognizant × Aston Martin Aramco"
+    : "Partnership impact brief: Cognizant × Aston Martin Aramco";
+  const summary =
+    "What the partnership and the team's wider programme delivered, drawn from the team's published reports. Estimates are marked as such.";
+  const sections = groupForBrief(facts).map((g) => {
+    const intro = SECTION_INTROS[g.title] ?? "";
+    return [g.title, intro, ...g.facts.map((f) => `- ${factSentence(f)}`)].filter(Boolean).join("\n");
   });
-  return [headline, "", ...sections].join("\n\n");
+  const notes =
+    "Data notes\nWhere the source reports disagree with themselves, the figure carries a quality flag in the dashboard. Nothing here is published without a source.";
+  return [title, summary, ...sections, notes].join("\n\n");
 }
+
+/* ---------------------------------------------------- investor summary */
 
 function investorSummaryTemplate(req: AiRequest, facts: Fact[]): string {
-  const pillarsParam = typeof req.params.pillars === "string" ? req.params.pillars : "";
-  const title =
-    pillarsParam === "community"
-      ? "Cognizant x Aston Martin Aramco: community impact snapshot"
-      : "Cognizant x Aston Martin Aramco: partnership impact snapshot";
-  const bulletFacts = facts.slice(0, 4);
-  const bullets = bulletFacts.map((f, i) => `- ${factSentence(f, i)}`);
-  while (bullets.length < 4) {
-    bullets.push("- Every figure above is drawn from the team's published, verified reporting or a documented estimate.");
-  }
-  return [title, ...bullets, "So what: verified data turns a sponsorship into a partnership investors can measure."].join("\n");
+  const narrow = req.params.pillars === "community";
+  const title = narrow ? "Cognizant × Aston Martin Aramco: community impact" : "Cognizant × Aston Martin Aramco: partnership impact";
+  // One bullet per topic first, so four bullets don't all describe the same programme.
+  const firstOfTopic = facts.filter((f, i) => facts.findIndex((g) => g.topic === f.topic) === i);
+  const ordered = [...firstOfTopic, ...facts.filter((f) => !firstOfTopic.includes(f))];
+  const bullets = ordered.slice(0, 4).map((f) => `- ${factSentence(f)}`);
+  const fillers = [
+    "- Every figure is traceable to a page in the team's published reports.",
+    "- Estimates and simulations are labelled; gaps are shown as gaps.",
+  ];
+  while (bullets.length < 4) bullets.push(fillers[bullets.length % fillers.length]);
+  const soWhat = narrow
+    ? "So what: a measurable skills pipeline that the sponsorship can point to, not just logo placement."
+    : "So what: sponsorship value that can be audited, not just asserted.";
+  return [title, ...bullets, soWhat].join("\n");
 }
 
-/* ------------------------------------------------------ scenario-explain */
+/* ------------------------------------------------ scenario explanation */
 
 function scenarioExplanationTemplate(req: AiRequest): string {
-  const derived = req.derived.slice(0, 4);
-  if (derived.length === 0) return "No scenario inputs were supplied.";
-  const sentences = derived.map((d, i) => derivedSentence(d, i, i === 0 ? "Scaling this up," : undefined));
-  return sentences.join(" ");
+  const d = new Map(req.derived.map((x) => [x.id, x]));
+  const out: string[] = [];
+  const ref = (id: string) => `[D:${id}]`;
+
+  const students = d.get("sc-students");
+  if (students) {
+    out.push(
+      students.value > 0
+        ? `More race-weekend STEM days would reach ${derivedValue(students)} ${ref(students.id)}, assuming each matches last year's Make A Mark Day and your turnout holds.`
+        : `With no extra STEM days set, reach stays where it is ${ref(students.id)}.`,
+    );
+  }
+  const mentees = d.get("sc-mentees");
+  const growth = d.get("sc-network-growth");
+  if (mentees && growth && mentees.value > 0) {
+    out.push(
+      `Extra mentoring cohorts add ${derivedValue(mentees)} a year ${ref(mentees.id)}; if they match this year's outcomes, ${derivedValue(growth)} would report a stronger professional network ${ref(growth.id)}.`,
+    );
+  }
+  const saf = d.get("sc-saf-avoided");
+  const extra = d.get("sc-saf-extra");
+  const laps = d.get("sc-saf-extra-laps");
+  if (saf && extra) {
+    out.push(
+      extra.value > 0
+        ? `Raising the fuel's reduction target would avoid ${derivedValue(saf)} of air-freight emissions ${ref(saf.id)}, ${derivedValue(extra)} more than last year ${ref(extra.id)}${laps ? `, or ${derivedValue(laps)} of Silverstone ${ref(laps.id)}` : ""}.`
+        : `At today's fuel level, air-freight savings hold at ${derivedValue(saf)} ${ref(saf.id)}; raise the target to see the extra.`,
+    );
+  }
+  out.push("It models carbon and reach only: fuel costs aren't published, so treat it as a planning aid rather than a forecast.");
+  return out.join(" ");
 }
 
-/* ------------------------------------------------------------- story-kit */
+/* ------------------------------------------------------------ story kit */
 
 function storyKitTemplate(req: AiRequest, facts: Fact[]): string {
-  const format = req.params.format;
   const initiative = initiatives.find((i) => i.id === req.params.initiative);
-  const name = initiative?.name ?? "this partnership";
+  // "Para-canoe seat with Paddle UK" -> "Para-canoe seat": the partner is named separately.
+  const name = (initiative?.name ?? "this programme").replace(/\s*\((with [^)]*)\)$/, "").replace(/\s+with\s+[A-Z].*$/, "");
+  const partner = initiative?.partners.find((p) => p !== "Cognizant") ?? "our organisation";
+  const own = facts.filter((f) => initiative?.factIds.includes(f.id));
+  const wider = facts.filter((f) => !initiative?.factIds.includes(f.id));
 
-  if (format === "summary") {
-    const sentences = [`${name} is one of the ways Aston Martin Aramco Formula One Team turns its published figures into action.`];
-    if (facts[0]) sentences.push(factSentence(facts[0], 0));
-    if (facts[1]) sentences.push(factSentence(facts[1], 1));
-    return sentences.join(" ");
+  const lines = [
+    ...own.map(factSentence),
+    ...(wider.length ? [`Across the team's wider ${PILLAR_TITLES[wider[0].pillar].toLowerCase()} work: ${lowerFirst(factSentence(wider[0]))}`] : []),
+  ];
+
+  if (req.params.format === "summary") {
+    return [`${partner} and the Aston Martin Aramco Formula One Team work together on the ${lowerFirst(name)}.`, ...lines.slice(0, 2)].join(" ");
   }
 
-  // "post": charity/community partner voice, first person plural.
-  const intro = `We're proud of what ${name} has achieved working alongside Aston Martin Aramco Formula One Team.`;
-  const included: string[] = [];
-  for (let i = 0; i < facts.length; i++) {
-    included.push(factSentence(facts[i], i));
-    if (wordCount([intro, ...included].join(" ")).length >= 55) break;
+  const intro = `At ${partner}, we've been working with the Aston Martin Aramco Formula One Team on the ${lowerFirst(name)}.`;
+  const body: string[] = [];
+  for (const l of lines) {
+    body.push(l);
+    if (words([intro, ...body].join(" ")) >= 55) break;
   }
-  const closing = "None of this happens without a team willing to put its own numbers on the table, and we're glad to be part of it.";
-  let text = [intro, ...included, closing].join(" ");
-  if (wordCount(text).length < 60) {
-    text += " It is exactly the kind of partnership Impact Lap was built to make visible.";
-  }
+  let text = [intro, ...body, "Every figure here comes from the team's published report, so you can check it yourself."].join(" ");
+  const extras = [
+    "We're proud to be part of it, and there's more to come.",
+    `If you'd like to get involved with ${name}, we'd love to hear from you.`,
+    "Thank you to everyone at the team who gives their time to make it happen.",
+  ];
+  for (const e of extras) if (words(text) < 60) text += ` ${e}`;
   return text;
 }
 
@@ -330,6 +364,6 @@ export function renderTemplate(req: AiRequest, facts: Fact[]): string {
     case "story-kit":
       return storyKitTemplate(req, facts);
     default:
-      return facts.map((f, i) => factSentence(f, i)).join(" ");
+      return facts.map(factSentence).join(" ");
   }
 }
