@@ -28,7 +28,7 @@ export const PILLAR_KPIS: Record<Pillar, Kpi[]> = {
     },
     {
       factId: "e25-ghg-total-sbti",
-      why: "The baseline the team has committed to cut under its science-based target, so partners can size the challenge.",
+      why: "The size of the challenge: the whole footprint the science-based targets are designed to cut.",
     },
     {
       factId: "e25-removals",
@@ -51,20 +51,16 @@ export const PILLAR_KPIS: Record<Pillar, Kpi[]> = {
   ],
   community: [
     {
-      factId: "c25-mam-day-students",
-      why: "The headline reach figure for the team's flagship STEM day, the number most often quoted externally.",
+      factId: "c24-esg-impressions",
+      why: "How far the team's sustainability and inclusion stories already travel on social media.",
     },
     {
-      factId: "c25-ai-skills-gap",
-      why: "The problem statement that justifies Cognizant's involvement in AI-skills programmes in the first place.",
+      factId: "c24-esg-posts-multiplier",
+      why: "Evidence that impact content outperforms ordinary race-weekend posts, which is the case for doing more of it.",
     },
     {
-      factId: "m-stem-programme-reach",
-      why: "Shows STEM outreach at programme scale across a season, not just a single event.",
-    },
-    {
-      factId: "c24-esg-impressions-partners",
-      why: "The media reach delivered specifically for the team's ESG partners, the figure a comms team reports upward.",
+      factId: "c25-stem-racing-students",
+      why: "Global STEM reach at the World Finals held in Singapore, the market this pitch is set in.",
     },
     {
       factId: "c25-charity-2025",

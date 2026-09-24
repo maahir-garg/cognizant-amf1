@@ -13,11 +13,14 @@ export function LivePanel({ raceId, speed = 4 }: { raceId: string; speed?: numbe
   const alerts = [...feed.milestones].reverse();
 
   return (
-    <section className="flex flex-col gap-6 border-t border-line pt-8">
+    <section className="flex flex-col gap-6 rounded-md border border-line bg-bg p-4 sm:p-5">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <p className="label">Live race weekend · Singapore Grand Prix 2026</p>
-          <p className="text-xs text-simulated">Simulated live feed — replayed demo data, not a real connection to the circuit.</p>
+          <p className="label flex items-center gap-2">
+            <span aria-hidden className="size-1.5 animate-pulse rounded-full bg-simulated" />
+            Live race weekend · Singapore Grand Prix 2026
+          </p>
+          <p className="text-xs text-simulated">Simulated live feed: replayed demo data, not a real connection to the circuit.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <span className="label rounded-sm border border-line px-2 py-1" title="How this panel is currently being driven">
@@ -40,7 +43,7 @@ export function LivePanel({ raceId, speed = 4 }: { raceId: string; speed?: numbe
         </div>
       </div>
 
-      <div className="grid gap-px overflow-hidden rounded-md border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-px overflow-hidden rounded-md border border-line bg-line lg:grid-cols-4 xl:grid-cols-2">
         {counterDefs.map((c) => {
           const value = feed.counters[c.id] ?? c.start;
           const nextMilestone = c.milestones.find((m) => value < m);

@@ -42,6 +42,7 @@ export function FactValue({
   const p = inlineUnit ? { ...parts, value: parts.value + parts.unit, unit: "" } : parts;
   const s = SIZES[size];
   const conflict = fact.flags.some((f) => f.kind === "source-conflict");
+  const qualitative = fact.value === null;
 
   return (
     <button
@@ -50,21 +51,34 @@ export function FactValue({
       className={cn("group flex flex-col items-start gap-1 text-left", className)}
       aria-label={`${fact.metric}: ${p.prefix}${p.value}${p.unit ? ` ${p.unit}` : ""}${p.suffix}. ${fact.status}. Show source.`}
     >
-      <span className="flex flex-wrap items-baseline gap-x-1.5">
-        <span className={cn("num font-semibold tracking-tight text-ink decoration-lime/60 underline-offset-4 group-hover:underline", s.value)}>
-          {p.prefix}
-          {p.value}
-          {p.suffix}
+      {qualitative ? (
+        <span className="text-lg leading-snug font-semibold text-ink decoration-lime/60 underline-offset-4 group-hover:underline sm:text-xl">
+          {fact.valueText}
         </span>
-        {p.unit && <span className={cn("num text-ink-2", s.unit)}>{p.unit}</span>}
-        {!showStatus && <StatusMark status={fact.status} className="ml-1 self-center" />}
-      </span>
+      ) : (
+        <span className="flex flex-wrap items-baseline gap-x-1.5">
+          <span
+            className={cn(
+              "num font-semibold tracking-tight text-ink decoration-lime/60 underline-offset-4 group-hover:underline",
+              s.value,
+            )}
+          >
+            {p.prefix}
+            {p.value}
+            {p.suffix}
+          </span>
+          {p.unit && <span className={cn("num text-ink-2", s.unit)}>{p.unit}</span>}
+          {!showStatus && <StatusMark status={fact.status} className="ml-1 self-center" />}
+        </span>
+      )}
       {(showMetric || label) && <span className="text-sm leading-snug text-ink-2">{label ?? fact.metric}</span>}
       {showStatus && (
         <span className="flex items-center gap-3">
           <StatusBadge status={fact.status} />
           {conflict && <StatusBadge status="conflict" />}
-          <span className="label opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">Source ↗</span>
+          <span className="label opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+            Source ↗
+          </span>
         </span>
       )}
     </button>
@@ -76,11 +90,28 @@ export function InlineFact({ id, className }: { id: string; className?: string }
   const fact = getFact(id);
   const { openFact } = useProvenance();
   const p = factParts(fact);
+  if (fact.value === null) {
+    return (
+      <button
+        type="button"
+        onClick={() => openFact(id)}
+        className={cn(
+          "inline text-left font-medium text-ink underline decoration-line-strong decoration-dotted underline-offset-4 hover:decoration-lime",
+          className,
+        )}
+      >
+        {fact.valueText} <StatusMark status={fact.status} className="ml-0.5 align-middle" />
+      </button>
+    );
+  }
   return (
     <button
       type="button"
       onClick={() => openFact(id)}
-      className={cn("num inline-flex items-baseline gap-1 font-semibold text-ink underline decoration-line-strong decoration-dotted underline-offset-4 hover:decoration-lime", className)}
+      className={cn(
+        "num inline-flex items-baseline gap-1 font-semibold whitespace-nowrap text-ink underline decoration-line-strong decoration-dotted underline-offset-4 hover:decoration-lime",
+        className,
+      )}
     >
       {p.prefix}
       {p.value}

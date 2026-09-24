@@ -4,7 +4,6 @@ import { Check, Copy } from "lucide-react";
 import { useState } from "react";
 import { AiText } from "@/components/shared/ai-text";
 import { InlineFact } from "@/components/shared/fact-value";
-import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useAiText } from "@/lib/ai/client";
@@ -129,9 +128,8 @@ export function NarrativeStudio() {
             return (
               <li key={id} className="flex flex-col gap-2 p-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                 <span className="min-w-0 text-xs text-ink-2">{fact.metric}</span>
-                <span className="flex flex-wrap items-center gap-2">
-                  <InlineFact id={id} className="whitespace-normal" />
-                  <StatusBadge status={fact.status} compact />
+                <span className="shrink-0 sm:max-w-[45%] sm:text-right">
+                  <InlineFact id={id} />
                 </span>
               </li>
             );
