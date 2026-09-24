@@ -11,7 +11,8 @@ export interface ModelProvider {
 }
 
 const DEFAULT_MODEL = "gemini-2.5-flash";
-const TIMEOUT_MS = 15_000;
+// Thinking models can take a while on longer tasks; override with AI_TIMEOUT_MS.
+const timeoutMs = () => Number(process.env.AI_TIMEOUT_MS) || 30_000;
 
 type GeminiResponse = {
   candidates?: { content?: { parts?: { text?: string }[] } }[];
@@ -28,10 +29,29 @@ export class GeminiProvider implements ModelProvider {
     this.id = `gemini:${model}`;
   }
 
+  /**
+   * Retries on HTTP 429 (rate limit) up to AI_MAX_RETRIES times, waiting for the
+   * delay the API suggests. Off by default so live requests never stall;
+   * scripts/warm-cache.ts turns it on because free-tier keys are rate-limited.
+   */
   async generate(input: { system: string; prompt: string; temperature?: number }): Promise<string> {
+    const maxRetries = Number(process.env.AI_MAX_RETRIES) || 0;
+    for (let attempt = 0; ; attempt++) {
+      try {
+        return await this.generateOnce(input);
+      } catch (err) {
+        const retryAfter = err instanceof RateLimitError ? err.retryAfterMs : null;
+        if (retryAfter === null || attempt >= maxRetries) throw err;
+        await new Promise((r) => setTimeout(r, retryAfter));
+      }
+    }
+  }
+
+  private async generateOnce(input: { system: string; prompt: string; temperature?: number }): Promise<string> {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent`;
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+    const timeout = timeoutMs();
+    const timer = setTimeout(() => controller.abort(), timeout);
     try {
       const res = await fetch(url, {
         method: "POST",
@@ -45,6 +65,11 @@ export class GeminiProvider implements ModelProvider {
       });
       if (!res.ok) {
         const body = await res.text().catch(() => "");
+        if (res.status === 429) {
+          // The API suggests a wait like "retryDelay": "37s"; default to a minute.
+          const delay = Number(body.match(/"retryDelay":\s*"(\d+(?:\.\d+)?)s"/)?.[1] ?? 60);
+          throw new RateLimitError(`Gemini rate limit (429): ${body.slice(0, 200)}`, (delay + 1) * 1000);
+        }
         throw new Error(`Gemini request failed (${res.status} ${res.statusText}): ${body.slice(0, 500)}`);
       }
       const data = (await res.json()) as GeminiResponse;
@@ -53,12 +78,21 @@ export class GeminiProvider implements ModelProvider {
       return text.trim();
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") {
-        throw new Error(`Gemini request timed out after ${TIMEOUT_MS}ms`);
+        throw new Error(`Gemini request timed out after ${timeout}ms`);
       }
       throw err;
     } finally {
       clearTimeout(timer);
     }
+  }
+}
+
+export class RateLimitError extends Error {
+  constructor(
+    message: string,
+    readonly retryAfterMs: number,
+  ) {
+    super(message);
   }
 }
 
