@@ -1,103 +1,40 @@
-# Impact Lap: AMF1 × Cognizant Sustainability Impact Platform
+# Impact Lap
 
-> Transforming Aston Martin Aramco's sustainability, inclusion, and community data into a trusted, real-time view of impact for Formula One fans and enterprise partners.
+**Aston Martin Aramco's impact, one lap at a time.** A concept prototype for the Cognizant × Aston Martin Aramco F1 Gen-AI Ideathon (Singapore, October 2026).
 
-**Concept prototype:** Team Growthbeans, AMF1 × Cognizant Ideathon 2026 (Singapore Grand Prix Weekend)
+Impact Lap turns the team's published sustainability, inclusion and community data into:
 
----
+- **A fan lap**: a personalised, 30-second-onboarding story through the Make A Mark pillars, with quiz beats, a Singapore Grand Prix carbon and logistics view in relatable units, matched community initiatives, a shareable 9:16 card and low-carbon choices that earn (simulated) impact credits.
+- **A partner dashboard**: KPI tiles with a full audit trail, AI-drafted co-branded posts and briefs with inline citations, a what-if scenario model, milestone alerts from a live race-weekend feed, and CSV/JSON export for BI tools.
 
-## Highlights
+Underneath both is a **trust layer**: every number is Verified (quoted from a report page and auto-checked), Estimated (calculated with a visible formula) or Simulated (labelled demo data), and every AI sentence passes a numeric guardrail before anyone sees it.
 
-- **The AI Trust Layer**: Grounded generative AI engine with a post-generation regex numeric guardrail. Every figure is audited against official disclosures before rendering—guaranteeing zero hallucinations.
-- **Audience A: The Interactive Fan Lap**: 30-second personalized onboarding (New, Casual, Die-hard), step-by-step lap journey through Environment, Belong, and Community pillars with interactive quiz beats, Singapore GP carbon equivalents, and downloadable 9:16 portrait story passes.
-- **Audience B: Partner Impact Intelligence Cockpit**: Designed for Cognizant and sponsor comms, sustainability, and investor relations teams. Features provenance audit drawers (document + page references), one-click grounded narrative generator (LinkedIn, brief, investor slides), deterministic what-if scenario modeller, real-time milestone alert feed, and read-only JSON BI API.
-- **100% Offline Resilience (`DEMO_MODE=true`)**: Runs completely offline without external API keys or cloud dependencies using deterministic response fixtures in `data/ai-cache/`.
-
----
-
-## Verified Data Grounding
-
-Every quantitative metric in this platform is explicitly categorized:
-1. **Verified**: Extracted verbatim from official Aston Martin Aramco publications with document and page citations:
-   - *Make A Mark ESG Report 2025* (93 pages)
-   - *Make A Mark ESG Report 2024* (88 pages)
-   - *Make A Mark Manifesto Update* (Feb 2025)
-2. **Estimated**: Derived from verified data via explicit, documented mathematical formulas (e.g. Singapore GP logistics allocations).
-3. **Simulated**: Clearly labeled demonstration data for scenario simulations and interactive gamified mechanics.
-
-See [`docs/data-sources.md`](docs/data-sources.md) for the complete provenance audit matrix.
-
----
-
-## Quick Start (No API Key Required)
+## Run it
 
 ```bash
-# 1. Clone the repository and navigate to root
-cd cognizant-amf1
-
-# 2. Install dependencies
 npm install
-
-# 3. Start local development server
-npm run dev
+npm run dev        # http://localhost:3000, no API key or network needed
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser. The application runs immediately in offline demo mode.
+Optional live AI: copy `.env.example` to `.env.local`, set `GEMINI_API_KEY` and `DEMO_MODE=false`.
 
----
-
-## Verification & Testing Commands
+## Check it
 
 ```bash
-# Audit all 15 extracted facts verbatim against source texts
-npm run extract-sources
-
-# Run unit tests for the post-generation numeric guardrail
-npm run test:guardrail
-
-# Pre-generate / refresh the offline AI cache fixtures
-npm run warm-cache
-
-# Run production build and linting verification
-npm run lint && npm run build
-
-# Run Playwright E2E smoke tests (Desktop 1080p & Mobile 390px)
-npm run test:e2e
+npm run check       # lint, types, unit tests, and the source audit (verify:data)
+npm run test:e2e    # Playwright golden paths, including an offline run
+npm run build
 ```
 
----
+## Read more
 
-## Key Exploration Routes
-
-### Audience A: Fan Experience
-- **Home Portal**: [`/`](http://localhost:3000)
-- **A1. Personalised Onboarding**: [`/onboarding`](http://localhost:3000/onboarding) — 30-second setup tailoring depth for New, Casual, or Die-hard fans.
-- **A2. Interactive Story Lap**: [`/journey`](http://localhost:3000/journey) — 3-sector guided lap with pop-up quiz moments, reveal badges, and AI storytelling.
-- **A3. Live Carbon & Logistics Tracker**: [`/tracker`](http://localhost:3000/tracker) — Singapore GP 2026 logistics emissions translated into human-scale equivalents (homes powered, flights avoided, trees planted).
-- **A4. Community Relevance Match**: Located inside [`/tracker`](http://localhost:3000/tracker) — Pairs fan profile to local Singapore STEM Lab activations.
-- **A5. 9:16 Social Story Pass**: [`/share`](http://localhost:3000/share) — High-res portrait card generator with direct PNG download.
-- **A6. Action Hub & Impact Credits**: [`/actions`](http://localhost:3000/actions) — Low-carbon transit selector and race volunteering signup.
-
-### Audience B: Cognizant & Partner Intelligence
-- **B1. Partner Dashboard**: [`/partners`](http://localhost:3000/partners) — Auditable KPI tiles, Provenance Drawers, and one-click grounded narrative generator.
-- **B1. What-If Scenario Modeller**: [`/partners/scenarios`](http://localhost:3000/partners/scenarios) — Interactive sliders for SAF and STEM expansion with deterministic math and AI copilot explanation.
-- **B1. Milestone Alert Feed**: [`/partners/feed`](http://localhost:3000/partners/feed) — Real-time event triggers with suggested sponsor campaign posts.
-- **B1. Read-Only JSON BI API**: [`/api/partner/metrics`](http://localhost:3000/api/partner/metrics) — Enterprise REST endpoint with CORS headers.
-- **B2. Community Partner Story Kit**: [`/partners/story-kit`](http://localhost:3000/partners/story-kit) — Lightweight toolkit for charities and NGOs to generate verified impact stories.
+- `AGENTS.md`: how the repo is organised and the rules for changing it
+- `DESIGN.md`: the design system
+- `docs/data-sources.md`: sources, extraction method, known data-quality issues
+- `docs/architecture.md`: system design and production rollout
+- `docs/DECISIONS.md`: judgement calls
+- `docs/DEMO_SCRIPT.md`, `docs/ROI.md`: pitch support
 
 ---
 
-## Documentation Index
-
-- [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md): 6-minute live pitch demo script with speaker cues and talking points.
-- [`docs/architecture.md`](docs/architecture.md): Full Mermaid architecture diagram, component overview, and 3-phase production integration plan.
-- [`docs/ROI.md`](docs/ROI.md): Business value framework mapped to the 5 ideathon scorecard criteria and non-sales ROI measures.
-- [`docs/data-sources.md`](docs/data-sources.md): Comprehensive ESG metric extraction records and DEFRA/EPA conversion factor citations.
-- [`docs/DECISIONS.md`](docs/DECISIONS.md): Architectural decisions and design rationale log.
-
----
-
-## License & Attribution
-
-Concept prototype created for the **AMF1 × Cognizant Gen-AI Ideathon 2026**, Singapore.  
-All quantitative sustainability metrics extracted from official publications of the **Aston Martin Aramco Formula One™ Team**.
+Concept prototype: Team Growthbeans, AMF1 × Cognizant Ideathon 2026. Not affiliated with or endorsed by Aston Martin Aramco F1 Team. Figures are taken from the team's public reports; see `docs/data-sources.md`.

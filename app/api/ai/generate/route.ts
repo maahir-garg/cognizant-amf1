@@ -1,26 +1,21 @@
-import { NextRequest, NextResponse } from "next/server";
-import { AiRequestSchema } from "@/lib/data/schemas";
-import { generateGroundedAi } from "@/lib/ai/provider";
+/**
+ * POST /api/ai/generate
+ * Body: AiRequest (lib/data/schemas.ts). Returns AiResponse.
+ * Never throws to the client: invalid requests get 400 with the Zod error.
+ */
+import { z } from "zod";
+import { runGeneration } from "@/lib/ai/engine";
+import { findFact } from "@/lib/data/load";
+import { AiRequest } from "@/lib/data/schemas";
 
-export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json();
-    const parsedRequest = AiRequestSchema.safeParse(body);
-
-    if (!parsedRequest.success) {
-      return NextResponse.json(
-        { error: "Invalid AI Request format", details: parsedRequest.error.format() },
-        { status: 400 }
-      );
-    }
-
-    const response = await generateGroundedAi(parsedRequest.data);
-    return NextResponse.json(response);
-  } catch (error: any) {
-    console.error("AI Generation error:", error);
-    return NextResponse.json(
-      { error: "Failed to generate AI response", message: error.message },
-      { status: 500 }
-    );
+export async function POST(request: Request) {
+  const parsed = AiRequest.safeParse(await request.json().catch(() => null));
+  if (!parsed.success) {
+    return Response.json({ error: z.prettifyError(parsed.error) }, { status: 400 });
   }
+  const unknown = parsed.data.factIds.filter((id) => !findFact(id));
+  if (unknown.length) {
+    return Response.json({ error: `Unknown fact ids: ${unknown.join(", ")}` }, { status: 400 });
+  }
+  return Response.json(await runGeneration(parsed.data));
 }

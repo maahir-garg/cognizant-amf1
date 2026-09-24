@@ -1,0 +1,94 @@
+[
+  {
+    "id": "esg-2025",
+    "title": "Make A Mark ESG Report 2025",
+    "publisher": "Aston Martin Aramco Formula One Team",
+    "kind": "pdf",
+    "url": "https://downloads.astonmartinf1.com/MakeAMark_ESG_Report_2025.pdf",
+    "localPath": "sources/MakeAMark_ESG_Report_2025.pdf",
+    "textPath": "sources/text/esg-2025.json",
+    "retrieved": "2026-09-23",
+    "published": "2026",
+    "pageCount": 92,
+    "notes": "Reporting period 1 Jan to 31 Dec 2025. PDF page index equals the printed page number."
+  },
+  {
+    "id": "esg-2024",
+    "title": "Make A Mark ESG Report 2024",
+    "publisher": "Aston Martin Aramco Formula One Team",
+    "kind": "pdf",
+    "url": "https://downloads.astonmartinf1.com/MakeAMark_ESG_Report_2024.pdf",
+    "localPath": "sources/MakeAMark_ESG_Report_2024.pdf",
+    "textPath": "sources/text/esg-2024.json",
+    "retrieved": "2026-09-23",
+    "published": "2025",
+    "pageCount": 95,
+    "notes": "First annual Make A Mark ESG report. 2024 GHG figures were later restated in the 2025 report (see esg-2025 p85). PDF page index equals the printed page number."
+  },
+  {
+    "id": "manifesto-2025",
+    "title": "Make A Mark Manifesto (update, Feb 2025, v3)",
+    "publisher": "Aston Martin Aramco Formula One Team",
+    "kind": "pdf",
+    "url": "https://downloads.ctfassets.net/kcno0boecupz/7nioI6NO0hyNZYZqctUSKC/fb3ef90dcf52b0c8bab545157ada2a7e/MakeAMark_Manifesto_Update_Feb_25_v3.pdf",
+    "localPath": "sources/MakeAMark_Manifesto_Update_Feb_25_v3.pdf",
+    "textPath": "sources/text/manifesto-2025.json",
+    "retrieved": "2026-09-23",
+    "published": "2025-02",
+    "pageCount": 24,
+    "notes": "Mostly 2022-2023 figures. PDF page index equals the printed page number."
+  },
+  {
+    "id": "mam-web",
+    "title": "Make A Mark | Sustainability and Impact (web page)",
+    "publisher": "Aston Martin Aramco Formula One Team",
+    "kind": "web",
+    "url": "https://www.astonmartinf1.com/en-GB/make-a-mark",
+    "localPath": "sources/make-a-mark.html",
+    "textPath": "sources/text/mam-web.json",
+    "retrieved": "2026-09-23",
+    "notes": "Saved HTML snapshot. Treated as a single page (page 1)."
+  },
+  {
+    "id": "defra-2025",
+    "title": "Greenhouse gas reporting: conversion factors 2025 (flat file)",
+    "publisher": "UK Department for Energy Security and Net Zero / DEFRA",
+    "kind": "dataset",
+    "url": "https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2025",
+    "localPath": "sources/external/defra-2025-selected-factors.csv",
+    "retrieved": "2026-09-24",
+    "published": "2025-06",
+    "notes": "The AMF1 2025 report uses these factors (footnotes 2, 9, 12, 14, 17). Extract of the rows used, keyed by the dataset's own row ID."
+  },
+  {
+    "id": "epa-equivalencies",
+    "title": "Greenhouse Gas Equivalencies Calculator: Calculations and References",
+    "publisher": "US Environmental Protection Agency",
+    "kind": "web",
+    "url": "https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator-calculations-and-references",
+    "localPath": "sources/external/epa-ghg-equivalencies-2026-08-04.txt",
+    "retrieved": "2026-09-24",
+    "published": "2026-08-04",
+    "notes": "US averages (eGRID 2022). Used for fan-friendly equivalents only, labelled as US averages."
+  },
+  {
+    "id": "f1-calendar-2025",
+    "title": "F1 Schedule 2025",
+    "publisher": "Formula 1",
+    "kind": "web",
+    "url": "https://www.formula1.com/en/racing/2025",
+    "localPath": "sources/external/f1-calendar-2025.txt",
+    "retrieved": "2026-09-24",
+    "notes": "Used for the number of rounds (24) in the 2025 season, the denominator of per-weekend estimates."
+  },
+  {
+    "id": "f1-calendar-2026",
+    "title": "F1 Schedule 2026",
+    "publisher": "Formula 1",
+    "kind": "web",
+    "url": "https://www.formula1.com/en/racing/2026",
+    "localPath": "sources/external/f1-calendar-2026.txt",
+    "retrieved": "2026-09-24",
+    "notes": "Hero weekend dates: Round 17, Singapore Grand Prix, 09-11 Oct 2026."
+  }
+]

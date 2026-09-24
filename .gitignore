@@ -1,32 +1,35 @@
-# Dependencies
-node_modules
-.pnp
-.pnp.js
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
 
-# Next.js
-.next/
-out/
-build/
-dist/
+# next.js / build
+/.next/
+/out/
+/build
+*.tsbuildinfo
+next-env.d.ts
 
-# Environment
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# testing
+/coverage
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
 
-# Large source binaries
-*.pdf
+# env
+.env*
+!.env.example
 
-# Testing & logs
-coverage/
-test-results/
-playwright-report/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# source binaries (download instructions in docs/data-sources.md)
+sources/*.pdf
 
-# OS Files
+# demo recordings are large; the final one is copied to docs/demo-video/
+/recordings/
+
+# misc
 .DS_Store
 *.pem
-Thumbs.db
+npm-debug.log*
+.vercel
+.claude/

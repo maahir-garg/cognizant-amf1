@@ -1,38 +1,18 @@
-export const SITE_CONFIG = {
-  name: "Impact Lap",
-  subtitle: "AMF1 × Cognizant Sustainability Impact Platform",
-  event: "AMF1 × Cognizant Ideathon 2026",
-  tagline: "Transforming Formula One ESG telemetry into verified, real-time fan and partner impact.",
-  footerNotice: "Concept prototype: Team Growthbeans, AMF1 × Cognizant Ideathon 2026",
-  heroRaceSlug: "singapore-gp",
-  heroRaceName: "Singapore Grand Prix 2026",
-  heroRaceDates: "9–11 Oct 2026",
-  pillars: [
-    {
-      id: "Environment",
-      name: "Environment",
-      color: "#00FF87",
-      description: "Science-led decarbonisation, sustainable aviation fuels, low-carbon freight, and campus energy efficiency.",
-    },
-    {
-      id: "Belong",
-      name: "Belong",
-      color: "#00E5FF",
-      description: "Fostering inclusive workplace culture, gender diversity pathways, employee wellbeing, and accessibility.",
-    },
-    {
-      id: "Community",
-      name: "Community",
-      color: "#CEDC00",
-      description: "STEM outreach, partner-powered education, local community engagement, and charitable support.",
-    },
-    {
-      id: "Governance",
-      name: "Governance",
-      color: "#94A3B8",
-      description: "Transparent ESG auditing, data integrity, science-based targets, and compliance leadership.",
-    },
-  ],
-} as const;
+/** Product constants. Rename the product here and nowhere else. */
+export const APP_NAME = "Impact Lap";
+export const APP_TAGLINE = "Aston Martin Aramco's impact, one lap at a time.";
+export const TEAM_NAME = "Team Growthbeans";
+export const FOOTER_LABEL = "Concept prototype: Team Growthbeans, AMF1 × Cognizant Ideathon 2026";
+export const HERO_RACE_ID = "singapore-2026";
+export const PARTNER_ID = "cognizant";
+export const PARTNER_NAME = "Cognizant";
 
-export type PillarType = (typeof SITE_CONFIG.pillars)[number]["id"];
+/**
+ * Demo mode serves AI text from data/ai-cache and never calls the network.
+ * It is ON unless DEMO_MODE=false and a model key is configured, so a fresh
+ * clone or a keyless deploy always works. Server-only.
+ */
+export function isDemoMode(): boolean {
+  if (process.env.DEMO_MODE === "false") return !process.env.GEMINI_API_KEY;
+  return true;
+}

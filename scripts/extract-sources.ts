@@ -1,71 +1,70 @@
 /**
- * Script to verify and document extraction of ESG metrics from Make A Mark reports.
+ * Regenerates sources/text/<id>.json (one string per page) from the original
+ * documents listed in data/sources.json.
+ *
+ *   npm run extract:sources
+ *
+ * Requires `pdftotext` (poppler) on PATH for PDFs. The generated text files are
+ * committed so that `npm run verify:data` works in CI without the PDFs, which
+ * are large and gitignored. See docs/data-sources.md for download commands.
  */
-import fs from "fs";
-import path from "path";
+import { execFileSync } from "node:child_process";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import path from "node:path";
+import { z } from "zod";
+import { Source } from "../lib/data/schemas";
 
-interface ExtractedFactCheck {
-  id: string;
-  sourceDoc: string;
-  page: number;
-  expectedTerm: string;
+const root = path.resolve(__dirname, "..");
+const sources = z.array(Source).parse(JSON.parse(readFileSync(path.join(root, "data/sources.json"), "utf8")));
+
+function pdfPages(file: string): string[] {
+  const raw = execFileSync("pdftotext", ["-enc", "UTF-8", file, "-"], {
+    encoding: "utf8",
+    maxBuffer: 64 * 1024 * 1024,
+    stdio: ["ignore", "pipe", "ignore"],
+  });
+  const pages = raw.split("\f");
+  // pdftotext ends the last page with a form feed, leaving an empty tail.
+  if (pages.at(-1)?.trim() === "") pages.pop();
+  return pages.map((p) => p.trim());
 }
 
-const auditList: ExtractedFactCheck[] = [
-  { id: "FACT-E-01", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 18, expectedTerm: "SCOPE 1" },
-  { id: "FACT-E-02", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 18, expectedTerm: "SCOPE 2" },
-  { id: "FACT-E-03", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 19, expectedTerm: "87,162" },
-  { id: "FACT-E-04", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 19, expectedTerm: "5,560.45" },
-  { id: "FACT-E-05", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 9, expectedTerm: "1,188" },
-  { id: "FACT-E-06", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 15, expectedTerm: "74%" },
-  { id: "FACT-E-07", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 21, expectedTerm: "23%" },
-  { id: "FACT-E-08", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 21, expectedTerm: "60%" },
-  { id: "FACT-E-09", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 36, expectedTerm: "122%" },
-  { id: "FACT-E-10", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 21, expectedTerm: "16%" },
-  { id: "FACT-S-01", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 84, expectedTerm: "48%" },
-  { id: "FACT-S-02", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 48, expectedTerm: "35" },
-  { id: "FACT-S-03", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 48, expectedTerm: "10%" },
-  { id: "FACT-C-01", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 11, expectedTerm: "300+" },
-  { id: "FACT-C-02", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 62, expectedTerm: "Cognizant" },
-  { id: "FACT-C-03", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 10, expectedTerm: "300K" },
-  { id: "FACT-C-04", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 10, expectedTerm: "95.5%" },
-  { id: "FACT-G-01", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 81, expectedTerm: "ACCREDITATION" },
-  { id: "FACT-G-02", sourceDoc: "MakeAMark_ESG_Report_2025.txt", page: 15, expectedTerm: "SBTi" },
-];
+function htmlPage(file: string): string[] {
+  const html = readFileSync(file, "utf8")
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    .replace(/<style[\s\S]*?<\/style>/gi, "");
+  const text = html
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/(p|div|h[1-6]|li|section)>/gi, "\n")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&#39;|&rsquo;|&lsquo;/g, "'")
+    .replace(/&quot;|&ldquo;|&rdquo;/g, '"')
+    .replace(/&[a-z]+;/g, " ")
+    .split("\n")
+    .map((l) => l.replace(/\s+/g, " ").trim())
+    .filter(Boolean)
+    .join("\n");
+  return [text];
+}
 
-export function runSourceAudit() {
-  const sourcesDir = path.join(process.cwd(), "sources");
-  console.log("Starting ESG Fact Provenance Audit...\n");
-
-  let passed = 0;
-  for (const item of auditList) {
-    const filePath = path.join(sourcesDir, item.sourceDoc);
-    if (!fs.existsSync(filePath)) {
-      console.error(`[FAIL] Source file not found: ${item.sourceDoc}`);
-      continue;
-    }
-
-    const content = fs.readFileSync(filePath, "utf-8");
-    const pages = content.split("\x0c");
-    const pageIndex = item.page - 1;
-
-    if (pageIndex >= pages.length) {
-      console.error(`[FAIL] Page ${item.page} exceeds total pages (${pages.length}) in ${item.sourceDoc}`);
-      continue;
-    }
-
-    const pageContent = pages[pageIndex];
-    if (pageContent.toLowerCase().includes(item.expectedTerm.toLowerCase())) {
-      console.log(`[PASS] ${item.id} verified on Page ${item.page} of ${item.sourceDoc} (contains "${item.expectedTerm}")`);
-      passed++;
-    } else {
-      console.warn(`[WARN] ${item.id} on Page ${item.page}: term "${item.expectedTerm}" not found verbatim.`);
-    }
+let failures = 0;
+for (const s of sources) {
+  if (!s.textPath || !s.localPath) continue;
+  const input = path.join(root, s.localPath);
+  if (!existsSync(input)) {
+    console.warn(`skip ${s.id}: ${s.localPath} not found (download it, see docs/data-sources.md)`);
+    failures++;
+    continue;
   }
-
-  console.log(`\nAudit Complete: ${passed}/${auditList.length} verified.`);
+  const pages = s.kind === "pdf" ? pdfPages(input) : htmlPage(input);
+  if (s.pageCount && pages.length !== s.pageCount) {
+    console.warn(`warn ${s.id}: expected ${s.pageCount} pages, got ${pages.length}`);
+  }
+  const out = path.join(root, s.textPath);
+  mkdirSync(path.dirname(out), { recursive: true });
+  writeFileSync(out, JSON.stringify(pages, null, 1) + "\n");
+  console.log(`wrote ${s.textPath} (${pages.length} pages)`);
 }
-
-if (process.argv[1]?.includes("extract-sources")) {
-  runSourceAudit();
-}
+process.exit(failures ? 1 : 0);

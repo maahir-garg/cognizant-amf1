@@ -1,54 +1,50 @@
 [
   {
-    "id": "RACE-SG-2026",
-    "slug": "singapore-gp",
-    "name": "Singapore Grand Prix",
+    "id": "singapore-2026",
+    "name": "Singapore Grand Prix 2026",
+    "season": 2026,
+    "round": 17,
     "circuit": "Marina Bay Street Circuit",
-    "city": "Singapore",
+    "cityId": "singapore",
     "country": "Singapore",
-    "dates": "9–11 Oct 2026",
-    "round": 18,
-    "freight_tco2e": 231.69,
-    "travel_tco2e": 185.40,
-    "total_tco2e": 417.09,
-    "previous_period_tco2e": 486.12,
-    "delta_percent": -14.2,
-    "saf_uptake_percent": 34.0,
-    "responsible_initiatives": [
-      "DHL Sustainable Aviation Fuel Certificates (SAFc) deployment",
-      "Regional Sea Freight Hub prepositioning for Asia-Pacific leg"
-    ],
-    "initiatives_active": [
-      "INIT-STEM-SG",
-      "INIT-CIRCULAR-PADDOCK"
-    ],
-    "status": "estimated",
-    "notes": "Derived from Make A Mark ESG Report 2025 Page 18 total seasonal freight (5,560.45 tCO2e / 24 races = 231.69 tCO2e) with travel estimated from team trackside personnel allocation."
+    "start": "2026-10-09",
+    "end": "2026-10-11",
+    "timezone": "Asia/Singapore",
+    "hero": true,
+    "factIds": ["f1-sg-2026-round", "est-freight-per-round", "est-travel-per-round", "est-saf-per-round"],
+    "status": "verified",
+    "sourceId": "f1-calendar-2026",
+    "page": 1,
+    "notes": "Dates and round verified. AMF1 does not publish per-race emissions or trackside energy for Singapore; the weekend view uses labelled estimates."
   },
   {
-    "id": "RACE-GB-2026",
-    "slug": "british-gp",
-    "name": "British Grand Prix",
-    "circuit": "Silverstone Circuit",
-    "city": "Silverstone",
-    "country": "United Kingdom",
-    "dates": "3–5 Jul 2026",
-    "round": 12,
-    "freight_tco2e": 42.10,
-    "travel_tco2e": 28.50,
-    "total_tco2e": 70.60,
-    "previous_period_tco2e": 88.25,
-    "delta_percent": -20.0,
-    "saf_uptake_percent": 15.0,
-    "responsible_initiatives": [
-      "Zero-mile home race electric logistics fleet",
-      "100% biofuel powered race truck transports"
-    ],
-    "initiatives_active": [
-      "INIT-STEM-UK",
-      "INIT-BELONG-APPRENTICE"
-    ],
-    "status": "estimated",
-    "notes": "Home race adjacent to Silverstone Technology Campus; reduced road transport and zero flight logistics."
-  }
+    "id": "singapore-2025",
+    "name": "Singapore Grand Prix 2025",
+    "season": 2025,
+    "round": 18,
+    "circuit": "Marina Bay Street Circuit",
+    "cityId": "singapore",
+    "country": "Singapore",
+    "start": "2025-10-03",
+    "end": "2025-10-05",
+    "timezone": "Asia/Singapore",
+    "factIds": ["est-freight-per-round", "est-travel-per-round"],
+    "status": "verified",
+    "sourceId": "f1-calendar-2025",
+    "page": 1
+  },
+  { "id": "gbr-2025", "name": "British Grand Prix 2025", "season": 2025, "circuit": "Silverstone", "cityId": "silverstone", "country": "United Kingdom", "factIds": ["e25-trackside-gbr-hvo", "e25-trackside-gbr-grid", "e25-trackside-gbr-solar"], "status": "verified", "sourceId": "esg-2025", "page": 37 },
+  { "id": "ned-2025", "name": "Dutch Grand Prix 2025", "season": 2025, "circuit": "Zandvoort", "cityId": "amsterdam", "country": "Netherlands", "factIds": ["e25-trackside-ned-hvo", "e25-trackside-ned-grid"], "status": "verified", "sourceId": "esg-2025", "page": 37 },
+  { "id": "bel-2025", "name": "Belgian Grand Prix 2025", "season": 2025, "circuit": "Spa-Francorchamps", "cityId": "brussels", "country": "Belgium", "factIds": ["e25-trackside-bel-hvo", "e25-trackside-bel-grid", "e25-trackside-bel-solar"], "status": "verified", "sourceId": "esg-2025", "page": 37 },
+  { "id": "esp-2025", "name": "Spanish Grand Prix 2025", "season": 2025, "circuit": "Barcelona-Catalunya", "cityId": "madrid", "country": "Spain", "factIds": ["e25-trackside-esp-hvo", "e25-trackside-esp-grid"], "status": "verified", "sourceId": "esg-2025", "page": 37 },
+  { "id": "mon-2025", "name": "Monaco Grand Prix 2025", "season": 2025, "circuit": "Circuit de Monaco", "cityId": "monaco", "country": "Monaco", "factIds": ["e25-trackside-mon-hvo", "e25-trackside-mon-grid"], "status": "verified", "sourceId": "esg-2025", "page": 37 },
+  { "id": "aut-2025", "name": "Austrian Grand Prix 2025", "season": 2025, "circuit": "Red Bull Ring", "cityId": "vienna", "country": "Austria", "factIds": ["e25-trackside-aut-hvo", "e25-trackside-aut-grid", "e25-trackside-aut-solar"], "status": "verified", "sourceId": "esg-2025", "page": 37 },
+  { "id": "hun-2025", "name": "Hungarian Grand Prix 2025", "season": 2025, "circuit": "Hungaroring", "cityId": "budapest", "country": "Hungary", "factIds": ["e25-trackside-hun-hvo", "e25-trackside-hun-grid", "e25-trackside-hun-solar"], "status": "verified", "sourceId": "esg-2025", "page": 37 },
+  { "id": "ita-2025", "name": "Italian Grand Prix 2025", "season": 2025, "circuit": "Monza", "cityId": "milan", "country": "Italy", "factIds": ["e25-trackside-ita-hvo", "e25-trackside-ita-grid", "e25-trackside-ita-solar"], "status": "verified", "sourceId": "esg-2025", "page": 37 },
+  { "id": "emi-2025", "name": "Emilia-Romagna Grand Prix 2025", "season": 2025, "circuit": "Imola", "cityId": "milan", "country": "Italy", "factIds": ["e25-trackside-emi-hvo", "e25-trackside-emi-grid"], "status": "verified", "sourceId": "esg-2025", "page": 37 },
+  { "id": "mia-2025", "name": "Miami Grand Prix 2025", "season": 2025, "circuit": "Miami International Autodrome", "cityId": "miami", "country": "United States", "factIds": [], "status": "verified", "sourceId": "esg-2025", "page": 64 },
+  { "id": "can-2024", "name": "Canadian Grand Prix 2024", "season": 2024, "circuit": "Circuit Gilles Villeneuve", "cityId": "montreal", "country": "Canada", "factIds": [], "status": "verified", "sourceId": "esg-2024", "page": 72 },
+  { "id": "usa-2024", "name": "United States Grand Prix 2024", "season": 2024, "circuit": "Circuit of the Americas", "cityId": "houston", "country": "United States", "factIds": [], "status": "verified", "sourceId": "esg-2024", "page": 71, "notes": "The race is in Austin; the related outreach took place in Houston." },
+  { "id": "chn-2024", "name": "Chinese Grand Prix 2024", "season": 2024, "circuit": "Shanghai International Circuit", "cityId": "shanghai", "country": "China", "factIds": [], "status": "verified", "sourceId": "esg-2024", "page": 71 },
+  { "id": "esp-2024", "name": "Spanish Grand Prix 2024", "season": 2024, "circuit": "Barcelona-Catalunya", "cityId": "madrid", "country": "Spain", "factIds": [], "status": "verified", "sourceId": "esg-2024", "page": 75, "notes": "The related STEM day was held in Oviedo, Asturias." }
 ]

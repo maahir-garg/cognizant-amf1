@@ -1,102 +1,80 @@
-import { Fact } from "@/lib/data/schemas";
+/**
+ * Numeric guardrail for generated text.
+ *
+ * Rules (all must hold for `passed`):
+ *  1. Every citation [F:id] / [D:id] refers to a fact or derived value that
+ *     was supplied with the request.
+ *  2. Every number in the text matches (exactly, or as a faithful rounding) a
+ *     number belonging to a fact or derived value that the text CITES.
+ *     A fact's numbers are its value plus any figure in its period, quote,
+ *     display or valueText (so "2025" is fine next to a 2025 fact).
+ *  3. The text cites at least one supplied id.
+ *
+ * Number words ("three") are not checked; templates and prompts avoid them.
+ */
+import { extractNumbers, numbersMatch, type FoundNumber } from "@/lib/data/numbers";
+import type { CheckedNumber, DerivedValue, Fact, GuardrailReport } from "@/lib/data/schemas";
 
-export interface GuardrailResult {
-  passed: boolean;
-  verifiedNumbers: number[];
-  unverifiedNumbers: number[];
-  error?: string;
+export const CITATION_RE = /\[(F|D):([a-z0-9]+(?:-[a-z0-9]+)*)\]/g;
+
+export function parseCitations(text: string): string[] {
+  return [...new Set([...text.matchAll(CITATION_RE)].map((m) => m[2]))];
 }
 
-/**
- * Normalizes numbers extracted from text, stripping commas and signs.
- */
-export function extractNumbersFromText(text: string): number[] {
-  // Matches integers and floats, including those with commas like 87,162 or 5,560.45
-  const matches = text.match(/(?:[-+]?[0-9]{1,3}(?:,[0-9]{3})+(?:\.[0-9]+)?)|(?:[-+]?[0-9]+(?:\.[0-9]+)?)/g);
-  if (!matches) return [];
-
-  const numbers: number[] = [];
-  for (const m of matches) {
-    const clean = m.replace(/,/g, "");
-    const parsed = parseFloat(clean);
-    if (!isNaN(parsed)) {
-      numbers.push(parsed);
-    }
-  }
-  return numbers;
+/** Text with citation markers removed, for display or for length checks. */
+export function stripCitations(text: string): string {
+  return text.replace(CITATION_RE, "").replace(/\s+([.,;:!?])/g, "$1").replace(/[ \t]{2,}/g, " ").trim();
 }
 
-/**
- * Standard allowed contextual numbers such as standard calendar years and list indices.
- */
-const DEFAULT_ALLOWED_NUMBERS = new Set([
-  2021, 2022, 2023, 2024, 2025, 2026, 2030, 2050, // Standard F1 & ESG timeline years
-  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, // List bullets / ordinals
-  100, 0, // Baseline percentages
-]);
+type Allowed = { id: string; values: number[] };
 
-/**
- * Validates that all quantitative values in generated AI copy match cited facts
- * or approved derived calculations.
- */
-export function validateAiNumericGuardrail(
-  content: string,
-  allowedFacts: Fact[],
-  additionalAllowedNumbers: number[] = []
-): GuardrailResult {
-  const extracted = extractNumbersFromText(content);
+function allowedFor(fact: Fact): Allowed {
+  const values: number[] = [];
+  if (fact.value !== null) values.push(Math.abs(fact.value));
+  for (const text of [fact.period, fact.quote, fact.display, fact.valueText]) {
+    if (text) values.push(...extractNumbers(text).map((n) => n.value));
+  }
+  return { id: fact.id, values };
+}
 
-  // Build the set of valid numbers from facts
-  const validNumbers = new Set<number>(DEFAULT_ALLOWED_NUMBERS);
+function allowedForDerived(d: DerivedValue): Allowed {
+  return { id: d.id, values: [Math.abs(d.value), ...extractNumbers(d.formula).map((n) => n.value)] };
+}
 
-  for (const f of allowedFacts) {
-    validNumbers.add(f.value);
-    validNumbers.add(Math.abs(f.value));
+function matchNumber(n: FoundNumber, pool: Allowed[]): string | null {
+  for (const a of pool) {
+    if (a.values.some((v) => numbersMatch(n, v))) return a.id;
+  }
+  return null;
+}
 
-    // Extract any additional numbers present in display_value or notes (e.g. "Page 18", "300+ students (14 schools)")
-    if (f.display_value) {
-      extractNumbersFromText(f.display_value).forEach((n) => validNumbers.add(n));
-    }
-    if (f.notes) {
-      extractNumbersFromText(f.notes).forEach((n) => validNumbers.add(n));
-    }
-    if (f.page) {
-      validNumbers.add(f.page);
+export function checkText(text: string, supplied: { facts: Fact[]; derived: DerivedValue[] }): GuardrailReport {
+  const reasons: string[] = [];
+  const known = new Map<string, Allowed>();
+  for (const f of supplied.facts) known.set(f.id, allowedFor(f));
+  for (const d of supplied.derived) known.set(d.id, allowedForDerived(d));
+
+  const cited = parseCitations(text);
+  const unknownCitations = cited.filter((id) => !known.has(id));
+  if (unknownCitations.length) reasons.push(`Cites ids that were not supplied: ${unknownCitations.join(", ")}`);
+  if (cited.length === 0) reasons.push("No citations: every generated text must cite at least one fact.");
+
+  const citedPool = cited.map((id) => known.get(id)).filter((a): a is Allowed => Boolean(a));
+  const uncitedPool = [...known.values()].filter((a) => !cited.includes(a.id));
+
+  const checked: CheckedNumber[] = [];
+  for (const n of extractNumbers(stripCitations(text))) {
+    const matchedId = matchNumber(n, citedPool);
+    checked.push({ raw: n.raw, value: n.value, matchedId });
+    if (!matchedId) {
+      const wouldMatch = matchNumber(n, uncitedPool);
+      reasons.push(
+        wouldMatch
+          ? `"${n.raw}" matches ${wouldMatch}, which the text does not cite`
+          : `"${n.raw}" does not match any cited fact or calculation`,
+      );
     }
   }
 
-  for (const n of additionalAllowedNumbers) {
-    validNumbers.add(n);
-    validNumbers.add(Math.abs(n));
-  }
-
-  const verified: number[] = [];
-  const unverified: number[] = [];
-
-  for (const num of extracted) {
-    // Check for exact or close floating point match (within 0.05 tolerance for rounding)
-    let isMatch = false;
-    for (const valid of validNumbers) {
-      if (Math.abs(num - valid) < 0.05 || Math.abs(Math.abs(num) - Math.abs(valid)) < 0.05) {
-        isMatch = true;
-        break;
-      }
-    }
-
-    if (isMatch) {
-      verified.push(num);
-    } else {
-      unverified.push(num);
-    }
-  }
-
-  return {
-    passed: unverified.length === 0,
-    verifiedNumbers: Array.from(new Set(verified)),
-    unverifiedNumbers: Array.from(new Set(unverified)),
-    error:
-      unverified.length > 0
-        ? `Output rejected: Contains unverified quantitative values: [${unverified.join(", ")}].`
-        : undefined,
-  };
+  return { passed: reasons.length === 0, checked, unknownCitations, reasons };
 }

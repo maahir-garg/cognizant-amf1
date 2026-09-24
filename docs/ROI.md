@@ -1,38 +1,47 @@
-# Business Value & Non-Sales ROI Framework: Impact Lap
+# Impact Lap: value and ROI
 
-**Challenge Context:** Transforming Aston Martin Aramco's sustainability, inclusion, and community data into a trusted, real-time view of impact for F1 audiences and enterprise partners.
+Return here is broader than sales, as the organisers asked: fan engagement, awareness of sustainability initiatives, partner relationships, brand perception and depth of stakeholder engagement. This document maps each feature to the judging scorecard and to how its value would be measured in a pilot. Figures quoted here are fact IDs from `data/facts.json`; nothing else is claimed as data.
 
----
+## Why this problem is worth solving (from the team's own reports)
 
-## 1. Ideathon Judging Scorecard Mapping (1–5 Criteria)
+- ESG content already outperforms: ESG posts drew **3×** the impressions of a typical race weekend in 2024 (`c24-esg-posts-multiplier`) and **144.8m** impressions in total (`c24-esg-impressions`).
+- Partners amplify it: sharing team-led ESG initiatives, partners (Cognizant among them) generated **97m+** additional impressions (`c24-esg-impressions-partners`). That amplification is currently manual.
+- The reports are written for auditors, not fans: 92 pages, restated baselines, and internal inconsistencies our extraction surfaced (see `docs/data-sources.md`). Trust is a real risk, and a real opportunity.
+- Young audiences want the skills story: **68%** of Make A Mark Day students were unclear about AI skills at the start of the day (`c25-ai-skills-gap`), which is exactly Cognizant's territory.
 
-| Scorecard Criterion (Slide 10 & Brief Rubric) | How Impact Lap Excels | Core Feature Proof Points |
-|---|---|---|
-| **1. Innovation & Technological Sophistication (5/5)** | Moves far beyond passive ESG charts by introducing an active **AI Trust Layer** with automated numeric guardrails, real-time relatable carbon conversions, and interactive telemetry story journeys. | • Zero-hallucination regex validator (`lib/ai/guardrail.ts`)<br>• Relatable carbon equivalents engine (`lib/data/equivalents.ts`)<br>• What-If predictive scenario modeller (`/partners/scenarios`) |
-| **2. Desirability & Fan Experience (5/5)** | Solves real pain points for both target audiences: fans receive bite-sized gamified content with 9:16 social share cards; sponsor comms teams get 1-click grounded narratives and provenance audit drawers. | • 30-second personalized onboarding (`/onboarding`)<br>• Pop-up telemetry quiz beats with instant reveals (`/journey`)<br>• 9:16 story pass with PNG download (`/share`)<br>• Co-branded LinkedIn/Brief generator (`/partners`) |
-| **3. Business Opportunity & Business Alignment (5/5)** | Sports sponsorships face intense scrutiny to prove ESG alignment to institutional investors. This creates a high-margin enterprise product that Cognizant can white-label across Formula One, sports leagues, and global clients. | • Read-only REST BI API (`/api/partner/metrics`)<br>• Instant CSV provenance export<br>• Expansion potential across all 10 F1 teams and global motorsport |
-| **4. Viability & ESG Impact (5/5)** | Built on proven web standards (Next.js, TypeScript strict, Tailwind) and official audited data (Make A Mark 2025 report). Designed to operate 100% offline via `DEMO_MODE=true` for rock-solid presentation reliability. | • Deterministic cache fixtures in `data/ai-cache/`<br>• Verified page numbers from official ESG report<br>• Zero external database dependency |
-| **5. Ease of Implementation & Feasibility (5/5)** | Low technical complexity and minimal operational overhead. Can be deployed to production in phases using existing partner data pipelines and low-cost serverless edge computing. | • Modular App Router structure<br>• 3-phase production blueprint in `docs/architecture.md`<br>• Zero cloud lock-in |
+## Feature → scorecard map
 
----
+| Feature | Innovation | Desirability | Business opportunity | Viability | Ease of implementation |
+|---|---|---|---|---|---|
+| **Trust layer**: verified / estimated / simulated on every number, provenance drawer, source audit in CI | Grounded, self-auditing ESG storytelling; surfaces the source's own inconsistencies | Answers "can I trust this?" for fans, partners and judges | Foundation for a licensable Impact API | Works with annual reports today, feeds tomorrow | Built on files and a script; no new infrastructure |
+| **Numeric guardrail** on all AI text | Rejects any number not tied to a cited fact | Partners can post AI drafts without fact-checking by hand | Reduces comms review time | Model-agnostic; falls back to templates | Small, unit-tested module |
+| **Fan lap** (personalised by level, city, interests; quiz beats) | ESG as a race lap with sectors and scrutineering | Written for fans, not auditors; 30-second onboarding | Engagement surface for sponsors' stories | Content refreshes as facts update | Web app; embeddable in the team app |
+| **Weekend carbon view** in laps of Silverstone | Uses the team's own equivalence, shows gaps honestly | Makes tonnes tangible | Per-race sponsor moments | Upgrades from estimate to measured with a logistics feed | Deterministic engine |
+| **Share card** (9:16) | Personal, sourced impact card | Social-native output | Organic reach for team and partners | No marginal cost | Client-side PNG |
+| **Act**: lower-carbon travel, volunteering, credits | Turns awareness into action | Something to do, not just read | Partner-sponsored rewards | Credits are a simple ledger | Local state in prototype |
+| **Partner dashboard**: KPIs with audit trail, CSV/JSON | Co-branded, sourced impact intelligence | Solves "prove the value of the sponsorship" | Premium partner analytics tier | Same fact base for every sponsor | Standard web + API |
+| **Narratives**: LinkedIn post, quarterly brief, investor summary with citations | Grounded, cited drafting | Minutes instead of days to produce partner content | Content packages for sponsors | Audit log of every draft | Uses existing model APIs |
+| **What-if scenarios** | Projections only from verified baselines, assumptions shown | Supports joint-programme decisions | Justifies expanded joint initiatives | No invented elasticities or costs | Pure function |
+| **Milestone alerts from a live feed** | Real-time trigger → drafted post | Timely content during race weekends | Always-on activation | SSE with offline fallback | Replaceable by a real event stream |
+| **Story Kit for charity partners** | Extends grounded storytelling beyond the team | Small charities get pro-quality impact copy | Goodwill and network effect | Same pipeline | Thin UI on shared engine |
 
-## 2. Comprehensive Non-Sales ROI Measurement Framework
+## Non-sales ROI and how to measure it in a pilot
 
-In modern sports marketing, ROI extends far beyond direct ticket or merchandise transactions. The table below outlines how **Impact Lap** delivers and quantifies non-sales value across key dimensions:
-
-| Value Dimension | Strategic Objective | Operational Metric & Target | Measurement Methodology |
+| ROI area | Metric | Instrumentation | Pilot target (to agree with AMF1) |
 |---|---|---|---|
-| **A. Fan Engagement** | Turn casual race spectators into active, educated participants in AMF1's net-zero mission. | • **Quiz Completion Rate**: >75% of onboarded fans complete all 3 sectors.<br>• **Time in Experience**: >3.5 minutes average engagement per session. | Track sector transitions, quiz interaction callbacks, and session dwell time in analytics. |
-| **B. Sustainability Awareness** | Demystify complex carbon and logistics data into tangible human terms. | • **Equivalents Toggle Rate**: >60% of visitors toggle from raw tCO₂e to relatable units (trees, homes, flights).<br>• **Recall Improvement**: >40% increase in fan awareness of SAF and campus renewable targets. | Pre- and post-journey interactive quiz checkpoints and toggle event listeners. |
-| **C. Viral Amplification** | Empower fans to advocate for sustainable racing across social media channels. | • **Share Card Generation Rate**: >25% of fans download or share their 9:16 portrait pass.<br>• **Social Reach**: Viral impressions across Instagram Stories, TikTok, and X. | Track `html-to-image` download events and UTM tracking tags on shared links. |
-| **D. Partner Alignment (Cognizant)** | Provide Cognizant with verifiable evidence of technology leadership and joint ESG progress. | • **Content Reuse Rate**: Cognizant marketing reuses >10 auto-drafted impact narratives quarterly.<br>• **BI Dashboard Ingestion**: Monthly active API syncs via `/api/partner/metrics`. | API endpoint request telemetry and corporate comms publication tracking. |
-| **E. Community Empowerment** | Amplify Make A Mark charity partners and inspire next-generation STEM talent. | • **Volunteering Click-Through**: >15% of fans explore Singapore GP volunteering.<br>• **Charity Partner Story Kit Adoption**: 100% of featured NGOs utilize auto-drafted story kits. | Action hub click telemetry and NGO stakeholder feedback surveys. |
-| **F. Brand Trust & Compliance** | Protect Aston Martin Aramco and Cognizant against accusations of greenwashing. | • **Zero Hallucination Incidents**: 100% verification pass rate through numeric guardrails.<br>• **Audit Trail Inspections**: User engagement with the Provenance Drawer. | Error logs on `/api/ai/generate` and drawer inspection event counts. |
+| Fan engagement | Lap completion rate; quiz beats answered per user; median time in lap | Page and step events | Baseline in race 1, improve race over race |
+| Awareness | Correct answers on quiz beats (before/after reveal); recall of one initiative on return visit | Quiz events; return-visit prompt | Measured, not assumed |
+| Sharing / reach | Share-card downloads and shares per active user; impressions of shared cards | Download and Web Share events, UTM links | Compare with ESG post benchmark (`c24-esg-posts-multiplier`) |
+| Action | Low-carbon travel pledges; volunteering interest registrations | Act tab events | Report counts per race |
+| Return visits | 7-day and next-race return rate | Anonymous device ID | Track across two races |
+| Partner relationships | Partner content reuse: drafts exported, posts published, time from milestone to post | Narrative and alert events, partner survey | Minutes-to-post for Cognizant comms |
+| Stakeholder trust | Provenance drawer opens per session; data-quality flags resolved by data owners | Drawer events; flag workflow | Flags trend to zero before publish |
+| Brand perception | Sentiment on shared content | Social listening (as the team already reports sentiment, e.g. `b25-accelerate-sentiment`) | Maintain or improve |
 
----
+## Business model options (qualitative)
 
-## 3. Executive Summary for Judges
+- **Impact API and dashboard as a partner benefit**: a premium tier in sponsorship packages, giving each sponsor sourced, co-branded impact reporting.
+- **Co-branded content packages**: race-weekend story packs (cards, posts, briefs) for sponsors and charity partners.
+- **Platform play for Cognizant**: the same grounded-generation pattern (fact base → guardrail → cited output) applies to any client's ESG, investor or regulatory communications.
 
-By combining high-performance Formula One telemetry aesthetics with strict scientific grounding and generative AI personalization, **Impact Lap** solves the single greatest dilemma in sports sustainability:
-
-> **How to make ESG reporting tangible and engaging for fans while keeping it 100% rigorous and auditable for enterprise sponsors.**
+No revenue figures are claimed; the prototype is designed to measure the engagement metrics above before any commercial case is sized.
