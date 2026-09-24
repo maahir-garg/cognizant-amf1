@@ -33,3 +33,6 @@ sources/*.pdf
 npm-debug.log*
 .vercel
 .claude/
+
+# raw capture; the committed backup is the mp4
+docs/demo-video/*.webm

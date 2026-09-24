@@ -13,6 +13,7 @@
     "verify:data": "tsx scripts/verify-data.ts",
     "warm-cache": "tsx scripts/warm-cache.ts",
     "extract:sources": "tsx scripts/extract-sources.ts",
+    "record-demo": "tsx scripts/record-demo.ts",
     "format": "prettier --write .",
     "check": "npm run lint && npm run typecheck && npm run test && npm run verify:data"
   },
