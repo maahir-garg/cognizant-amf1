@@ -115,7 +115,60 @@ function words(s: string): number {
 
 /* -------------------------------------------------------------- fan-story */
 
+/**
+ * Story chapters at "/". "new" is the "In plain words" recap, "die-hard" the
+ * denser paragraph inside "The detail". Openers carry no digits, so the only
+ * numbers in the text are the cited facts'.
+ */
+const CHAPTER_OPENERS: Record<string, { new: string; "die-hard": string; close?: string }> = {
+  campus: {
+    new: "The car is designed and built at the team's campus in Silverstone, which is where its most visible changes have happened.",
+    "die-hard": "The campus is the part of the footprint the team controls most directly, and a small part of the total.",
+  },
+  "supply-chain": {
+    new: "Most of the team's carbon comes from the things it buys, not from racing itself.",
+    "die-hard": "Scope three dominates, and within it the goods and services the team buys.",
+  },
+  moving: {
+    new: "Getting cars and kit to every race means a lot of flying, so the team is shipping more by sea and paying for a lower-carbon jet fuel.",
+    "die-hard": "Freight is counted before Sustainable Aviation Fuel certificates, alongside the team's first certificate purchase and a shift from air to sea.",
+  },
+  circuit: {
+    new: "At the track the garage needs power all weekend, and at European races it now comes from a shared, lower-carbon system.",
+    "die-hard": "Trackside, the team draws on the sport's shared paddock energy at European rounds.",
+    close: "The team has not published trackside energy for Singapore.",
+  },
+  beyond: {
+    new: "Away from racing, the team works with students, mentors and communities, some of them a long way from Silverstone.",
+    "die-hard": "Belong and Community in brief: STEM outreach, mentoring, and what the removal projects give back locally.",
+  },
+  finish: {
+    new: "The team has set targets to cut its emissions, and it is further along on some than on others.",
+    "die-hard": "Against the restated baseline, progress is uneven between the emissions the team controls and the rest of its value chain.",
+  },
+};
+
+const TRACKSIDE_RE = /^e25-trackside-([a-z]+)-(hvo|grid|solar)$/;
+const TRACKSIDE_SOURCE: Record<string, string> = { hvo: "HVO generators", grid: "renewable grid supply", solar: "solar" };
+
+/** Trackside kWh facts have no phrase: fold one race's sources into a single sentence. */
+function tracksideSentence(facts: Fact[]): string {
+  const parts = facts.map((f) => `${proseValue(f)} from ${TRACKSIDE_SOURCE[TRACKSIDE_RE.exec(f.id)?.[2] ?? "hvo"]} [F:${f.id}]`);
+  const list = parts.length > 1 ? `${parts.slice(0, -1).join(", ")} and ${parts[parts.length - 1]}` : parts[0];
+  return `At the British Grand Prix the team's garage used ${list}.`;
+}
+
+function fanChapterTemplate(req: AiRequest, facts: Fact[]): string {
+  const level = req.fan?.level === "die-hard" ? "die-hard" : "new";
+  const copy = CHAPTER_OPENERS[String(req.params.chapter)];
+  const trackside = facts.filter((f) => TRACKSIDE_RE.test(f.id));
+  const lines = facts.filter((f) => !trackside.includes(f)).map(factSentence);
+  if (trackside.length) lines.push(tracksideSentence(trackside));
+  return [copy?.[level], ...lines, copy?.close].filter(Boolean).join(" ");
+}
+
 function fanStoryTemplate(req: AiRequest, facts: Fact[]): string {
+  if (typeof req.params.chapter === "string") return fanChapterTemplate(req, facts);
   const fan = req.fan;
   const pillar = (req.params.pillar as Pillar) ?? facts[0]?.pillar ?? "environment";
   const opener = typeof req.params.stage === "string" ? JOURNEY_OPENERS[req.params.stage] ?? SECTOR_OPENERS[pillar] : SECTOR_OPENERS[pillar];

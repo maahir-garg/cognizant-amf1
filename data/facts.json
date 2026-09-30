@@ -600,6 +600,24 @@
     "phrase": "Running the AMR Technology Campus accounted for {v}."
   },
   {
+    "id": "e25-other-emissions",
+    "pillar": "environment",
+    "topic": "emissions",
+    "metric": "Other emissions (the smallest category in the 2025 footprint breakdown)",
+    "value": 150.4,
+    "unit": "tCO2e",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 19,
+    "quote": "Other emissions: 150.40",
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-30",
+    "phrase": "Everything else in the footprint came to {v}."
+  },
+  {
     "id": "e25-travel-logistics-cut",
     "pillar": "environment",
     "topic": "freight",
