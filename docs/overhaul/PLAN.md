@@ -23,10 +23,10 @@ Pitch: Thursday 8 Oct 2026, team presentations from 12:40 at Cognizant Singapore
 |---|---|---|---|
 | M0 | Research and brief | Stakeholder, fan and design reviews synthesised into `overhaul-brief.md` and `design-spec.md` | 30 Sep ✓ |
 | M1 | Foundation | New tokens, type, chrome and trust components; simulated features removed; check and build pass | 30 Sep ✓ |
-| M2 | Story | `/` scrollytelling: title page, six chapters, Singapore section, depth toggle, AI text per chapter | 1 Oct |
-| M3 | Race, share and quiz | `/weekend/[slug]`, `/share`, `/quiz` rebuilt on the new system | 1 Oct |
-| M4 | Impact desk | `/partners` race-week desk, narratives with approval, check my draft, scenarios, story kit, ROI panel, exports | 1 Oct |
-| M5 | Explainer, sources, docs | `/how-it-works`, `/sources`, README, rationale, ROI, architecture, demo script | 2 Oct |
+| M2 | Story | `/` scrollytelling: title page, six chapters, Singapore section, depth toggle, AI text per chapter | 1 Oct ✓ |
+| M3 | Race, share and quiz | `/weekend/[slug]`, `/share`, `/quiz` rebuilt on the new system | 1 Oct ✓ |
+| M4 | Impact desk | `/partners` race-week desk, narratives with approval, check my draft, scenarios, story kit, ROI panel, exports | 1 Oct ✓ |
+| M5 | Explainer, sources, docs | `/how-it-works`, `/sources`, README, rationale, ROI, architecture, demo script | 2 Oct ✓ |
 | M6 | QA | End-to-end specs rewritten; accessibility, responsive and offline checks green; CI green | 2 Oct |
 | M7 | Audit rounds | Personas, stakeholders, design, data claims, code hygiene and docs audits; fixes merged; repeat until audits stop finding material issues | 3-5 Oct |
 | M8 | Ship | Overhaul merged to `main`, live demo updated, backup video re-recorded, demo script rehearsed | 6 Oct |
@@ -44,3 +44,4 @@ Pitch: Thursday 8 Oct 2026, team presentations from 12:40 at Cognizant Singapore
 
 - 30 Sep: M0 complete. Snapshot of the previous draft committed on `rebuild/experience`. Four verified target figures added from the 2025 report, p15.
 - 30 Sep: M1 complete. Paper and racing-green tokens, Newsreader, new header, footer and trust components; simulated feed, counters, credits and illustrative events removed; /start, /lap and /act redirect to the story. Story, race, partner desk and docs streams started in parallel worktrees.
+- 30 Sep: M2-M5 merged into `rebuild/overhaul`: docs (#9), race weekend, quick check and share card (#10), Impact desk (#11), the story (#12), how it works and sources (#13). Product renamed to Off Camera. 323 unit tests and the data audit pass. Audit round 1 started (personas, stakeholders, design and motion, data claims with code and docs). End-to-end rewrite in progress.
