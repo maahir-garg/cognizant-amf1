@@ -392,6 +392,94 @@
     "phrase": "Net zero means cutting absolute emissions by {v}, with carbon removals covering only what's left."
   },
   {
+    "pillar": "environment",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 15,
+    "flags": [],
+    "extractedAt": "2026-09-30",
+    "id": "e25-progress-scope12",
+    "topic": "targets",
+    "metric": "Progress against target: change in absolute Scope 1 and 2 emissions, 2025 vs 2023 baseline",
+    "value": -74,
+    "unit": "%",
+    "period": "2023-2025",
+    "quote": "PROGRESS AGAINST OUR TARGETS 2025 … -74% … Reduce Scope 1 and 2 GHG emissions",
+    "notes": "The text layer separates the chart labels; on the rendered page -74% sits in the \"Progress against our targets 2025\" column beside the Scope 1 and 2 target. Matches est-scope12-change-vs-2023 (-73.6%).",
+    "tags": [
+      "environment",
+      "hero",
+      "targets"
+    ],
+    "phrase": "Emissions from the fuel and electricity the team uses directly are down {abs} on its baseline year."
+  },
+  {
+    "pillar": "environment",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 15,
+    "flags": [],
+    "extractedAt": "2026-09-30",
+    "id": "e25-progress-scope3",
+    "topic": "targets",
+    "metric": "Progress against target: change in absolute Scope 3 emissions, 2025 vs 2023 baseline",
+    "value": -14,
+    "unit": "%",
+    "period": "2023-2025",
+    "quote": "PROGRESS AGAINST OUR TARGETS 2025 … -14% … Reduce Scope 3 GHG emissions by 90%. Baseline Year 2023",
+    "notes": "On the rendered page -14% sits in the progress column beside the Scope 3 target. The text layer places it next to a different label, so it is quoted as fragments.",
+    "tags": [
+      "environment",
+      "hero",
+      "targets"
+    ],
+    "phrase": "Emissions across the rest of the value chain are down {abs} on the baseline year."
+  },
+  {
+    "pillar": "environment",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 15,
+    "flags": [],
+    "extractedAt": "2026-09-30",
+    "id": "e25-target-2030-tco2e",
+    "topic": "targets",
+    "metric": "Near-term 2030 target footprint in the SBTi target progress chart",
+    "value": 76162,
+    "unit": "tCO2e",
+    "period": "2030",
+    "qualifier": "target",
+    "quote": "TEAM SBTi TARGET PROGRESS (TCO2E) … 76,162 … Near Term\nTarget: 2030",
+    "notes": "Bar value in the SBTi target progress chart on p15.",
+    "tags": [
+      "environment",
+      "targets"
+    ],
+    "phrase": "By the end of the decade the footprint is due to come down to {v}."
+  },
+  {
+    "pillar": "environment",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 15,
+    "flags": [],
+    "extractedAt": "2026-09-30",
+    "id": "e25-target-2050-tco2e",
+    "topic": "targets",
+    "metric": "Net zero 2050 residual footprint in the SBTi target progress chart",
+    "value": 9722,
+    "unit": "tCO2e",
+    "period": "2050",
+    "qualifier": "target",
+    "quote": "TEAM SBTi TARGET PROGRESS (TCO2E) … 9,722 … Net Zero\nTarget: 2050",
+    "notes": "Bar value in the SBTi target progress chart on p15: the residual footprint after a 90% cut, with remaining emissions to be neutralised by removals.",
+    "tags": [
+      "environment",
+      "targets"
+    ],
+    "phrase": "At net zero no more than {v} would remain, to be neutralised by removals."
+  },
+  {
     "id": "e25-supply-chain",
     "pillar": "environment",
     "topic": "emissions",
