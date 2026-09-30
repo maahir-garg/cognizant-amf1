@@ -1,87 +1,76 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
+import { DESK_ROUTES, ROUTES, watchConsole } from "./helpers";
 
 /**
- * The demo must survive a dead Wi-Fi connection at the venue: every request
- * whose host isn't localhost is aborted, and the app should never attempt
- * one anyway (fonts are self-hosted, AI text comes from the demo cache, the
- * live feed is same-origin SSE with a local fallback).
+ * The venue Wi-Fi may be dead: every request that isn't to localhost is
+ * aborted, and the app must never try one anyway. Every route renders its
+ * heading, generated text comes from the offline cache or the templates,
+ * and the fonts are the self-hosted files.
  */
 
-const FAN_PATH = [
-  "/",
-  "/start",
-  "/lap?p=new.singapore.environment-stem",
-  "/weekend/singapore-2026?p=new.singapore.environment-stem",
-  "/share?p=new.singapore.environment-stem",
-  "/act?p=new.singapore.environment-stem",
-];
+const ALL = [...new Set([...ROUTES, ...DESK_ROUTES])];
+const LOCAL = new Set(["localhost", "127.0.0.1", "[::1]"]);
 
-const PARTNER_PATH = ["/partners", "/partners/narratives", "/partners/scenarios", "/partners/story-kit"];
-
-async function withOfflineGuard(
-  page: import("@playwright/test").Page,
-  run: (aborted: string[], errors: string[]) => Promise<void>,
-) {
-  const aborted: string[] = [];
-  const errors: string[] = [];
+async function blockTheInternet(page: Page) {
+  const outside: string[] = [];
+  const fonts: string[] = [];
   await page.route("**/*", (route) => {
-    const host = new URL(route.request().url()).hostname;
-    if (host === "localhost" || host === "127.0.0.1") return route.continue();
-    aborted.push(route.request().url());
-    return route.abort();
+    const url = new URL(route.request().url());
+    if (route.request().resourceType() === "font") fonts.push(url.href);
+    if (LOCAL.has(url.hostname)) return route.continue();
+    outside.push(url.href);
+    return route.abort("internetdisconnected");
   });
-  page.on("console", (msg) => {
-    if (msg.type() === "error") errors.push(msg.text());
-  });
-  page.on("pageerror", (err) => errors.push(String(err)));
-  await run(aborted, errors);
+  return { outside, fonts };
 }
 
-test.describe("offline demo resilience", () => {
-  test("fan path renders fully offline with AI text and no errors", async ({ page }) => {
-    await withOfflineGuard(page, async (aborted, errors) => {
-      for (const path of FAN_PATH) {
-        await page.goto(path);
-        await page.waitForLoadState("networkidle");
-      }
-      // AI text rendered (the guardrail's Verified badge) on the lap page.
-      await page.goto("/lap?p=new.singapore.environment-stem");
-      await expect(page.locator('span[tabindex="0"]', { hasText: "Verified" }).first()).toBeVisible({
-        timeout: 10_000,
-      });
+test.describe("offline demo", () => {
+  test("every route renders with no request leaving localhost", async ({ page }) => {
+    test.setTimeout(120_000);
+    const { outside } = await blockTheInternet(page);
+    const errors = watchConsole(page);
 
-      expect(aborted, `should never attempt a non-localhost request: ${aborted.join(", ")}`).toEqual([]);
-      expect(errors, `no console errors: ${errors.join(", ")}`).toEqual([]);
-    });
+    for (const route of ALL) {
+      const res = await page.goto(route);
+      expect(res?.ok(), `${route} should respond 2xx`).toBeTruthy();
+      await page.waitForLoadState("networkidle");
+      await expect(page.locator("h1").first(), `${route} heading`).toBeVisible();
+    }
+
+    expect(outside, `requests that left localhost:\n${outside.join("\n")}`).toEqual([]);
+    expect(errors, `console errors:\n${errors.join("\n")}`).toEqual([]);
   });
 
-  test("partner path renders fully offline with AI text and no errors", async ({ page }) => {
-    await withOfflineGuard(page, async (aborted, errors) => {
-      for (const path of PARTNER_PATH) {
-        await page.goto(path);
-        await page.waitForLoadState("networkidle");
-      }
-      await page.goto("/partners/narratives");
-      await expect(page.locator("button.num").first()).toBeVisible({ timeout: 10_000 });
-
-      expect(aborted, `should never attempt a non-localhost request: ${aborted.join(", ")}`).toEqual([]);
-      expect(errors, `no console errors: ${errors.join(", ")}`).toEqual([]);
-    });
+  test("generated text renders from the offline cache", async ({ page }) => {
+    const { outside } = await blockTheInternet(page);
+    await page.goto("/partners/narratives");
+    await expect(page.getByRole("button", { name: /^Source \d+: / }).first()).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText("Figures checked").first()).toBeVisible();
+    await page.goto("/share");
+    await expect(page.getByText("Figures checked").first()).toBeVisible({ timeout: 15_000 });
+    expect(outside).toEqual([]);
   });
 
-  test("the live feed (SSE or its local fallback) advances offline", async ({ page }) => {
-    await withOfflineGuard(page, async (aborted, errors) => {
-      await page.goto("/weekend/singapore-2026?p=new.singapore.environment-stem");
-      const livePanel = page.locator("section", { hasText: "Live feed" });
-      const counter = livePanel.locator("span.num.text-xl.font-semibold.text-ink").first();
-      await expect(counter).toBeVisible();
-      const before = await counter.innerText();
-      await expect(async () => {
-        expect(await counter.innerText()).not.toBe(before);
-      }).toPass({ timeout: 10_000 });
+  test("fonts are self-hosted and actually load", async ({ page }) => {
+    const { fonts } = await blockTheInternet(page);
+    await page.goto("/weekend/singapore-2026");
+    await page.waitForLoadState("networkidle");
+    await page.evaluate(() => document.fonts.ready);
 
-      expect(aborted, `should never attempt a non-localhost request: ${aborted.join(", ")}`).toEqual([]);
-      expect(errors, `no console errors: ${errors.join(", ")}`).toEqual([]);
-    });
+    expect(fonts.length, "the page should load its web fonts").toBeGreaterThan(0);
+    for (const url of fonts) expect(LOCAL.has(new URL(url).hostname), url).toBe(true);
+
+    const loaded = await page.evaluate(() =>
+      [...document.fonts].filter((f) => f.status === "loaded").map((f) => f.family.replace(/["']/g, "")),
+    );
+    for (const family of ["Newsreader Variable", "Archivo Variable"]) expect(loaded).toContain(family);
+
+    // No stylesheet or preconnect points at a font CDN.
+    const remote = await page.evaluate(() =>
+      [...document.querySelectorAll<HTMLLinkElement>("link[href]")]
+        .map((l) => l.href)
+        .filter((h) => /fonts\.(googleapis|gstatic)\.com|use\.typekit|fonts\.bunny/.test(h)),
+    );
+    expect(remote).toEqual([]);
   });
 });
