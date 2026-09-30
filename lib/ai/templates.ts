@@ -279,15 +279,20 @@ const LEANS_ON_PREVIOUS = /^(They|Those|These|It|That's|That)\b/;
  * its antecedent's bullet (same topic) or is dropped, so no bullet starts
  * with an orphaned "They".
  */
+/** True when both facts belong to the same programme, so "They came from ..." can follow its lead. */
+function sameProgramme(a: Fact, b: Fact): boolean {
+  return initiatives.some((i) => i.factIds.includes(a.id) && i.factIds.includes(b.id));
+}
+
 function briefBullets(facts: Fact[]): string[] {
-  const bullets: { topic: string; text: string }[] = [];
+  const bullets: { fact: Fact; text: string }[] = [];
   for (const f of facts) {
     if (LEANS_ON_PREVIOUS.test(f.phrase ?? "")) {
       const prev = bullets.at(-1);
-      if (prev && prev.topic === f.topic) prev.text += ` ${factSentence(f)}`;
+      if (prev && sameProgramme(prev.fact, f)) prev.text += ` ${factSentence(f)}`;
       continue;
     }
-    bullets.push({ topic: f.topic, text: factSentence(f) });
+    bullets.push({ fact: f, text: factSentence(f) });
   }
   return bullets.map((b) => `- ${b.text}`);
 }
@@ -299,13 +304,23 @@ function quarterlyBriefTemplate(req: AiRequest, facts: Fact[]): string {
     : "Partnership impact brief: Cognizant × Aston Martin Aramco";
   const summary =
     "What the partnership and the team's wider programme delivered, drawn from the team's published reports. Estimates are marked as such.";
-  const sections = groupForBrief(facts).map((g) => {
-    const intro = SECTION_INTROS[g.title] ?? "";
-    return [g.title, intro, ...briefBullets(g.facts)].filter(Boolean).join("\n");
-  });
   const notes =
     "Data notes\nWhere the source reports disagree with themselves, the figure carries a quality flag on the desk's Data quality page. Nothing here is published without a source.";
-  return [title, summary, ...sections, notes].join("\n\n");
+  const groups = groupForBrief(facts).map((g) => ({ title: g.title, bullets: briefBullets(g.facts) }));
+  const render = () =>
+    [
+      title,
+      summary,
+      ...groups.filter((g) => g.bullets.length).map((g) => [g.title, SECTION_INTROS[g.title] ?? "", ...g.bullets].filter(Boolean).join("\n")),
+      notes,
+    ].join("\n\n");
+  // Keep the brief to a page: trim the last bullet of the longest section until it fits.
+  while (words(render()) > 255) {
+    const longest = groups.reduce((a, b) => (b.bullets.length > a.bullets.length ? b : a));
+    if (longest.bullets.length <= 1) break;
+    longest.bullets.pop();
+  }
+  return render();
 }
 
 /* --------------------------------------------------- leadership update */
