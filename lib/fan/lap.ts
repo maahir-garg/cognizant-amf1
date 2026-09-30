@@ -1,100 +1,69 @@
-/**
- * Builds the fan lap sequence from a profile: three sectors (Environment,
- * Belong, Community), then a Scrutineering step for Governance, then a
- * finish step. Deterministic and data-driven, same shape used by /start's
- * preview and /lap's step-through.
- */
-import { facts, quizzes } from "@/lib/data/load";
-import type { FanProfile, Pillar, Quiz } from "@/lib/data/schemas";
+import type { Pillar } from "@/lib/data/schemas";
 
-export type SectorStep = {
-  kind: "sector";
-  id: Pillar;
-  sectorNumber: number;
+export type JourneyStage = {
+  id: "factory" | "freight" | "circuit" | "after-race";
+  navLabel: string;
   marker: string;
+  route: string;
+  topics: string;
   heading: string;
-  /** 1-3 headline facts, shown as FactValue size="xl". */
-  heroFactIds: string[];
-  /** Extra facts for the die-hard compact table (includes data-quality flags where present). */
-  tableFactIds: string[];
-  quizzes: Quiz[];
-};
-
-export type ScrutineeringStep = {
-  kind: "scrutineering";
-  marker: string;
-  heading: string;
+  description: string;
+  pillar: Pillar;
   factIds: string[];
-  /** A fact with a data-quality flag, shown as a worked example. */
-  flagFactId: string;
-  quizzes: Quiz[];
+  detailFactIds: string[];
 };
 
-export type FinishStep = { kind: "finish" };
-
-export type LapStep = SectorStep | ScrutineeringStep | FinishStep;
-
-const SECTORS: { pillar: Pillar; heading: string }[] = [
-  { pillar: "environment", heading: "Environment" },
-  { pillar: "belong", heading: "Belong" },
-  { pillar: "community", heading: "Community" },
+/**
+ * The car's operational path provides the order. Every visitor sees every ESG
+ * pillar; a saved profile only changes the generated explanation around it.
+ */
+export const JOURNEY_STAGES: JourneyStage[] = [
+  {
+    id: "factory",
+    navLabel: "Factory",
+    marker: "Factory · build",
+    route: "Campus → assembly → car",
+    topics: "Environment · Belong · Community",
+    heading: "It starts before the car moves",
+    description: "The footprint begins with the campus, the people who build the car, and the parts and services bought from suppliers.",
+    pillar: "environment",
+    factIds: ["e25-supply-chain-share", "e25-solar-gj"],
+    detailFactIds: ["b25-women-share", "c25-mam-day-students"],
+  },
+  {
+    id: "freight",
+    navLabel: "Freight",
+    marker: "In transit · move",
+    route: "Factory → freight → host city",
+    topics: "Environment · Governance",
+    heading: "The garage crosses the world",
+    description: "Cars, parts and garage equipment travel with the calendar. Freight planning and lower-carbon aviation certificates shape this part of the story.",
+    pillar: "environment",
+    factIds: ["e25-freight-logistics", "e25-saf-airfreight-cut"],
+    detailFactIds: ["e25-saf-avoided"],
+  },
+  {
+    id: "circuit",
+    navLabel: "Circuit",
+    marker: "Race weekend · run",
+    route: "Host city → circuit → community",
+    topics: "Environment · Community",
+    heading: "At the circuit, impact becomes local",
+    description: "Trackside energy meets programmes connected to the host region. Where local team data is unavailable, the experience says so plainly.",
+    pillar: "community",
+    factIds: ["e25-event-energy-cut", "c25-stem-racing-students"],
+    detailFactIds: ["c25-stem-racing-singapore"],
+  },
+  {
+    id: "after-race",
+    navLabel: "After the race",
+    marker: "After the flag · account",
+    route: "Circuit → recovery → disclosure",
+    topics: "Environment · Governance",
+    heading: "The work continues after the flag",
+    description: "Materials and surplus food still have a destination. Published methods, independent checks and visible data gaps show how the claims are governed.",
+    pillar: "governance",
+    factIds: ["m22-food-donated", "m22-materials-recycled"],
+    detailFactIds: ["g25-cdp", "g25-assurance", "g25-restatement"],
+  },
 ];
-
-const GOVERNANCE_FACT_IDS = ["g25-cdp", "g25-assurance", "g25-sbti", "g25-restatement"];
-const GOVERNANCE_FLAG_FACT_ID = "e25-ghg-total-sbti";
-
-function heroCountFor(level: FanProfile["level"]): number {
-  return level === "die-hard" ? 3 : level === "casual" ? 2 : 1;
-}
-
-/** Same scoring idea as lib/ai/requests.ts byTagAndPillar: hero tag, shared interests, Singapore relevance. */
-function rankFacts(pillar: Pillar, profile: FanProfile): string[] {
-  const tags = [...profile.interests, profile.cityId === "singapore" ? "singapore" : ""].filter(Boolean);
-  const pool = facts.filter((f) => f.pillar === pillar && f.status !== "simulated" && !f.tags.includes("data-quality"));
-  return pool
-    .map((f) => ({
-      id: f.id,
-      score: (f.tags.includes("hero") ? 3 : 0) + f.tags.filter((t) => tags.includes(t)).length * 2 + (f.value !== null ? 1 : 0),
-    }))
-    .sort((a, b) => b.score - a.score || a.id.localeCompare(b.id))
-    .map((s) => s.id);
-}
-
-export function buildLap(profile: FanProfile): LapStep[] {
-  const sectors: SectorStep[] = SECTORS.map(({ pillar, heading }, i) => {
-    const ranked = rankFacts(pillar, profile);
-    const heroFactIds = ranked.slice(0, heroCountFor(profile.level));
-    const tableFactIds = profile.level === "die-hard" ? ranked.slice(0, 6) : [];
-    return {
-      kind: "sector",
-      id: pillar,
-      sectorNumber: i + 1,
-      marker: `S${i + 1} · ${heading.toUpperCase()}`,
-      heading,
-      heroFactIds,
-      tableFactIds,
-      quizzes: quizzes.filter((q) => q.pillar === pillar && q.levels.includes(profile.level)),
-    };
-  });
-
-  const scrutineering: ScrutineeringStep = {
-    kind: "scrutineering",
-    marker: "SCRUTINEERING · GOVERNANCE",
-    heading: "Scrutineering",
-    factIds: GOVERNANCE_FACT_IDS,
-    flagFactId: GOVERNANCE_FLAG_FACT_ID,
-    quizzes: quizzes.filter((q) => q.pillar === "governance" && q.levels.includes(profile.level)),
-  };
-
-  return [...sectors, scrutineering, { kind: "finish" }];
-}
-
-export type LapPreview = { sectorCount: number; quizCount: number };
-
-/** Used by /start to show "4 sectors · 8 quiz beats" before the fan commits. */
-export function previewLap(profile: FanProfile): LapPreview {
-  const steps = buildLap(profile);
-  const sectorCount = steps.filter((s) => s.kind === "sector" || s.kind === "scrutineering").length;
-  const quizCount = steps.reduce((n, s) => (s.kind === "finish" ? n : n + s.quizzes.length), 0);
-  return { sectorCount, quizCount };
-}

@@ -64,11 +64,11 @@ flowchart LR
 
 **AI.** The model never sees the whole dataset. Each request names the facts it may use; the prompt contains only those, formatted; the model must cite `[F:id]` after each claim. The guardrail extracts every number from the output and rejects it unless the number matches a fact or derived value the text actually cites. A rejected draft is retried once with the reasons, then replaced by a grounded template. In demo mode, responses come from a pre-warmed cache, so the live pitch never depends on Wi-Fi.
 
-**Real time.** `/api/events/stream` streams the simulated race-weekend feed over server-sent events; the client falls back to a local replay using the same engine if the stream drops. Milestones fire when a counter crosses a threshold and trigger a drafted campaign post.
+**Simulated event replay.** `/api/events/stream` streams a deterministic, simulated race-weekend sequence over server-sent events; the client falls back to a local replay using the same engine if the stream drops. Milestones fire when a counter crosses a threshold and trigger a drafted campaign post. This demonstrates the event flow and is not connected to team telemetry.
 
 ## Production: how real feeds plug in
 
-The prototype's JSON files map one-to-one onto governed data products that Cognizant would run on its data platform. The UI and AI layers stay the same; only the loaders change.
+The prototype's JSON schemas are a proposed contract for governed data products that Cognizant could run on its data platform. A production discovery must confirm source-system access, field mapping, update frequency, assurance and publishing ownership. The UI and AI layers are designed to consume that contract; connecting real systems will require ingestion and approval work rather than a loader swap alone.
 
 ```mermaid
 flowchart LR
@@ -102,13 +102,13 @@ flowchart LR
 
 | Prototype file | Production source | Owner |
 |---|---|---|
-| `facts.json` (emissions) | GHG inventory and assurance workpapers (THG Eco / MyCarbon) | AMF1 ESG team |
-| `est-freight-per-round` | Per-shipment logistics data with mode and distance | AMF1 logistics + Atlas Air |
-| `est-travel-per-round` | Travel booking feed | AMF1 travel |
-| Trackside energy facts | F1 trackside metering (already published for European rounds) | F1 / AMF1 |
-| Belong facts | Aggregated HR and survey data, minimum group sizes enforced | AMF1 People |
-| Community facts, counters | Programme registration and attendance systems, partner reports | AMF1 + partners |
-| `events.json` | Operational event stream (freight milestones, sessions, activations) | AMF1 ops |
+| `facts.json` (emissions) | Candidate: approved GHG inventory and assurance workpapers | Team ESG owner |
+| `est-freight-per-round` | Candidate: shipment records with mode and distance | Team logistics owner and logistics partners |
+| `est-travel-per-round` | Candidate: aggregated travel-booking data | Team travel owner |
+| Trackside energy facts | Candidate: approved circuit or team trackside metering | Relevant data owner to confirm |
+| Belong facts | Candidate: published or approved aggregate people and survey data, with minimum group sizes | Team People owner |
+| Community facts, counters | Candidate: programme registration, attendance and partner reports | Team and programme partners |
+| `events.json` | Candidate: approved operational milestones and activation events | Team operations and communications owners |
 | `ai-cache` | Generation audit log (prompt, facts, output, guardrail result) | Cognizant |
 
 Principles that carry over unchanged: every datum has a source record; estimates show their formula; nothing is published without the owner's approval; personal data never leaves the source system (only aggregates reach the fact base); AI output is always guard-railed and logged.
@@ -117,19 +117,19 @@ Principles that carry over unchanged: every datum has a source record; estimates
 
 **Phase 0: Prototype (now).** Public reports only, offline demo, one hero race.
 
-**Phase 1: Pilot, one fly-away race (about 8–10 weeks).** Connect logistics and travel feeds for a single race weekend so the Singapore view shows measured rather than allocated emissions. Partner dashboard live for Cognizant's comms team with ESG-owner approval before publish. Success measures: time to produce a partner impact post (target: minutes, not days), share-card rate, quiz completion.
+**Phase 1: Discovery and one-race pilot.** Confirm data owners, permissions, field mappings and update frequencies for logistics and travel. Connect the sources that pass that assessment for one race weekend, while keeping estimates and gaps visible for the rest. Trial the partner dashboard with the Cognizant communications team and an ESG-owner approval step. Set a delivery estimate only after access and data quality are understood. Success measures: story completion, share-card rate, optional challenge participation, content reuse and measured review time.
 
-**Phase 2: Season rollout (about one season).** All races, monthly GHG estimates, programme data from Make A Mark partners, Story Kit opened to charity partners, fan experience inside the team app. Add translations for race markets.
+**Phase 2: Broader rollout, subject to pilot results.** Add races and approved programme datasets in stages, open the Story Kit to selected charity partners, and assess integration with team-owned channels. Add translations for prioritised race markets after content owners and review workflows are in place.
 
-**Phase 3: Platform.** Offer the Impact API and Story Kit to other sponsors (Aramco, Arm, Maaden, Xerox...) so each can report its joint impact with the team from the same governed fact base.
+**Phase 3: Platform option.** If the pilot demonstrates demand and the team approves the commercial model, extend the Impact API and Story Kit to selected partners so each can communicate approved joint impact from the same governed fact base.
 
 ### What Cognizant would own
 
-Data platform and ingestion, the governed fact base and lineage, the grounded-generation service with guardrail and audit log, the Impact API, and the partner dashboard. AMF1 owns the data, the approvals and the fan-facing brand experience.
+Proposed Cognizant scope: data platform and ingestion, the governed fact base and lineage, the grounded-generation service with guardrail and audit log, the Impact API, and the partner dashboard. Proposed team scope: data ownership, publishing approvals and the fan-facing brand experience. Final responsibilities require agreement with the team and each source-system owner.
 
 ### Cost drivers
 
-Data engineering for the first feeds (logistics, travel, energy) is the main cost; after that, marginal cost per race is low. Model usage is small because generation is short, grounded and heavily cached (most fan copy is shared across personas). Hosting is a standard web app plus a streaming endpoint. No new hardware; meters and logistics systems already exist.
+Data discovery and engineering for the first approved feeds are likely to be the main cost. Ongoing cost depends on source-system quality, assurance, approval cadence, localisation and traffic. Generation can be constrained through short grounded outputs and caching. The web app and event endpoint use standard hosting, but the prototype does not establish whether additional metering, integration licences or operational support will be needed.
 
 ### Risks and mitigations
 

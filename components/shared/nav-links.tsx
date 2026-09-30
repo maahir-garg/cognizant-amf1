@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 const LINKS = [
-  { href: "/start", label: "Fan lap", match: ["/start", "/lap", "/share", "/act"] },
+  { href: "/lap", label: "The journey", match: ["/start", "/lap", "/share", "/act"] },
   { href: "/weekend/singapore-2026", label: "Singapore GP", match: ["/weekend"] },
   { href: "/partners", label: "Partners", match: ["/partners"] },
   { href: "/sources", label: "Sources", match: ["/sources"] },

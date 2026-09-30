@@ -14,23 +14,24 @@ Return here is broader than sales, as the organisers asked: fan engagement, awar
 | Feature | Innovation | Desirability | Business opportunity | Viability | Ease of implementation |
 |---|---|---|---|---|---|
 | **Trust layer**: verified / estimated / simulated on every number, provenance drawer, source audit in CI | Grounded, self-auditing ESG storytelling; surfaces the source's own inconsistencies | Answers "can I trust this?" for fans, partners and judges | Foundation for a licensable Impact API | Works with annual reports today, feeds tomorrow | Built on files and a script; no new infrastructure |
-| **Numeric guardrail** on all AI text | Rejects any number not tied to a cited fact | Partners can post AI drafts without fact-checking by hand | Reduces comms review time | Model-agnostic; falls back to templates | Small, unit-tested module |
-| **Fan lap** (personalised by level, city, interests; quiz beats) | ESG as a race lap with sectors and scrutineering | Written for fans, not auditors; 30-second onboarding | Engagement surface for sponsors' stories | Content refreshes as facts update | Web app; embeddable in the team app |
+| **Numeric guardrail** on all AI text | Rejects any number not tied to a cited fact | Makes the first review traceable; human approval still applies | Test whether it reduces drafting and review time | Model-agnostic; falls back to templates | Small, unit-tested module |
+| **Car journey** (explanation depth, selected city and topic emphasis) | Scroll-led story from factory preparation to the race and post-race impact | Opens in a browser with no sign-up; all ESG pillars remain visible | Engagement surface for sponsors' sourced stories | Uses published facts now; content refreshes as approved facts update | Responsive web experience; can later be linked or embedded by the team |
+| **Optional knowledge challenge** | A short quiz after the main story, with sourced fact reveals | Gives fans a playful recap without blocking entry | A measurable learning signal | Questions are generated from the same fact base | Existing quiz components move behind the journey |
 | **Weekend carbon view** in laps of Silverstone | Uses the team's own equivalence, shows gaps honestly | Makes tonnes tangible | Per-race sponsor moments | Upgrades from estimate to measured with a logistics feed | Deterministic engine |
-| **Share card** (9:16) | Personal, sourced impact card | Social-native output | Organic reach for team and partners | No marginal cost | Client-side PNG |
+| **Share card** (9:16) | Personal, sourced impact card | Social-native output | Test whether fans distribute sourced stories | Client-side export limits processing cost; hosting and measurement remain | Client-side PNG |
 | **Act**: lower-carbon travel, volunteering, credits | Turns awareness into action | Something to do, not just read | Partner-sponsored rewards | Credits are a simple ledger | Local state in prototype |
 | **Partner dashboard**: KPIs with audit trail, CSV/JSON | Co-branded, sourced impact intelligence | Solves "prove the value of the sponsorship" | Premium partner analytics tier | Same fact base for every sponsor | Standard web + API |
-| **Narratives**: LinkedIn post, quarterly brief, investor summary with citations | Grounded, cited drafting | Minutes instead of days to produce partner content | Content packages for sponsors | Audit log of every draft | Uses existing model APIs |
+| **Narratives**: LinkedIn post, quarterly brief, investor summary with citations | Grounded, cited drafting | Gives reviewers a sourced first draft | Test content reuse and review time before packaging commercially | Audit log of every draft; human approval required | Uses a model when configured and grounded templates offline |
 | **What-if scenarios** | Projections only from verified baselines, assumptions shown | Supports joint-programme decisions | Justifies expanded joint initiatives | No invented elasticities or costs | Pure function |
-| **Milestone alerts from a live feed** | Real-time trigger → drafted post | Timely content during race weekends | Always-on activation | SSE with offline fallback | Replaceable by a real event stream |
-| **Story Kit for charity partners** | Extends grounded storytelling beyond the team | Small charities get pro-quality impact copy | Goodwill and network effect | Same pipeline | Thin UI on shared engine |
+| **Milestone alerts from a simulated replay** | Event trigger → grounded draft | Demonstrates a timely race-weekend content workflow | Potential activation once approved feeds exist | Deterministic and labelled Simulated | SSE with local offline fallback; production needs a named source and owner |
+| **Story Kit for charity partners** | Extends grounded storytelling beyond the team | Gives programme partners reusable, sourced draft copy | Test reuse and partner satisfaction | Same approval and fact pipeline | Thin UI on shared engine |
 
 ## Non-sales ROI and how to measure it in a pilot
 
 | ROI area | Metric | Instrumentation | Pilot target (to agree with AMF1) |
 |---|---|---|---|
-| Fan engagement | Lap completion rate; quiz beats answered per user; median time in lap | Page and step events | Baseline in race 1, improve race over race |
-| Awareness | Correct answers on quiz beats (before/after reveal); recall of one initiative on return visit | Quiz events; return-visit prompt | Measured, not assumed |
+| Fan engagement | Story completion rate; stages explored; median engaged time; optional challenge starts | Page, scroll-stage and interaction events | Establish a pilot baseline, then improve across releases |
+| Awareness | Optional challenge accuracy; recall of one initiative on return visit | Challenge events; consented return-visit prompt | Measured, not assumed |
 | Sharing / reach | Share-card downloads and shares per active user; impressions of shared cards | Download and Web Share events, UTM links | Compare with ESG post benchmark (`c24-esg-posts-multiplier`) |
 | Action | Low-carbon travel pledges; volunteering interest registrations | Act tab events | Report counts per race |
 | Return visits | 7-day and next-race return rate | Anonymous device ID | Track across two races |

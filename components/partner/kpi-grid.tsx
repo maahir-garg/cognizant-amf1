@@ -12,14 +12,18 @@ const PILLAR_LABEL: Record<Pillar, string> = {
 /** The curated KPI set, grouped by pillar, in a hairline grid. */
 export function KpiGrid() {
   return (
-    <section className="flex flex-col gap-8">
-      <p className="label">Key metrics by pillar</p>
+    <section className="flex flex-col gap-12">
+      <div className="max-w-3xl">
+        <p className="label">The whole ESG picture</p>
+        <h2 className="display mt-3 text-4xl sm:text-6xl">Evidence across every impact area.</h2>
+        <p className="mt-5 max-w-2xl text-ink-2">Open any figure to inspect its status, report source and original wording.</p>
+      </div>
       {PILLARS.map((pillar) => (
-        <div key={pillar} className="flex flex-col gap-4">
+        <div key={pillar} className="grid gap-5 border-t border-line pt-6 lg:grid-cols-[14rem_1fr]">
           <p className="label text-ink-2">{PILLAR_LABEL[pillar]}</p>
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="grid overflow-hidden rounded-md border border-line bg-line sm:grid-cols-2 xl:grid-cols-4">
             {PILLAR_KPIS[pillar].map((k) => (
-              <div key={k.factId} className="flex min-w-0 flex-col gap-3 rounded-md border border-line bg-surface p-4">
+              <div key={k.factId} className="flex min-h-52 min-w-0 flex-col justify-between gap-6 bg-surface p-5 transition-colors hover:bg-surface-2">
                 <FactValue id={k.factId} size="md" showMetric />
                 <p className="text-xs leading-relaxed text-ink-3">{k.why}</p>
               </div>

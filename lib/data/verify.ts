@@ -162,7 +162,16 @@ export function verifyData(): Issue[] {
       continue;
     }
     if (q.answerIndex >= q.options.length) issues.push({ level: "error", where, message: "answerIndex out of range" });
-    if (fact.value !== null) {
+    if (q.answerEvidence) {
+      const evidence = q.answerEvidence.toLowerCase().replace(/\s+/g, " ").trim();
+      const sourceText = [fact.quote, fact.phrase, fact.metric].filter(Boolean).join(" ").toLowerCase().replace(/\s+/g, " ");
+      if (!sourceText.includes(evidence)) {
+        issues.push({ level: "error", where, message: `answerEvidence "${q.answerEvidence}" is absent from the cited fact` });
+      }
+      if (extractNumbers(q.options[q.answerIndex]).length > 0) {
+        issues.push({ level: "error", where, message: "qualitative correct option must not contain an unbadged number" });
+      }
+    } else if (fact.value !== null) {
       const answer = extractNumbers(q.options[q.answerIndex]);
       if (!answer.some((n) => numbersMatch(n, Math.abs(fact.value!)))) {
         issues.push({ level: "error", where, message: `correct option "${q.options[q.answerIndex]}" does not match fact value ${fact.value}` });

@@ -19,7 +19,7 @@ Impact Lap is a concept prototype for the Cognizant × Aston Martin Aramco F1 (A
 3. **The demo runs offline.** No runtime call may be required to render any page. AI text comes from `data/ai-cache/` in demo mode (the default). Fonts are self-hosted (`@fontsource-variable/*`), never Google Fonts. No CDN scripts or images.
 4. **Authorship.** Do not credit any AI tool or model anywhere: commit messages, code comments, docs, `package.json`, HTML meta, UI copy. No `Co-authored-by` trailers. Use the machine's configured git identity; never change it.
 5. **No secrets in git.** Keys live in `.env.local` (gitignored). `.env.example` documents them.
-6. **No official logos or copyrighted imagery** unless added to `public/brand/` by the team. Use text names.
+6. **Brand assets require a source record.** This official collaboration prototype may use team imagery kept locally in `public/brand/` with its source and intended use documented there. Do not introduce third-party imagery or remote runtime assets.
 7. **Log judgement calls** in `docs/DECISIONS.md`, one line each: decision and reason.
 
 ## Commands

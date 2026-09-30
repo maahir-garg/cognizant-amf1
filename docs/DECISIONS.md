@@ -24,7 +24,7 @@ One line per judgement call: decision, then reason.
 - Single dark theme. Reason: F1 fan apps are dark, and one theme keeps the projector demo consistent.
 - `DEMO_MODE` defaults to on and stays on unless `DEMO_MODE=false` and a Gemini key exists. Reason: a fresh clone or keyless deploy must always work.
 - Guardrail requires every number to match a fact the text actually cites (not just any supplied fact). Reason: stops a correct number being attached to the wrong claim.
-- Live feed: SSE route plus a deterministic local replay with the same engine; the client falls back to local if SSE fails. Reason: "real-time" demo that still runs with no network or on serverless time limits.
+- Simulated event replay: SSE route plus a deterministic local replay with the same engine; the client falls back to local if SSE fails. Reason: demonstrates the event flow while remaining accurate about its offline demo data.
 - Committed `CLAUDE.md`/`AGENTS.md` agent docs at the root. Reason: requested so other agents can pick up the work; `next dev` also regenerates the managed block.
 
 ## AI layer (24 Sep 2026)
@@ -52,3 +52,19 @@ One line per judgement call: decision, then reason.
 - `components/fan/lap-progress.tsx`'s hand-built `role="progressbar"` had valuemin/max/now but no name; added `aria-label="Lap progress"` and an `aria-valuetext` (the same "Step X of Y" copy already shown visually). Reason: cheaper and more precise than reusing the (bar-chart-shaped) `<Progress>` primitive for a five-segment stepper.
 - Landing page's inline "Browse every source" link (`text-lime` inside `text-ink-2` body copy) had no underline at rest and only 1.13:1 contrast against the surrounding text — axe's `link-in-text-block`. Added a permanent `underline`. Reason: the two other `text-lime` inline links in the app (provenance drawer, data-quality panel) sit outside a paragraph of body text, so the rule doesn't apply to them; left those as they were rather than restyle links that weren't flagged.
 - `components/partner/story-kit-studio.tsx`'s initiative `<Select>` had no visible `<label>` association and no `aria-label`, unlike every other `Select` in the app (`/start`'s city picker has one). Added `aria-label="Community or charity partner"` matching the adjacent visible caption. Reason: same fix pattern already used elsewhere, just missed here.
+
+## Product framing (30 Sep 2026)
+
+- Use a responsive website as the public surface, with no account required for the learning path. Reason: a browser link removes installation and account steps, supports public sharing and source pages, and can still be linked or embedded by team and partner channels.
+- Start the fan story with defaults and make level, city and interest choices optional. Reason: personalisation should improve relevance without becoming a questionnaire that blocks the main experience.
+- Fan story follows the car from factory preparation to the race and post-race impact, with the quiz offered after learning. Reason: team feedback calls for an exploratory scroll experience and identifies the quiz as a side activity rather than the entry point.
+- Interest selection changes emphasis and explanation depth but keeps environment, belonging, community and governance visible. Reason: a fan's initial topic choice should not remove parts of sustainability they may not already recognise.
+- Regional matching uses the fan's explicit city selection and shows gaps where no local fact is published. Reason: this is useful personalisation without claiming precise geolocation or complete race-by-race coverage.
+- The intro film is documented as a locally available approved asset with safe text and region variants; synthetic driver likeness or voice remains a rights-dependent production concept. Reason: the prototype cannot credibly promise personalised driver footage without assets, consent and review.
+- Race-weekend events are called a simulated replay; “live” and “real time” are reserved for connected, owned and quality-checked production feeds. Reason: the current endpoint replays deterministic demo data offline.
+- Position Impact Lap beside AWorld by its team-data provenance and car-operations narrative, without claiming AWorld lacks personalisation, reporting or motorsport content. Reason: AWorld's own product and MotoGP materials show those capabilities.
+- The landing uses a static illustrated opening and scroll-led route rather than a runtime film. Reason: the prototype has no approved film asset, and the opening must remain reliable offline.
+- Quiz choices use qualitative concepts and reveal the exact cited figure afterwards; each correct concept carries a checked fragment from its supporting fact. Reason: invented numeric distractors looked like unbadged impact claims and obscured the learning point.
+- Removed the simulated race-weekend feed from public fan and partner pages. Reason: it distracted from the challenge's core transformation of published ESG data into cited, useful insight.
+- Replaced generic car outlines with locally bundled official team car images for this collaboration prototype. Reason: the car should carry the scroll narrative with credible visual detail; `public/brand/README.md` records the asset sources and reuse limits.
+- Use locally stored, high-resolution AMR26 images from Aston Martin Aramco's official site for the car-led visual story, with a source and rights manifest in `public/brand/`. Reason: the collaboration team explicitly requested official car imagery, the prototype must work offline, and the public site terms do not provide a general reuse licence beyond this approved collaboration context.

@@ -91,6 +91,13 @@ const SECTOR_OPENERS: Record<Pillar, string> = {
   governance: "Scrutineering: how you can tell any of this is true.",
 };
 
+const JOURNEY_OPENERS: Record<string, string> = {
+  factory: "Start where the car is prepared.",
+  freight: "Follow the car and garage equipment between races.",
+  circuit: "At the circuit, the team meets the host community.",
+  "after-race": "The work continues after the flag.",
+};
+
 const PILLAR_TITLES: Record<Pillar, string> = {
   environment: "Environment",
   belong: "Belong",
@@ -109,7 +116,7 @@ function words(s: string): number {
 function fanStoryTemplate(req: AiRequest, facts: Fact[]): string {
   const fan = req.fan;
   const pillar = (req.params.pillar as Pillar) ?? facts[0]?.pillar ?? "environment";
-  const opener = SECTOR_OPENERS[pillar];
+  const opener = typeof req.params.stage === "string" ? JOURNEY_OPENERS[req.params.stage] ?? SECTOR_OPENERS[pillar] : SECTOR_OPENERS[pillar];
   if (!fan || facts.length === 0) return [opener, ...facts.map(factSentence)].join(" ");
 
   const interest = INTEREST_LABELS[fan.interests[0]] ?? fan.interests[0];

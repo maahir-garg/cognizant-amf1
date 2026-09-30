@@ -1,58 +1,85 @@
 import type { Metadata } from "next";
 import { FactTable } from "@/components/shared/fact-table";
+import { FactValue } from "@/components/shared/fact-value";
 import { StatusLegend } from "@/components/shared/status-badge";
-import { facts, sources } from "@/lib/data/load";
+import { sources } from "@/lib/data/load";
 
 export const metadata: Metadata = { title: "Sources" };
 
 export default function SourcesPage() {
-  const flagged = facts.filter((f) => f.flags.length > 0);
-  const byKind = flagged.reduce<Record<string, number>>((acc, f) => {
-    for (const fl of f.flags) acc[fl.kind] = (acc[fl.kind] ?? 0) + 1;
-    return acc;
-  }, {});
-
   return (
-    <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-12 px-4 py-10 sm:px-6">
-      <header className="flex flex-col gap-4">
-        <p className="label">Governance · Scrutineering</p>
-        <h1 className="display text-5xl sm:text-7xl">Every number, traced.</h1>
-        <p className="max-w-2xl text-ink-2">
-          Impact Lap only shows figures that are printed in a source document, calculated from those with a visible formula, or
-          clearly marked as demo data. Verified quotes are re-checked against the page text on every build.
-        </p>
-        <StatusLegend />
+    <div className="overflow-x-clip">
+      <header className="border-b border-line">
+        <div className="mx-auto grid min-h-[65vh] w-full max-w-[1440px] content-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
+          <div>
+            <p className="label">The source room</p>
+            <h1 className="display mt-6 max-w-4xl text-[clamp(3.7rem,10vw,9rem)]">Open the books.</h1>
+          </div>
+          <div className="flex max-w-xl flex-col gap-7">
+            <p className="text-lg leading-relaxed text-ink-2">
+              Follow any figure back to the published page. See which results are quoted, which are calculated, and where the
+              record needs a closer look.
+            </p>
+            <StatusLegend />
+          </div>
+        </div>
       </header>
 
-      <section className="flex flex-col gap-4">
-        <h2 className="label">Documents</h2>
-        <ul className="grid gap-px overflow-hidden rounded-md border border-line bg-line md:grid-cols-2">
-          {sources.map((s) => (
-            <li key={s.id} className="flex flex-col gap-1 bg-surface p-4">
-              <a href={s.url} target="_blank" rel="noreferrer" className="font-medium text-ink underline-offset-4 hover:underline">
-                {s.title}
-              </a>
-              <p className="text-sm text-ink-2">{s.publisher}</p>
-              <p className="label">
-                {s.id} · retrieved {s.retrieved} · {facts.filter((f) => f.sourceId === s.id).length} facts
-              </p>
-            </li>
-          ))}
-        </ul>
+      <section className="border-b border-line" aria-labelledby="documents-heading">
+        <div className="mx-auto grid w-full max-w-[1440px] gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[0.7fr_1.3fr] lg:gap-16">
+          <div className="lg:sticky lg:top-24 lg:self-start">
+            <p className="label">The documents</p>
+            <h2 id="documents-heading" className="display mt-4 text-[clamp(2.7rem,6vw,5rem)]">Start with the source.</h2>
+            <p className="mt-5 max-w-md text-ink-2">
+              The story draws from the team&apos;s reports and other named references. Each linked record shows its publisher and
+              original document.
+            </p>
+          </div>
+          <ul className="border-t border-line">
+            {sources.map((source) => (
+              <li key={source.id} className="group border-b border-line py-6 sm:py-8">
+                <a
+                  href={source.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex min-h-12 items-start justify-between gap-6 text-xl font-semibold text-ink underline-offset-4 transition-colors hover:text-lime hover:underline sm:text-2xl"
+                >
+                  <span>{source.title}</span>
+                  <span aria-hidden className="text-lime">↗</span>
+                </a>
+                <p className="label mt-3">{source.publisher}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
       </section>
 
-      <section className="flex flex-col gap-4">
-        <h2 className="label">Data-quality flags found in the source reports</h2>
-        <p className="max-w-2xl text-sm text-ink-2">
-          Extracting the reports fact by fact surfaced places where they disagree with themselves: {byKind["source-conflict"] ?? 0}{" "}
-          source conflicts, {byKind["restated"] ?? 0} restated figures, {byKind["not-comparable"] ?? 0} not-comparable pairs and{" "}
-          {byKind["inconsistent-equivalence"] ?? 0} inconsistent equivalences. A production pipeline would route these to the
-          team&apos;s data owners before anything is published.
-        </p>
+      <section className="border-b border-line bg-surface" aria-labelledby="caveats-heading">
+        <div className="mx-auto grid w-full max-w-[1440px] gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[0.7fr_1.3fr] lg:gap-16">
+          <div>
+            <p className="label">Scrutineering</p>
+            <h2 id="caveats-heading" className="display mt-4 text-[clamp(2.7rem,6vw,5rem)]">Caveats stay visible.</h2>
+          </div>
+          <div className="flex flex-col gap-6">
+            <p className="max-w-2xl text-lg leading-relaxed text-ink-2">
+              Published reports can restate earlier figures or use different definitions. The fact explorer keeps those flags
+              beside the source so an AI explanation or partner draft cannot quietly smooth them away.
+            </p>
+            <div className="border-t border-line pt-6">
+              <FactValue id="g25-restatement" size="md" showMetric />
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section className="flex flex-col gap-4">
-        <h2 className="label">All facts</h2>
+      <section className="mx-auto flex w-full max-w-[1440px] flex-col gap-8 px-4 py-16 sm:px-6" aria-labelledby="facts-heading">
+        <div>
+          <p className="label">Fact explorer</p>
+          <h2 id="facts-heading" className="display mt-4 text-[clamp(2.7rem,6vw,5rem)]">Inspect every claim.</h2>
+          <p className="mt-5 max-w-2xl text-ink-2">
+            Filter the record by topic or evidence status, then open a figure for its quote, derivation and quality notes.
+          </p>
+        </div>
         <FactTable />
       </section>
     </div>

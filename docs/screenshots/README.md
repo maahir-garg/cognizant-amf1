@@ -5,7 +5,7 @@ All captured at 1920×1080 from the production build in offline demo mode, perso
 | File | Shows |
 |---|---|
 | `01-landing.png` | Landing: headline and four verified headline figures with status marks |
-| `02-onboarding.png` | 30-second onboarding with level, city and interests selected |
+| `02-onboarding.png` | Optional personalisation controls with level, city and interests selected |
 | `03-lap-sector-ai-text.png` | Lap sector 1 with personalised, cited AI intro and the "Verified" guardrail badge |
 | `04-quiz-reveal.png` | Quiz beat answered: reveal with the fact, status and explainer |
 | `05-provenance-drawer.png` | Provenance drawer: source, page, verbatim quote, automatic check |

@@ -54,7 +54,9 @@ const TASK_RULES: Record<AiRequest["task"], TaskRules> = {
         : level === "die-hard"
           ? "Write 1-2 dense sentences for a die-hard fan: assume F1 knowledge, no hand-holding, pack in detail."
           : "Write 2 sentences for a casual fan: friendly, a little more context than for a die-hard, less hand-holding than for a new fan.";
-    return `Task: fan-story. ${shape} Address the fan directly as "you". Tailor it to their interests and city, given below.`;
+    const stage = typeof req.params.stage === "string" ? ` Keep the copy about the ${req.params.stage} stage and the supplied facts.` : "";
+    const personalisation = req.fan ? " Tailor it to the fan's interests and city, given below." : "";
+    return `Task: fan-story. ${shape} Address the fan directly as "you".${stage}${personalisation}`;
   },
   "quiz-reveal": () =>
     `Task: quiz-reveal. Write exactly one sentence that reacts to whether the fan answered the quiz correctly (see "correct" below) and restates the fact that answers it.`,

@@ -4,8 +4,8 @@
 
 Impact Lap turns the team's published sustainability, inclusion and community data into:
 
-- **A fan lap**: a personalised, 30-second-onboarding story through the Make A Mark pillars, with quiz beats, a Singapore Grand Prix carbon and logistics view in relatable units, matched community initiatives, a shareable 9:16 card and low-carbon choices that earn (simulated) impact credits.
-- **A partner dashboard**: KPI tiles with a full audit trail, AI-drafted co-branded posts and briefs with inline citations, a what-if scenario model, milestone alerts from a live race-weekend feed, and CSV/JSON export for BI tools.
+- **A fan story**: a scroll-led route from factory preparation to the circuit and beyond the race. It opens without sign-in or a questionnaire. Optional city, experience and interest choices adjust emphasis while environment, belonging, community and governance stay visible. A sourced knowledge challenge follows the story, alongside the Singapore Grand Prix view, sharing and action paths.
+- **A partner dashboard**: KPI tiles with a full audit trail, AI-drafted posts and briefs with inline citations, a scenario model, and CSV/JSON export for BI tools.
 
 Underneath both is a **trust layer**: every number is Verified (quoted from a report page and auto-checked), Estimated (calculated with a visible formula) or Simulated (labelled demo data), and every AI sentence passes a numeric guardrail before anyone sees it.
 
@@ -19,6 +19,8 @@ npm run dev        # http://localhost:3000, no API key or network needed
 ```
 
 Optional live AI: copy `.env.example` to `.env.local`, set `GEMINI_API_KEY` and `DEMO_MODE=false`.
+
+The current experience uses published team data. Connected operational feeds would require approved source access and publishing checks before they could support timely reporting.
 
 ## Check it
 
@@ -34,9 +36,10 @@ npm run build
 - `DESIGN.md`: the design system
 - `docs/data-sources.md`: sources, extraction method, known data-quality issues
 - `docs/architecture.md`: system design and production rollout
+- `docs/PRODUCT_RATIONALE.md`: experience flow, web rationale and production boundaries
 - `docs/DECISIONS.md`: judgement calls
 - `docs/DEMO_SCRIPT.md`, `docs/ROI.md`: pitch support
 
 ---
 
-Concept prototype: Team Growthbeans, AMF1 × Cognizant Ideathon 2026. Not affiliated with or endorsed by Aston Martin Aramco F1 Team. Figures are taken from the team's public reports; see `docs/data-sources.md`.
+Concept prototype: Team Growthbeans, Aston Martin Aramco × Cognizant Ideathon. Figures are taken from the team's public reports; see `docs/data-sources.md`.

@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CarbonLogistics, ChangeVsEarlier } from "@/components/fan/carbon-logistics";
 import { DataGapCard, OwnTracksideCard } from "@/components/fan/data-gap-card";
-import { LivePanel } from "@/components/fan/live-panel";
 import { MatchedInitiatives } from "@/components/fan/matched-initiatives";
-import { events, races } from "@/lib/data/load";
+import { races } from "@/lib/data/load";
 import { decodeProfile } from "@/lib/fan/profile-codec";
-import { formatDate } from "@/lib/format";
 
 function eligibleRaces() {
   return races.filter((r) => r.hero || r.factIds.length > 0);
@@ -36,34 +36,45 @@ export default async function WeekendPage({
 
   const paramProfile = decodeProfile(p);
   const hasOwnTrackside = race.factIds.some((id) => id.startsWith("e25-trackside-"));
-  const hasLiveFeed = events.some((e) => e.raceId === race.id);
+  const raceName = race.name.replace(/\s20\d{2}$/, "");
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-10 px-4 py-10 sm:px-6 sm:py-14">
-      <header className="flex flex-col gap-2">
-        <p className="label">
-          {race.season} · Round {race.round ?? "—"}
-        </p>
-        <h1 className="display text-[clamp(2.5rem,9vw,4.5rem)]">{race.name}</h1>
-        {race.start && race.end && (
-          <p className="text-ink-2">
-            {formatDate(race.start)} – {formatDate(race.end)}
-            {race.circuit && ` · ${race.circuit}`}
+    <div className="overflow-x-clip">
+      <header className="relative flex min-h-[75vh] flex-col justify-end overflow-hidden border-b border-line bg-surface">
+        <Image
+          src="/brand/amr26-render-rear.jpg"
+          alt="Aston Martin Aramco race car seen from behind"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center opacity-70"
+        />
+        <div className="absolute inset-0 bg-bg/45" aria-hidden />
+        <div className="relative mx-auto flex w-full max-w-[1440px] flex-col items-start gap-6 px-4 py-12 sm:px-6 sm:py-20">
+          <Link href="/lap" className="label text-ink underline underline-offset-4 hover:text-lime">
+            ← Back to the car story
+          </Link>
+          <p className="label text-lime">At the circuit</p>
+          <h1 className="display max-w-5xl text-[clamp(3.3rem,9vw,8rem)]">{raceName}</h1>
+          {race.circuit && <p className="text-lg text-ink">{race.circuit}</p>}
+          <p className="max-w-2xl text-ink-2">
+            See what the team publishes about moving to a race, what can only be estimated, and where local evidence is missing.
           </p>
-        )}
+        </div>
       </header>
 
-      <CarbonLogistics />
-      <ChangeVsEarlier />
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-16 px-4 py-16 sm:px-6 sm:py-24">
+        <CarbonLogistics />
+        <ChangeVsEarlier />
 
-      {hasOwnTrackside ? <OwnTracksideCard raceId={race.id} raceName={race.name} /> : <DataGapCard raceName={race.name} />}
+        {hasOwnTrackside ? <OwnTracksideCard raceId={race.id} raceName={raceName} /> : <DataGapCard raceName={raceName} />}
 
-      <section className="flex flex-col gap-4 border-t border-line pt-6">
-        <p className="label">Matched for you</p>
-        <MatchedInitiatives paramProfile={paramProfile} />
-      </section>
-
-      {hasLiveFeed && <LivePanel raceId={race.id} />}
+        <section className="flex flex-col gap-6 border-t border-line pt-10">
+          <p className="label">Beyond the circuit</p>
+          <h2 className="display text-[clamp(2.5rem,6vw,5rem)]">The people around the race</h2>
+          <MatchedInitiatives paramProfile={paramProfile} />
+        </section>
+      </div>
     </div>
   );
 }

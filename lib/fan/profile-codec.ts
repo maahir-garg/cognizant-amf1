@@ -24,7 +24,7 @@ export function decodeProfile(param: string | null | undefined): FanProfile | nu
 }
 
 export const FAN_LEVEL_COPY: Record<FanLevel, { label: string; description: string }> = {
-  new: { label: "New to F1", description: "Explain things simply, skip the jargon." },
+  new: { label: "New to Formula One", description: "Explain things simply, skip the jargon." },
   casual: { label: "Casual fan", description: "I follow the sport, I don't need everything spelled out." },
   "die-hard": { label: "Die-hard", description: "Give me the detail and the data quality caveats too." },
 };

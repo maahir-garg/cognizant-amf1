@@ -1,8 +1,9 @@
 "use client";
 
 import { ArrowRight, Check } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   Select,
   SelectContent,
@@ -15,7 +16,6 @@ import { cities } from "@/lib/data/load";
 import { FAN_LEVELS, type FanLevel, type FanProfile, type Interest } from "@/lib/data/schemas";
 import { ALL_INTERESTS, FAN_LEVEL_COPY, INTEREST_COPY } from "@/lib/fan/profile-codec";
 import { useFanProfile } from "@/lib/fan/profile";
-import { previewLap } from "@/lib/fan/lap";
 import { cn } from "@/lib/utils";
 
 export function StartClient({ paramProfile }: { paramProfile: FanProfile | null }) {
@@ -30,11 +30,6 @@ export function StartClient({ paramProfile }: { paramProfile: FanProfile | null 
   const [interests, setInterests] = useState<Interest[]>(initial?.interests ?? []);
 
   const ready = Boolean(level && cityId && interests.length > 0);
-  const preview = useMemo(() => {
-    if (!ready || !level || !cityId) return null;
-    return previewLap({ level, cityId, interests });
-  }, [ready, level, cityId, interests]);
-
   function toggleInterest(i: Interest) {
     setInterests((cur) => (cur.includes(i) ? cur.filter((x) => x !== i) : [...cur, i]));
   }
@@ -46,15 +41,27 @@ export function StartClient({ paramProfile }: { paramProfile: FanProfile | null 
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-xl flex-col gap-10 px-4 py-10 sm:px-6 sm:py-16">
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-12 px-4 py-10 sm:px-6 sm:py-16">
+      <div className="flex flex-col items-start gap-4 border-b border-line pb-10">
+        <p className="label">Your view</p>
+        <h1 className="display text-[clamp(2.75rem,10vw,5rem)]">Explore first. Personalise if useful.</h1>
+        <p className="max-w-xl text-lg leading-relaxed text-ink-2">
+          The full car journey is open now. You can add a few preferences to change the level of detail and local emphasis; every ESG topic remains visible.
+        </p>
+        <Button asChild size="lg">
+          <Link href="/lap">
+            Explore the car journey <ArrowRight />
+          </Link>
+        </Button>
+      </div>
+
       <div className="flex flex-col gap-3">
-        <p className="label">Before lights out</p>
-        <h1 className="display text-[clamp(2.75rem,10vw,4.5rem)]">Set up your lap</h1>
-        <p className="text-ink-2">Three quick picks. Takes about thirty seconds, and shapes everything that follows.</p>
+        <p className="label">Optional personalisation</p>
+        <h2 className="display text-3xl sm:text-4xl">Tune the commentary</h2>
       </div>
 
       <section className="flex flex-col gap-3">
-        <h2 className="label">1 · How much F1 do you follow?</h2>
+        <h3 className="label">How closely do you follow Formula One?</h3>
         <div className="flex flex-col gap-2">
           {FAN_LEVELS.map((l) => (
             <button
@@ -78,7 +85,7 @@ export function StartClient({ paramProfile }: { paramProfile: FanProfile | null 
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="label">2 · Where do you watch from?</h2>
+        <h3 className="label">Where do you watch from?</h3>
         <Select value={cityId ?? undefined} onValueChange={setCityId}>
           <SelectTrigger className="h-11 w-full text-base" aria-label="Home city">
             <SelectValue placeholder="Choose your city" />
@@ -94,7 +101,7 @@ export function StartClient({ paramProfile }: { paramProfile: FanProfile | null 
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="label">3 · What do you want more of? (pick at least one)</h2>
+        <h3 className="label">What would you like emphasised?</h3>
         <div className="flex flex-wrap gap-2">
           {ALL_INTERESTS.map((i) => (
             <button
@@ -115,17 +122,10 @@ export function StartClient({ paramProfile }: { paramProfile: FanProfile | null 
 
       <div className="flex flex-col gap-4 border-t border-line pt-6">
         <p className="min-h-4 text-sm text-ink-2" aria-live="polite">
-          {preview ? (
-            <>
-              Your lap: <span className="num text-ink">{preview.sectorCount}</span> sectors ·{" "}
-              <span className="num text-ink">{preview.quizCount}</span> quiz beats
-            </>
-          ) : (
-            "Pick a level, a city and at least one interest to preview your lap."
-          )}
+          {ready ? "Your preferences are ready." : "Choose each preference to save a personalised view."}
         </p>
         <Button size="lg" disabled={!ready} onClick={start} className="w-full sm:w-auto">
-          Start your lap <ArrowRight />
+          Save and explore <ArrowRight />
         </Button>
       </div>
     </div>

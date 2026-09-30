@@ -9,31 +9,23 @@ import { facts } from "@/lib/data/load";
  */
 export function DataQualityPanel() {
   const flagged = facts.filter((f) => f.flags.length > 0);
-  const byKind = flagged.reduce<Record<string, number>>((acc, f) => {
-    for (const fl of f.flags) acc[fl.kind] = (acc[fl.kind] ?? 0) + 1;
-    return acc;
-  }, {});
   const examples = flagged.slice(0, 3);
-  const summary = Object.entries(byKind)
-    .map(([k, v]) => `${v} ${k.replace(/-/g, " ")}`)
-    .join(", ");
 
   return (
-    <section className="flex flex-col gap-4 border-t border-line pt-8">
-      <div className="flex flex-wrap items-baseline justify-between gap-4">
+    <section className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+      <div className="flex flex-col items-start gap-5">
         <p className="label">Data quality · governance</p>
+        <h2 className="display text-4xl sm:text-6xl">Trust includes the difficult parts.</h2>
+        <p className="max-w-xl text-sm leading-relaxed text-ink-2">
+          The evidence layer audits the team&apos;s published reports before a figure reaches a partner brief. Conflicts,
+          restatements and limits stay visible so the output can be challenged and corrected.
+        </p>
         <Link href="/sources" className="label text-lime underline-offset-4 hover:underline">
           Browse every flag →
         </Link>
       </div>
-      <p className="max-w-2xl text-sm text-ink-2">
-        We audit the team&apos;s own published reports for internal inconsistencies before a figure reaches a partner deck:{" "}
-        <span className="num text-ink">{flagged.length}</span> of <span className="num text-ink">{facts.length}</span> facts
-        currently carry a flag{summary ? ` (${summary})` : ""}. Surfacing this here, rather than hiding it, is the governance
-        value: a partner sees exactly where the source data disagrees with itself and why.
-      </p>
       {examples.length > 0 && (
-        <ul className="flex flex-col divide-y divide-line rounded-md border border-line">
+        <ul className="flex flex-col divide-y divide-line border-y border-line">
           {examples.map((f) => (
             <li key={f.id} className="flex flex-col gap-2 p-4">
               <div className="flex flex-wrap items-center gap-3">

@@ -260,11 +260,13 @@ export type Counter = z.infer<typeof Counter>;
 export const Quiz = z.object({
   id: Slug,
   pillar: Pillar,
-  /** The fact whose value is the answer. */
+  /** The fact that supports the answer and appears in the reveal. */
   factId: Slug,
   question: z.string(),
   options: z.array(z.string()).min(2).max(4),
   answerIndex: z.number().int().nonnegative(),
+  /** Verbatim fragment from the cited fact for a qualitative correct option. */
+  answerEvidence: z.string().min(1).optional(),
   /** Fan levels that see this beat. New fans see the most. */
   levels: z.array(z.enum(["new", "casual", "die-hard"])).min(1),
   explainer: z.string(),

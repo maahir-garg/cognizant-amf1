@@ -1,104 +1,105 @@
 "use client";
 
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { ArrowDown, ArrowRight, SlidersHorizontal } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { FanProfile } from "@/lib/data/schemas";
-import { buildLap } from "@/lib/fan/lap";
+import { JOURNEY_STAGES, type JourneyStage } from "@/lib/fan/lap";
 import { useResolvedProfile } from "@/lib/fan/profile";
-import { LapFinish } from "./lap-finish";
 import { LapProgress } from "./lap-progress";
-import { NoProfileCard } from "./no-profile-card";
-import { ScrutineeringPanel } from "./scrutineering-panel";
+import { JourneyStageVisual } from "./journey-stage-visual";
 import { SectorPanel } from "./sector-panel";
-import type { QuizAnswer } from "./quiz-beat";
 
 export function LapClient({ paramProfile }: { paramProfile: FanProfile | null }) {
-  const profile = useResolvedProfile(paramProfile);
-  return profile ? <Lap profile={profile} /> : <NoProfileCard />;
-}
-
-function Lap({ profile }: { profile: FanProfile }) {
-  const steps = useMemo(() => buildLap(profile), [profile]);
-  const [index, setIndex] = useState(0);
-  const [direction, setDirection] = useState(1);
-  const [answers, setAnswers] = useState<Record<string, QuizAnswer>>({});
-  const reduceMotion = useReducedMotion();
-
-  const step = steps[index];
-  const canBack = index > 0;
-  const canForward = index < steps.length - 1;
-
-  function go(next: number) {
-    if (next < 0 || next >= steps.length) return;
-    setDirection(next > index ? 1 : -1);
-    setIndex(next);
-  }
+  const savedProfile = useResolvedProfile(paramProfile);
+  const [activeId, setActiveId] = useState<JourneyStage["id"]>(JOURNEY_STAGES[0].id);
 
   useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      const tag = (document.activeElement?.tagName ?? "").toLowerCase();
-      if (tag === "input" || tag === "textarea" || tag === "select") return;
-      if (e.key === "ArrowRight" && canForward) go(index + 1);
-      if (e.key === "ArrowLeft" && canBack) go(index - 1);
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [index, canForward, canBack]);
-
-  function onAnswer(quizId: string, a: QuizAnswer) {
-    setAnswers((cur) => ({ ...cur, [quizId]: a }));
-  }
-
-  const variants = {
-    enter: (dir: number) => ({ opacity: 0, x: reduceMotion ? 0 : dir * 24 }),
-    center: { opacity: 1, x: 0 },
-    exit: (dir: number) => ({ opacity: 0, x: reduceMotion ? 0 : dir * -24 }),
-  };
+    const nodes = document.querySelectorAll<HTMLElement>("[data-journey-stage]");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        const id = visible?.target.getAttribute("data-journey-stage") as JourneyStage["id"] | null;
+        if (id) setActiveId(id);
+      },
+      { rootMargin: "-28% 0px -48% 0px", threshold: [0.05, 0.2, 0.45] },
+    );
+    nodes.forEach((node) => observer.observe(node));
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <div className="flex min-h-[calc(100dvh-3.5rem)] flex-col">
-      <div className="sticky top-14 z-20 border-b border-line bg-bg/95 px-4 py-3 backdrop-blur sm:px-6">
-        <div className="mx-auto flex w-full max-w-3xl flex-col gap-2">
-          <LapProgress steps={steps} current={index} />
-          <p className="label">
-            {step.kind === "finish" ? "Finish" : step.marker} · Step {index + 1} of {steps.length}
-          </p>
+    <div className="relative">
+      <div className="sticky top-14 z-30 border-b border-line bg-bg/95 px-4 py-3 backdrop-blur sm:px-6">
+        <div className="mx-auto w-full max-w-6xl">
+          <LapProgress stages={JOURNEY_STAGES} activeId={activeId} />
         </div>
       </div>
 
-      <div className="mx-auto w-full max-w-3xl flex-1 overflow-hidden px-4 py-8 sm:px-6 sm:py-10">
-        <AnimatePresence mode="wait" custom={direction} initial={false}>
-          <motion.div
-            key={index}
-            custom={direction}
-            variants={variants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ duration: reduceMotion ? 0 : 0.22, ease: "easeOut" }}
-          >
-            {step.kind === "sector" && <SectorPanel step={step} profile={profile} answers={answers} onAnswer={onAnswer} />}
-            {step.kind === "scrutineering" && <ScrutineeringPanel step={step} profile={profile} answers={answers} onAnswer={onAnswer} />}
-            {step.kind === "finish" && <LapFinish />}
-          </motion.div>
-        </AnimatePresence>
-      </div>
-
-      {step.kind !== "finish" && (
-        <div className="sticky bottom-0 z-20 border-t border-line bg-bg/95 px-4 py-3 backdrop-blur sm:px-6">
-          <div className="mx-auto flex w-full max-w-3xl items-center justify-between">
-            <Button variant="outline" disabled={!canBack} onClick={() => go(index - 1)} aria-label="Previous">
-              <ChevronLeft /> Back
+      <header className="mx-auto grid min-h-[calc(100dvh-7rem)] w-full max-w-[90rem] items-center gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[minmax(0,0.72fr)_minmax(32rem,1.28fr)] lg:gap-8 lg:py-16">
+        <div className="relative z-10 flex flex-col items-start gap-6 lg:py-12">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-10 bg-lime" aria-hidden />
+            <p className="label text-ink">From factory to circuit</p>
+          </div>
+          <h1 className="display max-w-3xl text-[clamp(3.8rem,9vw,8.8rem)]">Follow the car. See the impact.</h1>
+          <p className="max-w-xl text-lg leading-relaxed text-ink-2 sm:text-xl">
+            Move through the operation with the car. Published evidence shows how environment, belonging, community and governance shape every race weekend.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Button asChild size="lg">
+              <a href="#factory">
+                Enter the factory <ArrowDown />
+              </a>
             </Button>
-            <Button disabled={!canForward} onClick={() => go(index + 1)} aria-label="Next">
-              Next <ChevronRight />
+            <Button asChild size="lg" variant="outline">
+              <Link href="/start">
+                <SlidersHorizontal /> {savedProfile ? "Adjust your view" : "Personalise later"}
+              </Link>
             </Button>
           </div>
+          <div className="grid max-w-xl gap-3 border-t border-line pt-5 sm:grid-cols-2">
+            <div>
+              <p className="label text-lime">What AI changes</p>
+              <p className="mt-2 text-sm leading-relaxed text-ink-2">It turns the facts for each operational stage into a concise, contextual explanation for you.</p>
+            </div>
+            <div>
+              <p className="label text-ink">What stays fixed</p>
+              <p className="mt-2 text-sm leading-relaxed text-ink-2">The published facts, their status and their sources. Tap any figure to inspect the evidence.</p>
+            </div>
+          </div>
         </div>
-      )}
+        <JourneyStageVisual stageId="factory" className="w-full lg:min-h-[42rem]" />
+      </header>
+
+      <div className="mx-auto w-full max-w-[90rem] px-4 sm:px-6">
+        {JOURNEY_STAGES.map((stage, index) => (
+          <SectorPanel key={stage.id} stage={stage} profile={savedProfile} index={index} />
+        ))}
+
+        <section className="my-16 grid gap-8 border-y border-line py-12 sm:my-24 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div className="flex max-w-2xl flex-col gap-3">
+            <p className="label">Parc fermé</p>
+            <h2 className="display text-[clamp(2.5rem,7vw,4.5rem)]">Keep exploring</h2>
+            <p className="text-ink-2">
+              See the next race through your region, or take the optional knowledge check after the full story.
+            </p>
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Button asChild size="lg">
+              <Link href="/weekend/singapore-2026">
+                Explore a Singapore example <ArrowRight />
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link href="/quiz">Optional knowledge check</Link>
+            </Button>
+          </div>
+        </section>
+      </div>
     </div>
   );
 }
