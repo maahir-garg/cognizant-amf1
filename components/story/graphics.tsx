@@ -427,9 +427,9 @@ export function TilesGraphic({ title, tiles, highlight }: { title: string; tiles
 
 export function QuoteStage({ quote }: { quote: Quote }) {
   return (
-    <figure className="flex max-w-[640px] flex-col gap-5">
+    <figure className="flex w-full max-w-[640px] flex-col gap-5">
       <blockquote className="font-serif text-[clamp(1.75rem,1.1rem+2.6vw,3.5rem)] leading-[1.12] font-medium text-ink italic">
-        <p>
+        <p className="text-balance">
           <span aria-hidden className="text-highlight">
             “
           </span>

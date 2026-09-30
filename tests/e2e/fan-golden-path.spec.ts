@@ -111,7 +111,8 @@ test.describe("fan golden path", () => {
     for (let i = 0; i < total; i++) {
       const q = questions.nth(i);
       await q.locator("label").first().click();
-      await expect(q.getByText(/Correct, and the report agrees\.|Not quite/)).toBeVisible();
+      // The verdict line only: the AI reveal below can also start with "Not quite".
+      await expect(q.getByText(/^(✓ Correct, and the report agrees\.|Not quite\. Here's what the report says\.)$/)).toBeVisible();
       const figure = q.getByRole("button", { name: /Show source\.$/ });
       await expect(figure).toBeVisible();
       await expect(figure).toContainText(/Verified|Estimated/);
