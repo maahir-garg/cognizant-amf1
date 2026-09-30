@@ -25,7 +25,7 @@ export function GettingThere({ race, initial }: { race: Race; initial: TripInput
             </p>
             <p>
               The bigger story is the team&apos;s own freight: cars, parts and garage kit flown and shipped between rounds.{" "}
-              <Link href="/#moving-the-team" className="link font-sans text-[0.9375rem]">
+              <Link href="/#moving" className="link font-sans text-[0.9375rem]">
                 Read how the team moves →
               </Link>
             </p>

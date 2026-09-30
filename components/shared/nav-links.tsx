@@ -8,7 +8,7 @@ import { APP_NAME } from "@/lib/config";
 import { cn } from "@/lib/utils";
 
 export const NAV_LINKS = [
-  { href: "/", label: "The story", match: (p: string) => p === "/" || p.startsWith("/share") || p.startsWith("/quiz") },
+  { href: "/", label: "The story", match: (p: string) => p === "/" },
   { href: "/weekend/singapore-2026", label: "Singapore GP", match: (p: string) => p.startsWith("/weekend") },
   { href: "/partners", label: "Partners", match: (p: string) => p.startsWith("/partners") },
   { href: "/how-it-works", label: "How it works", match: (p: string) => p.startsWith("/how-it-works") },
