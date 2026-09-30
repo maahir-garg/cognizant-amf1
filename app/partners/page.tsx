@@ -1,95 +1,174 @@
-import { ArrowRight, Download, FileJson } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { StatusLegend } from "@/components/shared/status-badge";
-import { Button } from "@/components/ui/button";
-import { DataQualityPanel } from "@/components/partner/data-quality-panel";
-import { JointStrip } from "@/components/partner/joint-strip";
-import { KpiGrid } from "@/components/partner/kpi-grid";
+import { DeskHeader, DeskSection } from "@/components/partner/desk-header";
+import { FactNotes, FactRow, FactTiles } from "@/components/partner/fact-tiles";
+import { SuggestedPost } from "@/components/partner/suggested-post";
+import { FactValue, InlineFact } from "@/components/shared/fact-value";
+import { DataGap, StatusLegend } from "@/components/shared/status-badge";
 import { PARTNER_NAME } from "@/lib/config";
+import { factCitation, getFact, getSource } from "@/lib/data/load";
+import { formatDate } from "@/lib/format";
+import {
+  jointCognizantFacts,
+  newestFacts,
+  POST_ANGLES,
+  RACE_DATA_GAPS,
+  raceFacts,
+  raceInitiatives,
+  raceWeekRace,
+} from "@/lib/partner/race-week";
 
-export const metadata: Metadata = { title: "Partner Impact Intelligence" };
+export const metadata: Metadata = { title: "Impact desk: this race week" };
 
-export default function PartnerOverviewPage() {
+/** Short, number-free tile captions for the figures this page shows. */
+const CAPTIONS: Record<string, string> = {
+  "c25-stem-racing-students": "Students at the STEM Racing World Finals in Singapore",
+  "c25-stem-racing-countries": "Countries those students came from",
+  "m-stem-programme-reach": "Young people reached by the STEM programme, UK and race locations",
+  "c25-mam-day-students": "Students at Make A Mark Day, where Cognizant ran the careers sessions",
+  "c25-mam-day-schools": "Schools and community groups at Make A Mark Day",
+  "c25-mam-day-early-careers": "Make A Mark Day students who met the Early Careers team",
+  "c25-ai-skills-gap": "Students unsure, at the start of the day, what skills AI work needs",
+  "c24-mam-day-students": "Students at Make A Mark Day in British Grand Prix week, the year before",
+  "c24-esg-impressions-partners": "Extra impressions when partners, Cognizant included, shared the team's stories",
+};
+
+const NEW_LABELS: Record<string, string> = {
+  "e25-progress-scope12": "Scope 1 and 2 against the baseline year",
+  "e25-progress-scope3": "Scope 3 against the baseline year",
+  "e25-target-2030-tco2e": "2030 target footprint",
+  "e25-target-2050-tco2e": "2050 residual footprint",
+};
+
+/** "9 to 11 Oct 2026", or "30 Sept to 2 Oct 2026" across a month. */
+function dateRange(start: string, end: string): string {
+  const [a, b] = [formatDate(start), formatDate(end)];
+  const [ad, am, ay] = a.split(" ");
+  const [, bm, by] = b.split(" ");
+  if (ay !== by) return `${a} to ${b}`;
+  return am === bm ? `${ad} to ${b}` : `${ad} ${am} to ${b}`;
+}
+
+export default function RaceWeekPage() {
+  const race = raceWeekRace();
+  const published = raceFacts(race);
+  const joint = jointCognizantFacts().filter((f) => !published.some((p) => p.id === f.id));
+  const programmes = raceInitiatives(race);
+  const latest = getSource("esg-2025");
+  const changes = newestFacts();
+  const restatement = getFact("g25-restatement");
+
+  const numeric = (list: typeof published) => list.filter((f) => f.value !== null).map((f) => f.id);
+  const text = (list: typeof published) => list.filter((f) => f.value === null).map((f) => f.id);
+
   return (
-    <div className="flex flex-col">
-      <header className="flex flex-col gap-5 border-b border-line py-12 lg:py-16">
-        <p className="kicker kicker-rule">{PARTNER_NAME} × Aston Martin Aramco</p>
-        <h1 className="h1-feature">Impact desk</h1>
-        <p className="dek">Published, checked figures from the team&apos;s own reports, ready to turn into content partners can publish.</p>
-      </header>
+    <>
+      <DeskHeader
+        kicker="Impact desk · This race week"
+        title={race.name}
+        dek={
+          <>
+            {race.start && race.end && dateRange(race.start, race.end)}
+            {race.circuit && ` · ${race.circuit}`}. What the team has published that you can use this week, what is new, and what is not
+            published.
+          </>
+        }
+        aside={
+          <>
+            <StatusLegend />
+            <p className="text-[0.875em] text-ink-3">
+              Updated when the team publishes. Latest: {latest.title}.
+            </p>
+          </>
+        }
+      />
 
-      <section id="evidence" className="grid scroll-mt-28 gap-10 border-b border-line py-16 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:py-24">
-        <div className="lg:sticky lg:top-32 lg:self-start">
-          <p className="label">The transformation</p>
-          <h2 className="font-serif font-medium leading-[1.05] tracking-tight mt-4 max-w-xl text-4xl sm:text-6xl">Published data becomes useful evidence.</h2>
-        </div>
-        <div className="grid gap-px overflow-hidden rounded-md border border-line bg-line sm:grid-cols-2">
-          {[
-            ["Find", "Retrieve only the report facts relevant to a partner, audience and impact area."],
-            ["Explain", "Turn dense disclosures into plain language while keeping citations attached."],
-            ["Check", "Reject generated figures that do not match a cited fact or documented calculation."],
-            ["Reuse", "Adapt one governed evidence base into briefs, scenarios and partner-ready stories."],
-          ].map(([title, body]) => (
-            <div key={title} className="min-h-48 bg-surface p-6 sm:p-8">
-              <p className="label text-link">{title}</p>
-              <p className="mt-6 max-w-sm text-lg leading-snug text-ink">{body}</p>
+      <div className="grid gap-x-12 gap-y-12 pt-8 lg:grid-cols-12">
+        <DeskSection
+          id="published"
+          title="Published for this race"
+          note={`From the programmes the reports tie to ${programmes.length ? "Singapore" : "this city"}`}
+          className="lg:col-span-8"
+        >
+          <FactTiles ids={numeric(published)} captions={CAPTIONS} />
+          <FactNotes ids={text(published)} />
+          {programmes.length > 0 && (
+            <p className="text-[0.875em] text-ink-3">
+              Programmes: {programmes.map((p) => p.name).join("; ")}.
+            </p>
+          )}
+        </DeskSection>
+
+        <DeskSection id="changed" title="What changed since the last report" className="lg:col-span-4">
+          <div className="flex flex-col gap-3">
+            <p className="text-ink-2">
+              New in the fact base on {formatDate(changes.date)}: the report&apos;s own progress figures from its target chart. Use these
+              for progress, not a comparison of yearly totals.
+            </p>
+            <div className="flex flex-col divide-y divide-line border-y border-line">
+              {changes.facts.map((f) => (
+                <FactRow key={f.id} id={f.id} label={NEW_LABELS[f.id]} />
+              ))}
             </div>
-          ))}
-        </div>
-      </section>
-
-      <div className="py-16 lg:py-24">
-        <div className="mb-10 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-          <div>
-            <p className="label">Partner evidence</p>
-            <h2 className="font-serif font-medium leading-[1.05] tracking-tight mt-3 text-4xl sm:text-6xl">The shared work, in source.</h2>
           </div>
-          <StatusLegend />
-        </div>
-        <JointStrip />
-      </div>
-
-      <div className="border-y border-line py-16 lg:py-24">
-        <KpiGrid />
-      </div>
-
-      <div className="grid gap-10 py-16 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16 lg:py-24">
-        <div>
-          <p className="label">From evidence to communication</p>
-          <h2 className="font-serif font-medium leading-[1.05] tracking-tight mt-3 max-w-xl text-4xl sm:text-6xl">A draft you can audit.</h2>
-        </div>
-        <div className="flex max-w-2xl flex-col items-start gap-6">
-          <p className="text-lg leading-relaxed text-ink-2">
-            Choose an audience and impact area. The system retrieves the relevant published facts, writes a plain-language draft,
-            cites each claim and holds back unsupported figures. Human review remains the final editorial step.
-          </p>
-          <Button asChild>
-            <Link href="/partners/narratives">
-              Build a grounded draft <ArrowRight />
+          <div className="flex flex-col gap-2 rounded-[4px] border border-line bg-surface p-4">
+            <p className="kicker text-conflict">Restated</p>
+            <FactValue id={restatement.id} size="sm" />
+            <Link href="/partners/data-quality" className="link self-start text-[0.875em] font-medium">
+              See every restated and disputed figure
             </Link>
-          </Button>
-        </div>
-      </div>
+          </div>
+        </DeskSection>
 
-      <div className="border-t border-line py-16 lg:py-24">
-        <DataQualityPanel />
-      </div>
+        <DeskSection
+          id="joint"
+          title={`Joint with ${PARTNER_NAME}`}
+          note={`Facts tagged as joint ${PARTNER_NAME} activity`}
+          className="lg:col-span-8"
+        >
+          <FactTiles ids={numeric(joint)} captions={CAPTIONS} />
+          <FactNotes ids={text(joint)} />
+        </DeskSection>
 
-      <section className="-mx-4 flex flex-col gap-5 border-t border-line bg-surface px-4 py-10 sm:-mx-6 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <p className="label">Take the evidence with you</p>
-          <p className="mt-2 max-w-xl text-sm text-ink-2">Export the same governed metrics shown here for analysis and reporting.</p>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <Button asChild variant="outline">
-            <a href="/api/partner/metrics?format=csv" download="partner-metrics.csv"><Download /> Export CSV</a>
-          </Button>
-          <Button asChild variant="outline">
-            <a href="/api/partner/metrics" target="_blank" rel="noreferrer" title="Open the metrics API response"><FileJson /> JSON API</a>
-          </Button>
-        </div>
-      </section>
-    </div>
+        <DeskSection id="gaps" title="Not published" note="Leave these out, or say they are not published" className="lg:col-span-4">
+          <ul className="flex flex-col gap-3">
+            {RACE_DATA_GAPS.map((g) => (
+              <li key={g.title}>
+                <DataGap label={`Data gap · ${g.title}`}>{g.body}</DataGap>
+              </li>
+            ))}
+          </ul>
+        </DeskSection>
+
+        <DeskSection id="angles" title="Post angles for the week" note="Each angle lists the facts it rests on" className="lg:col-span-8">
+          <ul className="grid gap-px overflow-hidden border-y border-line bg-line md:grid-cols-2">
+            {POST_ANGLES.map((a) => (
+              <li key={a.id} className="flex flex-col gap-3 bg-bg py-5 md:px-5 md:first:pl-0 md:[&:nth-child(odd)]:pl-0">
+                <h3 className="text-[1.0625rem] font-semibold text-ink">{a.title}</h3>
+                <p className="text-ink-2">{a.why}</p>
+                <p className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                  {/* Figures only; the angle's words already carry the qualitative facts. */}
+                  {a.factIds
+                    .filter((id) => getFact(id).value !== null)
+                    .map((id) => (
+                      <InlineFact key={id} id={id} />
+                    ))}
+                  <span className="text-[0.8125rem] text-ink-3">
+                    {[...new Set(a.factIds.map((id) => factCitation(getFact(id)).label))].join(" · ")}
+                  </span>
+                </p>
+                <Link href={a.href} className="link mt-auto self-start font-medium">
+                  {a.action}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </DeskSection>
+
+        <DeskSection id="suggested" title="Suggested post" note="Drafted from the fact base" className="lg:col-span-4">
+          <SuggestedPost />
+        </DeskSection>
+      </div>
+    </>
   );
 }

@@ -1,9 +1,9 @@
 /**
  * Enumerates every AI request the offline demo can hit: every persona x
  * pillar, every quiz visible to that persona (both outcomes), every
- * persona's share caption, every partner narrative format x tone, the
- * default scenario, every verified non-Cognizant initiative's story kit
- * (both formats).
+ * persona's share caption, every partner narrative format (all pillars and
+ * community only), the default scenario, every verified non-Cognizant
+ * initiative's story kit (every format).
  *
  * Shared by scripts/warm-cache.ts (which sends these through the live
  * pipeline when a key is configured) and tests/unit/ai-templates.test.ts
@@ -18,7 +18,7 @@ import {
   DEFAULT_SHARE_FACT_IDS,
   DEMO_PERSONAS,
   NARRATIVE_FORMATS,
-  NARRATIVE_TONES,
+  STORY_KIT_FORMATS,
   fanStoryRequest,
   narrativeRequest,
   quizRevealRequest,
@@ -43,10 +43,8 @@ export function enumerateDemoRequests(): AiRequest[] {
   }
 
   for (const format of NARRATIVE_FORMATS) {
-    for (const tone of NARRATIVE_TONES) {
-      reqs.push(narrativeRequest(format, { partnerId: "cognizant", pillars: [...PILLARS], tone }));
-      reqs.push(narrativeRequest(format, { partnerId: "cognizant", pillars: ["community"], tone }));
-    }
+    reqs.push(narrativeRequest(format, { partnerId: "cognizant", pillars: [...PILLARS] }));
+    reqs.push(narrativeRequest(format, { partnerId: "cognizant", pillars: ["community"] }));
   }
 
   const scenarioOutputs = runScenario(SCENARIO_DEFAULTS);
@@ -55,8 +53,7 @@ export function enumerateDemoRequests(): AiRequest[] {
 
   for (const initiative of initiatives) {
     if (initiative.status !== "verified" || initiative.partners.includes("Cognizant")) continue;
-    reqs.push(storyKitRequest(initiative.id, "post"));
-    reqs.push(storyKitRequest(initiative.id, "summary"));
+    for (const format of STORY_KIT_FORMATS) reqs.push(storyKitRequest(initiative.id, format));
   }
 
   return reqs;

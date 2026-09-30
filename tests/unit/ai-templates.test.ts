@@ -82,8 +82,8 @@ describe("task shape rules", () => {
     }
   });
 
-  it("investor-summary has a title, exactly 4 bullets and a so-what line", () => {
-    for (const req of requests.filter((r) => r.task === "investor-summary")) {
+  it("leadership-update has a title, exactly 4 bullets and a so-what line", () => {
+    for (const req of requests.filter((r) => r.task === "leadership-update")) {
       const text = renderTemplate(req, req.factIds.map(getFact));
       const lines = text.trim().split("\n");
       const bullets = lines.filter((l) => l.startsWith("- "));
@@ -108,12 +108,14 @@ describe("task shape rules", () => {
     }
   });
 
-  it("story-kit summary format is 2-3 sentences", () => {
-    for (const req of requests.filter((r) => r.task === "story-kit" && r.params.format === "summary")) {
+  it("story-kit funder format is one third-person paragraph of 40-110 words", () => {
+    for (const req of requests.filter((r) => r.task === "story-kit" && r.params.format === "funder")) {
       const text = renderTemplate(req, req.factIds.map(getFact));
-      const sentences = text.match(/[.!?](?=\s|$)/g)?.length ?? 0;
-      expect(sentences).toBeGreaterThanOrEqual(2);
-      expect(sentences).toBeLessThanOrEqual(3);
+      const n = words(text);
+      expect(n).toBeGreaterThanOrEqual(40);
+      expect(n).toBeLessThanOrEqual(110);
+      expect(text).not.toMatch(/\n/);
+      expect(text).not.toMatch(/\b(we|our|us)\b/i);
     }
   });
 });

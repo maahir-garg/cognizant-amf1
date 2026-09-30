@@ -66,15 +66,15 @@ const TASK_RULES: Record<AiRequest["task"], TaskRules> = {
     `Task: linkedin-post. Write 80-140 words in a confident, co-branded Cognizant x Aston Martin Aramco voice, third person, suitable to post on LinkedIn. End with up to 3 hashtags on their own line; hashtags must be words only, never digits.`,
   "quarterly-brief": () =>
     `Task: quarterly-brief. Write a one-line headline, then 3-4 short sections each with a one-line lead-in and 1-2 bullet points ("- " prefix). Total length 180-260 words. Plain professional partner-facing tone, third person.`,
-  "investor-summary": () =>
-    `Task: investor-summary. Write a short slide-ready summary: one title line, then exactly 4 bullet points ("- " prefix), then one closing line starting "So what:" that states the implication. No other text.`,
+  "leadership-update": () =>
+    `Task: leadership-update. Write a short update for Cognizant's leadership team: one title line, then exactly 4 bullet points ("- " prefix), then one closing line starting "So what:" that states the implication. No other text.`,
   "scenario-explanation": () =>
     `Task: scenario-explanation. Write 3-4 sentences in plain professional language explaining what the projected scenario outcomes mean, using only the derived values ([D:...]) supplied. Name the assumption each projection scales from (drawn from its formula) as you go.`,
   "story-kit": (req) => {
     const format = req.params.format;
     return format === "post"
       ? `Task: story-kit, format "post". Write 60-100 words in the voice of the charity or community partner talking about the collaboration, first person plural ("we"), warm and specific.`
-      : `Task: story-kit, format "summary". Write 2-3 sentences in the third person, suitable as a short catalogue description of the initiative.`;
+      : `Task: story-kit, format "funder". Write one paragraph of 40-110 words in formal third person, suitable for a charity's report to its funders: what the collaboration is, then its published outcomes. No first person, no hashtags.`;
   },
 };
 
