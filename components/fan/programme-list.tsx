@@ -1,9 +1,9 @@
 import { FactValue } from "@/components/shared/fact-value";
 import { DataGap } from "@/components/shared/status-badge";
 import { APP_NAME } from "@/lib/config";
-import { findFact, getSource, sourceLink, sourceShortName } from "@/lib/data/load";
+import { findFact, getSource, initiatives, sourceLink, sourceShortName } from "@/lib/data/load";
 import type { Race } from "@/lib/data/schemas";
-import { raceCityName, raceProgrammes, type Programme } from "@/lib/fan/race";
+import { raceCityName, raceProgrammes, WAYS_IN, type Programme } from "@/lib/fan/race";
 import { SectionHead } from "./section-head";
 
 function joinNames(names: string[]): string {
@@ -27,7 +27,7 @@ function ProgrammeCard({ programme, race }: { programme: Programme; race: Race }
   const ids = cardFactIds(programme);
   const source = initiative.sourceId ? getSource(initiative.sourceId) : null;
   return (
-    <article className="flex flex-col gap-4 rounded-md border border-line-strong bg-card p-5 sm:p-6">
+    <article className="flex flex-col gap-4 border-t border-line-strong pt-5">
       <p className="kicker text-ink-3">{whereLabel(programme, race)}</p>
       <h3 className="h3">{initiative.name}</h3>
       <p className="font-serif text-[1.0625rem] leading-[1.45] text-ink sm:text-lg">{initiative.summary}</p>
@@ -38,7 +38,7 @@ function ProgrammeCard({ programme, race }: { programme: Programme; race: Race }
           ))}
         </div>
       )}
-      <div className="mt-auto flex flex-col gap-1 border-t border-line pt-3 font-sans text-[0.8125rem] text-ink-3">
+      <div className="flex flex-col gap-1 font-sans text-[0.8125rem] text-ink-3">
         {initiative.partners.length > 0 && <p>With {joinNames(initiative.partners)}</p>}
         {/* Name the programme's page unless a figure above already cites it. */}
         {!ids.some((id) => findFact(id)?.sourceId === initiative.sourceId && findFact(id)?.page === initiative.page) && source && initiative.sourceId && (
@@ -54,6 +54,50 @@ function ProgrammeCard({ programme, race }: { programme: Programme; race: Race }
         )}
       </div>
     </article>
+  );
+}
+
+/**
+ * Real routes into the programmes the team reports, for fans who want more
+ * than reading: what each is, who it is for and how people join, in the
+ * words of the report. Each opens to its report page. There are no official
+ * sign-up links in the source record, so none are shown.
+ */
+function WaysIn() {
+  return (
+    <div className="flex flex-col gap-6 border-t border-line pt-10">
+      <div className="flex flex-col gap-2">
+        <h3 className="h3">Your way in</h3>
+        <p className="measure font-serif text-[1.0625rem] leading-[1.45] text-ink-2">
+          Want to do more than watch? These are the routes the team&apos;s programmes offer, from school to your first job.{" "}
+          {APP_NAME} doesn&apos;t take sign-ups or list invented events.
+        </p>
+      </div>
+      <ol className="grid gap-x-6 md:grid-cols-2 xl:grid-cols-3">
+        {WAYS_IN.map((w) => {
+          const i = initiatives.find((x) => x.id === w.initiativeId);
+          if (!i) return null;
+          return (
+            <li key={w.initiativeId} className="flex flex-col gap-1.5 border-t border-line py-4">
+              <span className="kicker text-ink-3">{w.who}</span>
+              <span className="font-serif text-lg font-semibold text-ink">{i.name}</span>
+              <span className="font-serif text-[1.0625rem] leading-[1.45] text-ink-2">{w.how}</span>
+              {i.sourceId && (
+                <a
+                  href={sourceLink(i.sourceId, i.page)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-fit font-sans text-[0.8125rem] text-ink-3 underline decoration-1 underline-offset-[3px] hover:text-ink"
+                >
+                  {sourceShortName(i.sourceId)}
+                  {i.page ? `, p. ${i.page}` : ""} ↗
+                </a>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </div>
   );
 }
 
@@ -75,7 +119,7 @@ export function ProgrammeList({ race, upcoming }: { race: Race; upcoming: boolea
           }
         />
         {programmes.length > 0 ? (
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-x-6 gap-y-12 md:grid-cols-2 xl:grid-cols-3">
             {programmes.map((p) => (
               <ProgrammeCard key={p.initiative.id} programme={p} race={race} />
             ))}
@@ -83,12 +127,7 @@ export function ProgrammeList({ race, upcoming }: { race: Race; upcoming: boolea
         ) : (
           <DataGap>The team hasn&apos;t reported a community programme at this race or in {city}.</DataGap>
         )}
-        {upcoming && (
-          <p className="measure font-serif text-[1.0625rem] leading-[1.45] text-ink-2">
-            There&apos;s no sign-up here. {APP_NAME} only lists programmes the team has already reported, so there are no invented
-            events to book. Dates for anything new come from the team&apos;s own channels.
-          </p>
-        )}
+        {upcoming && <WaysIn />}
       </div>
     </section>
   );
