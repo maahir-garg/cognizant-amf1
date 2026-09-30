@@ -87,20 +87,6 @@ export function scenarioExplanationRequest(derived: DerivedValue[], factIds: str
   return { task: "scenario-explanation", factIds: [...new Set(factIds)].sort(), derived, params: {} };
 }
 
-/** Suggested campaign post when a live milestone fires. The milestone value is simulated. */
-export function milestonePostRequest(milestone: { counterId: string; label: string; threshold: number; unit: string }, factIds: string[]): Built {
-  const derived: DerivedValue[] = [
-    {
-      id: `ms-${milestone.counterId}`,
-      label: milestone.label,
-      value: milestone.threshold,
-      unit: milestone.unit,
-      formula: "Simulated live counter crossed a milestone threshold (demo data)",
-    },
-  ];
-  return { task: "linkedin-post", factIds, derived, params: { partner: "cognizant", milestone: milestone.counterId, simulated: true } };
-}
-
 /** Impact copy for a community / charity partner, grounded in its initiative's facts. */
 export function storyKitRequest(initiativeId: string, format: "post" | "summary"): Built {
   const initiative = initiatives.find((i) => i.id === initiativeId);

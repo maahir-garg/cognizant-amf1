@@ -1,10 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { compareTrips, fanEquivalents, toEquivalent } from "@/lib/data/equivalents";
-import { facts, getFact } from "@/lib/data/load";
+import { facts, getFact, initiatives } from "@/lib/data/load";
 import { matchInitiatives } from "@/lib/data/relevance";
 import { runScenario, SCENARIO_DEFAULTS } from "@/lib/data/scenario";
 import { verifyData } from "@/lib/data/verify";
-import { replayAt, replayDuration } from "@/lib/live/replay";
 
 describe("fact base", () => {
   it("passes the full source audit", () => {
@@ -13,6 +12,10 @@ describe("fact base", () => {
   });
   it("labels every fact", () => {
     for (const f of facts) expect(["verified", "estimated", "simulated"]).toContain(f.status);
+  });
+  it("ships no simulated facts or initiatives in the product", () => {
+    expect(facts.filter((f) => f.status === "simulated").map((f) => f.id)).toEqual([]);
+    expect(initiatives.filter((i) => i.status === "simulated").map((i) => i.id)).toEqual([]);
   });
 });
 
@@ -46,15 +49,5 @@ describe("scenario", () => {
     expect(out["sc-students"]).toBe(Math.round(3 * 257 * 0.8));
     expect(out["sc-saf-extra"]).toBe(0);
     expect(out["sc-mentees"]).toBe(14);
-  });
-});
-
-describe("live replay", () => {
-  it("fires milestones exactly once", () => {
-    const end = replayAt("singapore-2026", replayDuration("singapore-2026"));
-    expect(end.done).toBe(true);
-    const ids = end.milestones.map((m) => `${m.counterId}:${m.threshold}`);
-    expect(new Set(ids).size).toBe(ids.length);
-    expect(ids).toContain("sg-stem-students:100");
   });
 });

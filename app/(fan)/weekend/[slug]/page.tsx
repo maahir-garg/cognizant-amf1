@@ -51,11 +51,11 @@ export default async function WeekendPage({
         />
         <div className="absolute inset-0 bg-bg/45" aria-hidden />
         <div className="relative mx-auto flex w-full max-w-[1440px] flex-col items-start gap-6 px-4 py-12 sm:px-6 sm:py-20">
-          <Link href="/lap" className="label text-ink underline underline-offset-4 hover:text-lime">
+          <Link href="/" className="label text-ink underline underline-offset-4 hover:text-link">
             ← Back to the car story
           </Link>
-          <p className="label text-lime">At the circuit</p>
-          <h1 className="display max-w-5xl text-[clamp(3.3rem,9vw,8rem)]">{raceName}</h1>
+          <p className="label text-link">At the circuit</p>
+          <h1 className="font-serif font-medium leading-[1.05] tracking-tight max-w-5xl text-[clamp(3.3rem,9vw,8rem)]">{raceName}</h1>
           {race.circuit && <p className="text-lg text-ink">{race.circuit}</p>}
           <p className="max-w-2xl text-ink-2">
             See what the team publishes about moving to a race, what can only be estimated, and where local evidence is missing.
@@ -71,7 +71,7 @@ export default async function WeekendPage({
 
         <section className="flex flex-col gap-6 border-t border-line pt-10">
           <p className="label">Beyond the circuit</p>
-          <h2 className="display text-[clamp(2.5rem,6vw,5rem)]">The people around the race</h2>
+          <h2 className="font-serif font-medium leading-[1.05] tracking-tight text-[clamp(2.5rem,6vw,5rem)]">The people around the race</h2>
           <MatchedInitiatives paramProfile={paramProfile} />
         </section>
       </div>

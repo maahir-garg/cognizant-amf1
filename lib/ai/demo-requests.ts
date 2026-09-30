@@ -3,7 +3,7 @@
  * pillar, every quiz visible to that persona (both outcomes), every
  * persona's share caption, every partner narrative format x tone, the
  * default scenario, every verified non-Cognizant initiative's story kit
- * (both formats), and every counter milestone post.
+ * (both formats).
  *
  * Shared by scripts/warm-cache.ts (which sends these through the live
  * pipeline when a key is configured) and tests/unit/ai-templates.test.ts
@@ -11,7 +11,7 @@
  * deterministic templates, with no network involved).
  */
 import { HERO_RACE_ID } from "@/lib/config";
-import { counters, initiatives, quizzes } from "@/lib/data/load";
+import { initiatives, quizzes } from "@/lib/data/load";
 import { PILLARS, type AiRequest } from "@/lib/data/schemas";
 import { runScenario, SCENARIO_DEFAULTS, scenarioDerivedValues } from "@/lib/data/scenario";
 import {
@@ -20,7 +20,6 @@ import {
   NARRATIVE_FORMATS,
   NARRATIVE_TONES,
   fanStoryRequest,
-  milestonePostRequest,
   narrativeRequest,
   quizRevealRequest,
   scenarioExplanationRequest,
@@ -58,17 +57,6 @@ export function enumerateDemoRequests(): AiRequest[] {
     if (initiative.status !== "verified" || initiative.partners.includes("Cognizant")) continue;
     reqs.push(storyKitRequest(initiative.id, "post"));
     reqs.push(storyKitRequest(initiative.id, "summary"));
-  }
-
-  for (const counter of counters) {
-    for (const threshold of counter.milestones) {
-      reqs.push(
-        milestonePostRequest(
-          { counterId: counter.id, label: counter.label, threshold, unit: counter.unit },
-          ["c25-mam-day-students", "c25-ai-skills-gap"],
-        ),
-      );
-    }
   }
 
   return reqs;

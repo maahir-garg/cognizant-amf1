@@ -185,23 +185,8 @@ const TONE_CLOSINGS: Record<string, string> = {
 
 function linkedinPostTemplate(req: AiRequest, facts: Fact[]): string {
   const tone = typeof req.params.tone === "string" && TONE_INTROS[req.params.tone] ? req.params.tone : "confident";
-  const simulated = Boolean(req.params.simulated);
-  const parts: string[] = [];
-
-  if (simulated && req.derived[0]) {
-    const d = req.derived[0];
-    parts.push(
-      cite(`Race-weekend milestone from our Impact Lap demo: ${lowerFirst(d.label)} just passed ${derivedValue(d)}`, `D:${d.id}`),
-      "It's a simulated feed built for this prototype, but it shows the moments a live version would catch.",
-      "The real story behind it:",
-    );
-  } else {
-    parts.push(TONE_INTROS[tone]);
-  }
-
-  const closing = simulated
-    ? "In production, this post would draft itself the moment a real milestone lands, with every figure sourced."
-    : TONE_CLOSINGS[tone];
+  const parts: string[] = [TONE_INTROS[tone]];
+  const closing = TONE_CLOSINGS[tone];
 
   for (const f of facts) {
     parts.push(factSentence(f));

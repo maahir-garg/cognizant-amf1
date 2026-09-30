@@ -15,7 +15,7 @@ function words(text: string): number {
 }
 
 describe("demo request set", () => {
-  it("covers every persona, format, initiative and milestone the offline demo can hit", () => {
+  it("covers every persona, format and initiative the offline demo can hit", () => {
     // Sanity check that the enumeration itself isn't trivially empty; the
     // exact count moves if data/*.json changes, so just check it's large.
     expect(requests.length).toBeGreaterThan(100);
@@ -70,13 +70,6 @@ describe("task shape rules", () => {
         expect(tag.startsWith("#")).toBe(true);
         expect(/\d/.test(tag)).toBe(false);
       }
-    }
-  });
-
-  it("linkedin-post says so when the milestone is simulated", () => {
-    for (const req of requests.filter((r) => r.task === "linkedin-post" && r.params.simulated)) {
-      const text = renderTemplate(req, req.factIds.map(getFact));
-      expect(/simulated/i.test(text)).toBe(true);
     }
   });
 

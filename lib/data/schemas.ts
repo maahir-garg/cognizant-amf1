@@ -221,40 +221,6 @@ export const TravelMode = z.object({
 });
 export type TravelMode = z.infer<typeof TravelMode>;
 
-/* --------------------------------------------------------- simulated events */
-
-export const EVENT_TYPES = ["freight", "session", "community", "milestone", "data"] as const;
-
-export const FeedEvent = z.object({
-  id: Slug,
-  raceId: Slug,
-  /** Seconds after the replay starts. */
-  at: z.number().nonnegative(),
-  /** Race-weekend clock label shown in the feed, e.g. "THU 14:10". */
-  clock: z.string(),
-  type: z.enum(EVENT_TYPES),
-  title: z.string(),
-  detail: z.string(),
-  /** Facts the event text relies on (verified background, not the event itself). */
-  factIds: z.array(Slug).default([]),
-  /** Increments a simulated live counter, e.g. { counter: "sg-students-reached", by: 40 }. */
-  increment: z.object({ counter: Slug, by: z.number() }).optional(),
-  status: z.literal("simulated"),
-});
-export type FeedEvent = z.infer<typeof FeedEvent>;
-
-export const Counter = z.object({
-  id: Slug,
-  label: z.string(),
-  unit: z.string(),
-  start: z.number(),
-  /** Milestone thresholds that fire an alert when crossed. */
-  milestones: z.array(z.number()).default([]),
-  status: z.literal("simulated"),
-  notes: z.string(),
-});
-export type Counter = z.infer<typeof Counter>;
-
 /* -------------------------------------------------------------- quiz beats */
 
 export const Quiz = z.object({

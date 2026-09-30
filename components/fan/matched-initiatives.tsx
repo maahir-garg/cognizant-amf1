@@ -16,10 +16,10 @@ export function MatchedInitiatives({ paramProfile }: { paramProfile: FanProfile 
   if (!profile) {
     return (
       <div className="flex flex-col items-start gap-3 rounded-md border border-line p-5">
-        <p className="text-sm text-ink-2">Set up your lap to see initiatives matched to you.</p>
+        <p className="text-sm text-ink-2">Read the story to see initiatives matched to you.</p>
         <Button asChild variant="outline">
-          <Link href="/start">
-            Start your lap <ArrowRight />
+          <Link href="/">
+            Read the story <ArrowRight />
           </Link>
         </Button>
       </div>

@@ -62,13 +62,8 @@ const TASK_RULES: Record<AiRequest["task"], TaskRules> = {
     `Task: quiz-reveal. Write exactly one sentence that reacts to whether the fan answered the quiz correctly (see "correct" below) and restates the fact that answers it.`,
   "share-caption": () =>
     `Task: share-caption. Write exactly one line, at most 110 characters including spaces and the citation marker, written in the first person as the fan sharing their result. Make it sound like something a person would actually post, not a headline.`,
-  "linkedin-post": (req) => {
-    const simulated = Boolean(req.params.simulated);
-    const sim = simulated
-      ? " This post is about a live milestone from the demo's simulated feed: say plainly that it is drawn from a simulated demo feed, not a real live figure."
-      : "";
-    return `Task: linkedin-post. Write 80-140 words in a confident, co-branded Cognizant x Aston Martin Aramco voice, third person, suitable to post on LinkedIn.${sim} End with up to 3 hashtags on their own line; hashtags must be words only, never digits.`;
-  },
+  "linkedin-post": () =>
+    `Task: linkedin-post. Write 80-140 words in a confident, co-branded Cognizant x Aston Martin Aramco voice, third person, suitable to post on LinkedIn. End with up to 3 hashtags on their own line; hashtags must be words only, never digits.`,
   "quarterly-brief": () =>
     `Task: quarterly-brief. Write a one-line headline, then 3-4 short sections each with a one-line lead-in and 1-2 bullet points ("- " prefix). Total length 180-260 words. Plain professional partner-facing tone, third person.`,
   "investor-summary": () =>

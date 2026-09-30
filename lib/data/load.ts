@@ -5,8 +5,6 @@
 import { z } from "zod";
 import citiesJson from "@/data/cities.json";
 import factorsJson from "@/data/conversion-factors.json";
-import countersJson from "@/data/counters.json";
-import eventsJson from "@/data/events.json";
 import factsJson from "@/data/facts.json";
 import initiativesJson from "@/data/initiatives.json";
 import quizzesJson from "@/data/quizzes.json";
@@ -16,9 +14,7 @@ import travelJson from "@/data/travel-modes.json";
 import {
   City,
   ConversionFactor,
-  Counter,
   Fact,
-  FeedEvent,
   Initiative,
   Quiz,
   Race,
@@ -42,8 +38,6 @@ export const races = parse(Race, racesJson, "data/races.json");
 export const cities = parse(City, citiesJson, "data/cities.json");
 export const conversionFactors = parse(ConversionFactor, factorsJson, "data/conversion-factors.json");
 export const travelModes = parse(TravelMode, travelJson, "data/travel-modes.json");
-export const events = parse(FeedEvent, eventsJson, "data/events.json");
-export const counters = parse(Counter, countersJson, "data/counters.json");
 export const quizzes = parse(Quiz, quizzesJson, "data/quizzes.json");
 
 const factIndex = new Map(facts.map((f) => [f.id, f]));
@@ -89,4 +83,31 @@ export function getCity(id: string): City | undefined {
 export function sourceLink(sourceId: string, page?: number): string {
   const s = getSource(sourceId);
   return s.kind === "pdf" && page ? `${s.url}#page=${page}` : s.url;
+}
+
+const SHORT_NAMES: Record<string, string> = {
+  "manifesto-2025": "Manifesto",
+  "mam-web": "Team website",
+  "defra-2025": "DEFRA 2025",
+  "epa-equivalencies": "US EPA",
+  "f1-calendar-2025": "F1 calendar 2025",
+  "f1-calendar-2026": "F1 calendar 2026",
+};
+
+/** Short reader-facing name for a source: "2025 report", "Manifesto", "DEFRA 2025". */
+export function sourceShortName(sourceId: string): string {
+  const report = /^esg-(\d{4})$/.exec(sourceId);
+  if (report) return `${report[1]} report`;
+  return SHORT_NAMES[sourceId] ?? getSource(sourceId).title;
+}
+
+/**
+ * The citation line under a figure: "2025 report, p. 42" for a quoted fact,
+ * "Calculated" for an estimate, with the deep link when there is one.
+ */
+export function factCitation(fact: Fact): { label: string; href?: string } {
+  if (fact.derivation || !fact.sourceId) return { label: "Calculated" };
+  const name = sourceShortName(fact.sourceId);
+  const pdf = getSource(fact.sourceId).kind === "pdf";
+  return { label: pdf && fact.page ? `${name}, p. ${fact.page}` : name, href: sourceLink(fact.sourceId, fact.page) };
 }
