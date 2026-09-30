@@ -47,7 +47,9 @@ test.describe("offline demo", () => {
     await expect(page.getByRole("button", { name: /^Source \d+: / }).first()).toBeVisible({ timeout: 15_000 });
     await expect(page.getByText("Figures checked").first()).toBeVisible();
     await page.goto("/share");
-    await expect(page.getByText("Figures checked").first()).toBeVisible({ timeout: 15_000 });
+    // Fan pages carry one plain line instead of the drafter label.
+    await expect(page.getByText("Every number checked against the report").first()).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(/Drafted (by|from)/)).toHaveCount(0);
     expect(outside).toEqual([]);
   });
 
