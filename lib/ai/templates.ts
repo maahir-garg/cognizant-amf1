@@ -8,7 +8,7 @@
  * checked by verify:data to contain no other numbers, so templates cannot
  * leak an unsourced figure.
  */
-import { initiatives } from "@/lib/data/load";
+import { getRace, initiatives } from "@/lib/data/load";
 import type { AiRequest, DerivedValue, Fact, Initiative, Pillar } from "@/lib/data/schemas";
 import { unitLabel } from "@/lib/format";
 
@@ -195,14 +195,40 @@ function shareCaptionTemplate(req: AiRequest, facts: Fact[]): string {
 
 /* --------------------------------------------------------- linkedin-post */
 
-const POST_INTRO = "Impact stories are only as good as the data behind them. Here's what Cognizant and Aston Martin Aramco have to show.";
-const POST_CLOSING = "Every figure here links back to the page of the team's published report it came from.";
+const POST_INTRO: Record<string, string> = {
+  community: "Away from the track, the Aston Martin Aramco Formula One Team spends much of its year in classrooms and careers sessions.",
+  belong: "Mentoring and inclusion programmes are a quiet part of the Aston Martin Aramco Formula One Team's year.",
+  environment: "The Aston Martin Aramco Formula One Team has published how its footprint is changing, and where it has to go.",
+  governance: "The Aston Martin Aramco Formula One Team's impact figures are checked and published, and here is how.",
+  mixed: "The Aston Martin Aramco Formula One Team's latest impact report covers the car, the campus and the people around it.",
+};
+const POST_CLOSING = "Each figure comes from the team's published report, with the page it is on.";
 
-function linkedinPostTemplate(_req: AiRequest, facts: Fact[]): string {
-  const parts: string[] = [POST_INTRO];
+/** A phrase that leans on the sentence before it ("They came from ..."), so it can't open a bullet or follow an unrelated fact. */
+const leansOnPrevious = (f: Fact) => /^(They|Those|These|It|That's|That)\b/.test(f.phrase ?? "");
+
+/** Facts in order, dropping any leaning phrase whose predecessor is not about the same thing. */
+function flowing(facts: Fact[]): Fact[] {
+  const out: Fact[] = [];
+  for (const f of facts) {
+    const prev = out.at(-1);
+    if (leansOnPrevious(f) && !(prev && prev.topic === f.topic && prev.pillar === f.pillar)) continue;
+    out.push(f);
+  }
+  return out;
+}
+
+function linkedinPostTemplate(req: AiRequest, facts: Fact[]): string {
+  const pillars = String(req.params.pillars ?? "").split(",").filter(Boolean);
+  // A race-week post opens on the race, named without its year so the only figures are cited ones.
+  const race = typeof req.params.race === "string" ? getRace(req.params.race) : null;
+  const intro = race
+    ? `The Aston Martin Aramco Formula One Team races at the ${race.name.replace(/\s*\d{4}$/, "")} this week, and its work with students there started well before the lights go out.`
+    : (POST_INTRO[pillars.length === 1 ? pillars[0] : "mixed"] ?? POST_INTRO.mixed);
+  const parts: string[] = [intro];
   const closing = POST_CLOSING;
 
-  for (const f of facts) {
+  for (const f of flowing(facts)) {
     parts.push(factSentence(f));
     if (words([...parts, closing].join(" ")) >= 90) break;
   }
@@ -217,6 +243,9 @@ const SECTION_INTROS: Record<string, string> = {
   Belong: "Mentoring, representation and wellbeing inside the team.",
   Community: "Education, outreach and fundraising, including the programmes Cognizant helps run.",
   Governance: "How the numbers are checked, and what the team discloses.",
+  Partners: "Where Cognizant fits in the partnership.",
+  Disclosure: "What the team reports, and to whom.",
+  Assurance: "Who has checked the figures, and to what standard.",
   "Also of note": "Further figures from the same reports.",
   Education: "Programmes that bring students into STEM and motorsport.",
   Emissions: "The team's carbon footprint and how it is moving.",
@@ -243,7 +272,7 @@ function groupForBrief(facts: Fact[]): { title: string; facts: Fact[] }[] {
 }
 
 /** Phrases that lean on the sentence before ("They came from ..."). */
-const LEANS_ON_PREVIOUS = /^(They|Those|These|It)\b/;
+const LEANS_ON_PREVIOUS = /^(They|Those|These|It|That's|That)\b/;
 
 /**
  * One bullet per fact, except that a phrase leaning on the one before joins
@@ -287,7 +316,8 @@ function leadershipUpdateTemplate(req: AiRequest, facts: Fact[]): string {
     ? "Leadership update: community impact with Aston Martin Aramco"
     : "Leadership update: the Aston Martin Aramco partnership";
   // Bullets stand alone, so skip phrases that lean on the one before ("They came from ...").
-  const pool = facts.filter((f) => !LEANS_ON_PREVIOUS.test(f.phrase ?? ""));
+  // Leadership already knows the partnership title, so it is not a bullet.
+  const pool = facts.filter((f) => !LEANS_ON_PREVIOUS.test(f.phrase ?? "") && f.topic !== "partners");
   // One bullet per topic first, so four bullets don't all describe the same programme.
   const firstOfTopic = pool.filter((f, i) => pool.findIndex((g) => g.topic === f.topic) === i);
   const ordered = [...firstOfTopic, ...pool.filter((f) => !firstOfTopic.includes(f))];
@@ -298,8 +328,8 @@ function leadershipUpdateTemplate(req: AiRequest, facts: Fact[]): string {
   ];
   while (bullets.length < 4) bullets.push(fillers[bullets.length % fillers.length]);
   const soWhat = narrow
-    ? "So what: a measurable skills pipeline that the sponsorship can point to, not just logo placement."
-    : "So what: sponsorship value that can be audited, not just asserted.";
+    ? "So what: a measurable skills pipeline the partnership can point to, in the team's own figures."
+    : "So what: partnership value that can be checked against the team's own reports.";
   return [title, ...bullets, soWhat].join("\n");
 }
 
@@ -358,11 +388,52 @@ function programmeName(initiative: Initiative): string {
   return TAKES_ARTICLE.test(named) ? `the ${named}` : named;
 }
 
+/**
+ * How each story-kit programme is introduced, in the charity's own voice
+ * ("post") and in a funder's third person ("funder"). Written per programme
+ * so the relationship reads the right way round; programmes outside the kit
+ * get a neutral line.
+ */
+const STORY_KIT_VOICE: Record<string, { post: string; funder: string }> = {
+  "stem-racing-world-finals": {
+    post: "The Aston Martin Aramco Formula One Team supports STEM Racing, and was with us at the World Finals in Singapore.",
+    funder: "The Aston Martin Aramco Formula One Team supports STEM Racing and took part in the World Finals in Singapore.",
+  },
+  "aleto-leadership": {
+    post: "Our leadership programme pairs university students from under-represented backgrounds with mentors at the Aston Martin Aramco Formula One Team.",
+    funder: "The Aleto Foundation runs a leadership programme for university students from under-represented backgrounds, with mentoring from the Aston Martin Aramco Formula One Team.",
+  },
+  "afbe-transition": {
+    post: "Our Transition Event brought engineering and STEM students to the Aston Martin Aramco Formula One Team.",
+    funder: "AFBE-UK held its Transition Event for engineering and STEM students with the Aston Martin Aramco Formula One Team.",
+  },
+  "racing-pride": {
+    post: "We work with the Aston Martin Aramco Formula One Team on inclusion in motorsport, on track and in engineering.",
+    funder: "Racing Pride works with the Aston Martin Aramco Formula One Team on inclusion in motorsport.",
+  },
+  "gp-trust-industry-day": {
+    post: "The Aston Martin Aramco Formula One Team joined our Motorsport Industry Day to meet students thinking about careers in the sport.",
+    funder: "The Aston Martin Aramco Formula One Team took part in The Grand Prix Trust's Motorsport Industry Day for students.",
+  },
+  "paddle-uk-seat": {
+    post: "We worked with the Aston Martin Aramco Formula One Team and Darkside Canoes on a bespoke seat for a Paralympic paddler.",
+    funder: "Paddle UK worked with the Aston Martin Aramco Formula One Team and Darkside Canoes on a bespoke para-canoe seat.",
+  },
+};
+
+/** "Figures are for the 2024-2025 cohort." or "Figures are for 2025.", from the facts' own periods. */
+function periodNote(facts: Fact[]): string {
+  const period = facts.find((f) => /\d{4}/.test(f.period))?.period;
+  if (!period) return "";
+  return /cohort|season/i.test(period) ? `Figures are for the ${period}.` : `Figures are for ${period}.`;
+}
+
 function storyKitTemplate(req: AiRequest, facts: Fact[]): string {
   const initiative = initiatives.find((i) => i.id === req.params.initiative);
   const name = initiative ? programmeName(initiative) : "this programme";
   const partners = initiative?.partners.filter((p) => p !== "Cognizant") ?? [];
-  const lines = facts.map(factSentence);
+  const voice = initiative ? STORY_KIT_VOICE[initiative.id] : undefined;
+  const lines = flowing(facts).map(factSentence);
 
   if (req.params.format === "funder") {
     // One formal, third-person paragraph for a grant or funder report; the
@@ -375,15 +446,13 @@ function storyKitTemplate(req: AiRequest, facts: Fact[]): string {
       : own === "its partnership"
         ? `${who} is a partner of the Aston Martin Aramco Formula One Team.`
         : `${who} ${partners.length > 1 ? "work" : "works"} with the Aston Martin Aramco Formula One Team on ${own}.`;
-    return [
-      opener,
-      ...lines.slice(0, 3),
-      "The figures are taken from the team's published reporting and are referenced in the footnotes.",
-    ].join(" ");
+    return [voice?.funder ?? opener, periodNote(facts), ...lines.slice(0, 3), "Sources are given in the footnotes."]
+      .filter(Boolean)
+      .join(" ");
   }
 
   // The charity's own post, so it speaks as "we"; the team is always "the team".
-  const intro = `We've been working with the Aston Martin Aramco Formula One Team on ${name}.`;
+  const intro = voice?.post ?? `We've been working with the Aston Martin Aramco Formula One Team on ${name}.`;
   const body: string[] = [];
   for (const l of lines) {
     body.push(l);
@@ -391,8 +460,9 @@ function storyKitTemplate(req: AiRequest, facts: Fact[]): string {
   }
   let text = [intro, ...body, "Every figure here comes from the team's published report, so anyone can check it."].join(" ");
   const extras = [
-    "Thank you to everyone at the team who gives their time to it.",
-    `To find out more about ${name}, get in touch.`,
+    "Thank you to everyone at the team who gave their time to it.",
+    "It is the kind of work we want more young people to see.",
+    "Find out more about the programme on our website.",
   ];
   for (const e of extras) if (words(text) < 60) text += ` ${e}`;
   return text;

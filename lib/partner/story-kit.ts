@@ -3,20 +3,11 @@
  * co-brand line (from each initiative's own `partners`, never hard-coded),
  * the figures a card may carry and the card sizes the kit exports.
  */
-import { storyKitFactIds } from "@/lib/ai/requests";
+import { STORY_KIT_INITIATIVE_IDS, storyKitFactIds } from "@/lib/ai/requests";
 import { getFact, initiatives } from "@/lib/data/load";
 import type { Initiative } from "@/lib/data/schemas";
 
-/** STEM Racing first: its World Finals were in Singapore, the race this desk is built around. */
-export const STORY_KIT_INITIATIVE_IDS = [
-  "stem-racing-world-finals",
-  "aleto-leadership",
-  "afbe-transition",
-  "racing-pride",
-  "gp-trust-industry-day",
-  "paddle-uk-seat",
-  "neurodiversity-week",
-] as const;
+export { STORY_KIT_INITIATIVE_IDS };
 
 export function storyKitInitiatives(): Initiative[] {
   return STORY_KIT_INITIATIVE_IDS.map((id) => initiatives.find((i) => i.id === id)).filter((i): i is Initiative => Boolean(i));
