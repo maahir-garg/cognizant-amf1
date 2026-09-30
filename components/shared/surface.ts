@@ -9,7 +9,7 @@ import { usePathname } from "next/navigation";
  */
 const TECHNICAL_PREFIXES = ["/partners", "/sources", "/how-it-works"];
 
-export function isFanPath(pathname: string | null): boolean {
+function isFanPath(pathname: string | null): boolean {
   if (!pathname) return true;
   return !TECHNICAL_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }

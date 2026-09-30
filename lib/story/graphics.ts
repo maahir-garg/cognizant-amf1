@@ -86,7 +86,7 @@ export function progressRows(): ProgressRow[] {
 /* -------------------------------------------------------- trackside */
 
 export type TracksideSource = "hvo" | "grid" | "solar";
-export const TRACKSIDE_SOURCES: { key: TracksideSource; label: string }[] = [
+const TRACKSIDE_SOURCES: { key: TracksideSource; label: string }[] = [
   { key: "hvo", label: "HVO generators" },
   { key: "grid", label: "Renewable grid" },
   { key: "solar", label: "Solar" },

@@ -24,7 +24,7 @@ describe("explainer number check", () => {
 
   it("reads years as context", () => {
     const r = checkSentence("In 2025 the supply chain was 81% of the footprint.");
-    expect(r.numbers.map((n) => n.status)).toEqual(["year", "matched"]);
+    expect(r.numbers.map((n) => n.status)).toEqual(["context", "matched"]);
     expect(r.passed).toBe(true);
   });
 

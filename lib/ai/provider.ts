@@ -18,7 +18,7 @@ type GeminiResponse = {
   candidates?: { content?: { parts?: { text?: string }[] } }[];
 };
 
-export class GeminiProvider implements ModelProvider {
+class GeminiProvider implements ModelProvider {
   readonly id: string;
   private readonly apiKey: string;
   private readonly model: string;
@@ -87,7 +87,7 @@ export class GeminiProvider implements ModelProvider {
   }
 }
 
-export class RateLimitError extends Error {
+class RateLimitError extends Error {
   constructor(
     message: string,
     readonly retryAfterMs: number,

@@ -13,10 +13,10 @@
  * laps or scored.
  */
 import { travelModes } from "@/lib/data/load";
-import { getTravelMode, modeRatio, tripKg } from "@/lib/data/equivalents";
+import { getTravelMode, modeRatio, tripKg } from "@/lib/data/travel";
 import type { Race, TravelMode } from "@/lib/data/schemas";
 
-export const TRIP_DEFAULTS = { modeId: "mrt", km: 5 } as const;
+const TRIP_DEFAULTS = { modeId: "mrt", km: 5 } as const;
 export const TRIP_KM_MIN = 1;
 export const TRIP_KM_MAX = 40;
 

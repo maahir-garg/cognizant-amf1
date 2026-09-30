@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { enumerateDemoRequests } from "@/lib/ai/demo-requests";
 import { parseCitations } from "@/lib/ai/guardrail";
 import { buildPrompt } from "@/lib/ai/prompts";
-import { fanChapterRequest, scenarioExplanationRequest } from "@/lib/ai/requests";
+import { NEVER_IN_AI_COPY, fanChapterRequest, scenarioExplanationRequest } from "@/lib/ai/requests";
 import { renderTemplate } from "@/lib/ai/templates";
 import { getFact } from "@/lib/data/load";
 import { runScenario, SCENARIO_DEFAULTS, scenarioDerivedValues } from "@/lib/data/scenario";
@@ -119,7 +119,7 @@ describe("template output follows the house style", () => {
     // The scenario's inputs are the desk's own model (flags shown beside it); its text cites only derived values.
     for (const { req } of rendered.filter((r) => r.req.task !== "scenario-explanation")) {
       for (const id of req.factIds) {
-        expect(["b25-pay-gap-median", "b25-pay-gap-mean", "b25-women-share"], label(req)).not.toContain(id);
+        expect(NEVER_IN_AI_COPY, label(req)).not.toContain(id);
         expect(getFact(id).flags.some((f) => f.kind === "source-conflict"), `${id} in ${label(req)}`).toBe(false);
       }
     }
