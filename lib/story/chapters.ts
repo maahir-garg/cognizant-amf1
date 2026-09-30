@@ -272,7 +272,7 @@ export const CHAPTERS: Chapter[] = [
     ],
   },
   {
-    id: "moving-the-team",
+    id: "moving",
     number: 3,
     name: "Moving the team",
     title: "Moving a Formula One team round the world",
