@@ -1,6 +1,6 @@
 # Impact Lap
 
-**Aston Martin Aramco's impact, one lap at a time.** A concept prototype for the Cognizant × Aston Martin Aramco F1 Gen-AI Ideathon (Singapore, October 2026).
+**The story of the AMR26 off camera, every figure sourced.** A concept prototype for the Cognizant × Aston Martin Aramco F1 Gen-AI Ideathon (Singapore, October 2026).
 
 Impact Lap turns the team's published sustainability, inclusion and community data into:
 

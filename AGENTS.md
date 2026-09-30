@@ -14,13 +14,14 @@ Impact Lap is a concept prototype for the Cognizant × Aston Martin Aramco F1 (A
 
 ## Non-negotiables
 
-1. **No fabricated AMF1 data.** Every number on screen comes from `data/facts.json` (verified, estimated or simulated) and is rendered through `<FactValue>`, `<InlineFact>` or `<AiText>`. Never type a figure into JSX, copy or a prompt. If you need a number that isn't in the fact base, add a fact (see below) or don't show it.
-2. **Every number shows its status.** Verified, Estimated and Simulated are always labelled (`<StatusBadge>`). Illustrative initiatives, events and counters are `status: "simulated"` with a `notes` explanation.
-3. **The demo runs offline.** No runtime call may be required to render any page. AI text comes from `data/ai-cache/` in demo mode (the default). Fonts are self-hosted (`@fontsource-variable/*`), never Google Fonts. No CDN scripts or images.
-4. **Authorship.** Do not credit any AI tool or model anywhere: commit messages, code comments, docs, `package.json`, HTML meta, UI copy. No `Co-authored-by` trailers. Use the machine's configured git identity; never change it.
-5. **No secrets in git.** Keys live in `.env.local` (gitignored). `.env.example` documents them.
-6. **Brand assets require a source record.** This official collaboration prototype may use team imagery kept locally in `public/brand/` with its source and intended use documented there. Do not introduce third-party imagery or remote runtime assets.
-7. **Log judgement calls** in `docs/DECISIONS.md`, one line each: decision and reason.
+1. **No fabricated AMF1 data.** Every number on screen comes from `data/facts.json` (verified or estimated) and is rendered through `<FactValue>`, `<InlineFact>` or `<AiText>`. Never type a figure into JSX, copy or a prompt. If you need a number that isn't in the fact base, add a fact (see below) or don't show it.
+2. **Every number shows its status.** Verified and Estimated are always labelled (`<StatusBadge>`), with the source line ("2025 report, p. 42"). Where the team has not published a figure, show `<DataGap>`, never a number.
+3. **No simulated data in the product UI.** No invented counters, live feeds, events, credits or illustrative initiatives. The `simulated` status stays in the schema for completeness (it must say why in `notes`), but nothing shipped uses it. A future capability, such as a trackside feed, is described in words as the pilot plan, never shown as working UI. Never claim "live" or "real time".
+4. **The demo runs offline.** No runtime call may be required to render any page. AI text comes from `data/ai-cache/` in demo mode (the default). Fonts are self-hosted: `@fontsource-variable/newsreader` (headlines and body), `@fontsource-variable/archivo` (UI and numbers) and `@fontsource-variable/jetbrains-mono` (fact ids and code only), never Google Fonts. No CDN scripts or images.
+5. **Authorship.** Do not credit any AI tool or model anywhere: commit messages, code comments, docs, `package.json`, HTML meta, UI copy. No `Co-authored-by` trailers. Use the machine's configured git identity; never change it.
+6. **No secrets in git.** Keys live in `.env.local` (gitignored). `.env.example` documents them.
+7. **Brand assets require a source record.** This official collaboration prototype may use team imagery kept locally in `public/brand/` with its source and intended use documented there. Do not introduce third-party imagery or remote runtime assets.
+8. **Log judgement calls** in `docs/DECISIONS.md`, one line each: decision and reason.
 
 ## Commands
 
@@ -38,37 +39,41 @@ npm run extract:sources  # regenerate sources/text/*.json from the PDFs (needs p
 
 ```
 app/
-  page.tsx               landing
+  page.tsx               the story (flagship fan experience, scrollytelling)
+  how-it-works/          for judges and partners: AI, guardrail, pilot plan, ROI
   sources/               fact explorer and data-quality flags (governance showcase)
-  (fan)/                 fan experience: start, lap, weekend/[slug], share, act
-  partners/              partner dashboard: overview, scenarios, narratives, story-kit
+  (fan)/                 weekend/[slug] race page, share card builder, quiz
+  partners/              impact desk: overview, narratives, scenarios, story-kit
   api/ai/generate        POST AiRequest -> AiResponse
-  api/events/stream      SSE replay of the simulated race-weekend feed
   api/partner/metrics    read-only JSON (and ?format=csv) for partner BI tools
+                         (/start, /lap and /act redirect to / in next.config.ts)
 components/
   ui/                    shadcn/ui primitives (restyled via tokens; keep edits minimal)
-  shared/                trust components used everywhere: FactValue, StatusBadge,
-                         ProvenanceProvider (drawer), AiText, FactTable, header/footer
+  shared/                trust components used everywhere: FactValue, InlineFact,
+                         StatusBadge, StatusLegend, DataGap, ProvenanceProvider (drawer),
+                         AiText, FactTable, site header/nav/footer
   fan/  partner/         surface-specific components
 lib/
   config.ts              product name, footer label, isDemoMode()
   format.ts              number and unit formatting for facts
   data/schemas.ts        THE CONTRACT: Zod schemas and types for all data and AI I/O
-  data/load.ts           validated, typed access to /data (client- and server-safe)
+  data/load.ts           validated, typed access to /data (client- and server-safe),
+                         plus factCitation() / sourceShortName() for source lines
   data/verify.ts         the audit behind `verify:data` (node-only)
   data/numbers.ts        number extraction and matching (verifier + guardrail)
   data/derive.ts         safe arithmetic for estimated facts
   data/equivalents.ts    CO2e -> laps of Silverstone, flights, car-years, trips
   data/relevance.ts      fan profile -> ranked initiatives
   data/scenario.ts       what-if model for joint initiatives
-  live/                  replay engine + useLiveFeed hook (SSE with local fallback)
+  fan/                   fan profile, profile codec, trackside rows
   ai/                    guardrail, engine, templates, provider, prompts, cache, client hook
 data/                    facts, sources, initiatives, races, cities, conversion-factors,
-                         travel-modes, events, counters, quizzes, ai-cache/
+                         travel-modes, quizzes, ai-cache/
 sources/                 original PDFs (gitignored), text/<id>.json (committed), external/
 scripts/                 extract-sources, verify-data, warm-cache, record-demo
 tests/unit  tests/e2e    Vitest and Playwright
-docs/                    architecture, data-sources, DECISIONS, DEMO_SCRIPT, ROI, screenshots/
+docs/                    architecture, data-sources, DECISIONS, DEMO_SCRIPT, ROI, screenshots/,
+                         overhaul/ (locked brief and design spec for the Oct 2026 rebuild)
 ```
 
 ## The data contract
@@ -77,7 +82,7 @@ docs/                    architecture, data-sources, DECISIONS, DEMO_SCRIPT, ROI
 - **Adding a verified fact**: find the figure in `sources/text/<source>.json` (page index = array index + 1; for the AMF1 reports this equals the printed page number). Add an entry to `data/facts.json` with `sourceId`, `page`, and a verbatim `quote` that contains the value. Table cells the text layer splits apart can be quoted as fragments joined by ` … `. Run `npm run verify:data`.
 - **Copy phrase**: facts used in generated text should carry a `phrase`, a hand-written sentence with `{v}` (formatted value), `{n}` (bare number) or `{abs}` (absolute value) placeholders and no other numbers. Templates build their sentences from these; the verifier rejects phrases with stray numbers.
 - **Adding an estimated fact**: give a `derivation` with a human `formula`, a machine `expression` over `{fact-id}` references, `inputs`, and `assumptions`. The verifier recomputes it.
-- **Simulated anything** must say why in `notes`, and the UI must label it.
+- **Simulated anything** must say why in `notes`, and the UI must label it. The product currently ships none (a unit test enforces this for facts and initiatives).
 - **Quality flags** (`source-conflict`, `restated`, `not-comparable`, `inconsistent-equivalence`) record where the reports disagree with themselves. Keep them; they are a feature (Governance).
 - Never compare 2024 and 2025 GHG figures directly: 2023/2024 were restated (see `g25-restatement`). Use the report's own change figures.
 - Fact ids: `<pillar letter><yy>-<slug>` for report facts (`e25-saf-avoided`), `est-...` for estimates, `m...` for the Manifesto, `f1-...` for the calendar.
@@ -107,7 +112,8 @@ Work happens on branches named `rebuild/<stream>`. Stay inside your directories;
 
 - TypeScript strict. Server components by default; add `"use client"` only where there is state or browser APIs.
 - Next.js 16: `params`/`searchParams` are Promises; `middleware` is now `proxy`; no `next lint`.
-- Styling: Tailwind v4 with the tokens in `app/globals.css`. Follow `DESIGN.md`. No inline hex colours.
+- Styling: Tailwind v4 with the tokens in `app/globals.css`. Follow `DESIGN.md`. No inline hex colours. Light paper theme by default; wrap a section in `data-tone="green"` for the green ground and use semantic tokens (`bg`, `ink`, `line`, `highlight`, status colours) so components work on both.
+- Data-quality flags and disputed figures (`source-conflict`) appear only on `/sources` and the partner desk, never on fan pages (`<FactValue showFlags>` is off by default).
 - Copy: British English, sentence case, plain words. Say "the team" or "Aston Martin Aramco", not "AMF1", in fan-facing copy.
 - Comments explain why, not what. Match the density of the surrounding code.
 - Commits: small, conventional (`feat:`, `fix:`, `chore:`, `docs:`, `test:`), no attribution trailers.

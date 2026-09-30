@@ -37,8 +37,8 @@ flowchart LR
   end
 
   subgraph UI
-    FAN[Fan lap<br/>onboard · lap · weekend · share · act]
-    PARTNER[Partner dashboard<br/>KPIs · narratives · scenarios · story kit]
+    FAN[Fan story<br/>story · race weekend · share · quiz]
+    PARTNER[Impact desk<br/>KPIs · narratives · scenarios · story kit]
     SRC[Sources explorer]
     API["/api/partner/metrics<br/>JSON · CSV"]
   end
@@ -64,7 +64,7 @@ flowchart LR
 
 **AI.** The model never sees the whole dataset. Each request names the facts it may use; the prompt contains only those, formatted; the model must cite `[F:id]` after each claim. The guardrail extracts every number from the output and rejects it unless the number matches a fact or derived value the text actually cites. A rejected draft is retried once with the reasons, then replaced by a grounded template. In demo mode, responses come from a pre-warmed cache, so the live pitch never depends on Wi-Fi.
 
-**Simulated event replay.** `/api/events/stream` streams a deterministic, simulated race-weekend sequence over server-sent events; the client falls back to a local replay using the same engine if the stream drops. Milestones fire when a counter crosses a threshold and trigger a drafted campaign post. This demonstrates the event flow and is not connected to team telemetry.
+**No simulated feed.** The earlier simulated race-weekend replay, its counters and milestone posts were removed in the September 2026 overhaul. A trackside or programme feed is part of the pilot plan: it would refresh after each race weekend once an approved source and data owner exist, and is described in words rather than shown as working UI.
 
 ## Production: how real feeds plug in
 
@@ -107,8 +107,8 @@ flowchart LR
 | `est-travel-per-round` | Candidate: aggregated travel-booking data | Team travel owner |
 | Trackside energy facts | Candidate: approved circuit or team trackside metering | Relevant data owner to confirm |
 | Belong facts | Candidate: published or approved aggregate people and survey data, with minimum group sizes | Team People owner |
-| Community facts, counters | Candidate: programme registration, attendance and partner reports | Team and programme partners |
-| `events.json` | Candidate: approved operational milestones and activation events | Team operations and communications owners |
+| Community facts | Candidate: programme registration, attendance and partner reports | Team and programme partners |
+| Race-weekend activity (future) | Candidate: approved operational milestones and activation events | Team operations and communications owners |
 | `ai-cache` | Generation audit log (prompt, facts, output, guardrail result) | Cognizant |
 
 Principles that carry over unchanged: every datum has a source record; estimates show their formula; nothing is published without the owner's approval; personal data never leaves the source system (only aggregates reach the fact base); AI output is always guard-railed and logged.
