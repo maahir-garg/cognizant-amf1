@@ -101,29 +101,26 @@ async function goto(page: Page, pathAndQuery: string) {
   await pause(page, 300);
 }
 
-/** Runs a presenter step only when its target exists, so one missing element never ruins a take. */
-async function ifPresent(locator: Locator, step: (l: Locator) => Promise<void>, what: string) {
-  if ((await locator.count()) === 0) {
-    log(`skipped: ${what} not found`);
-    return;
+/** Walks one chapter's step cards at reading pace, so the sticky image and graphic change under each caption. */
+async function readChapter(page: Page, id: string, onCard?: (card: Locator, i: number) => Promise<void>) {
+  const chapter = page.locator(`section#${id}`);
+  await smoothScrollTo(page, chapter.getByRole("heading", { level: 2 }), 1200);
+  await pause(page, 2400);
+  const cards = chapter.locator("article");
+  const count = await cards.count();
+  if (count === 0) throw new Error(`chapter ${id} has no step cards`);
+  for (let i = 0; i < count; i++) {
+    await smoothScrollTo(page, cards.nth(i), 1000);
+    await pause(page, 2200);
+    await onCard?.(cards.nth(i), i);
   }
-  await step(locator.first());
 }
 
-/** Scrolls the story at reading pace: one viewport at a time, pausing on each chapter heading. */
-async function readStory(page: Page) {
-  const headings = page.locator("main h2");
-  const count = await headings.count();
-  if (count === 0) {
-    await pause(page, 4000);
-    return;
-  }
-  for (let i = 0; i < count; i++) {
-    await smoothScrollTo(page, headings.nth(i), 1200);
-    await pause(page, 2600);
-    await page.mouse.wheel(0, 600);
-    await pause(page, 2200);
-  }
+/** Opens a chapter's "The detail" disclosure and lets it sit on screen. */
+async function openDetail(page: Page, id: string) {
+  const summary = page.locator(`section#${id} details > summary`).first();
+  await smoothClick(page, summary, { pauseAfter: 1200 });
+  await smoothScrollTo(page, page.locator(`section#${id} details[open]`).first(), 3500);
 }
 
 async function run() {
@@ -153,42 +150,60 @@ async function run() {
   await goto(page, "/");
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
-  log("story: title page, byline and depth toggle");
+  log("story: title page and byline");
   await pause(page, 5000);
-  await ifPresent(
-    page.getByText("Watched for years"),
-    async (l) => {
-      await smoothScrollTo(page, l, 800);
-      await page.mouse.move(VIEWPORT.width / 2, VIEWPORT.height / 2, { steps: 10 });
-    },
-    "depth toggle",
-  );
 
-  log("story: six chapters");
-  await readStory(page);
+  log("story: what you get");
+  await smoothScrollTo(page, page.locator("#what-you-get"), 4500);
 
-  log("story: trust moment 1, the supply-chain share opens its page");
-  await ifPresent(
-    page.getByRole("button", { name: /81%.*Show source\.$/ }),
-    async (fig) => {
-      await smoothScrollTo(page, fig, 900);
-      await smoothClick(page, fig, { pauseAfter: 1200 });
-      await pause(page, 5000);
-      await page.keyboard.press("Escape");
-      await pause(page, 700);
-    },
-    "the 81% figure",
-  );
+  log("story: depth toggle, left on New to F1");
+  const toggle = page.getByRole("group", { name: "How much detail?" });
+  await smoothScrollTo(page, toggle, 600);
+  const watched = toggle.locator("label", { hasText: "Watched for years" });
+  const box = await watched.boundingBox();
+  if (!box) throw new Error("depth toggle is not on screen");
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 24 });
+  await pause(page, 3000);
+
+  log("story: chapter 1, the campus");
+  await readChapter(page, "campus");
+
+  log("story: chapter 2, supply chain; trust moment 1 on the 81%");
+  await readChapter(page, "supply-chain", async (card, i) => {
+    if (i !== 0) return;
+    const figure = card.getByRole("button", { name: /Show source\.$/ }).first();
+    await smoothClick(page, figure, { pauseAfter: 1200 });
+    await page.getByRole("dialog").waitFor({ state: "visible" });
+    await pause(page, 5500);
+    await page.keyboard.press("Escape");
+    await pause(page, 800);
+  });
+
+  log("story: chapter 3, moving the team; open the detail on SAF");
+  await readChapter(page, "moving");
+  await openDetail(page, "moving");
+
+  log("story: chapter 4, at the circuit, ending on the Singapore gap");
+  await readChapter(page, "circuit");
+  await pause(page, 2500);
+
+  log("story: chapter 5, beyond the track");
+  await readChapter(page, "beyond");
+
+  log("story: chapter 6, the finish line and the target chart");
+  await readChapter(page, "finish");
+  await pause(page, 2500);
+
+  log("story: the ending, into the race weekend");
+  const ending = page.locator("section#race-weekend");
+  await smoothScrollTo(page, ending.getByRole("heading", { level: 2 }), 3500);
+  await smoothClick(page, ending.getByRole("link", { name: "See the programmes" }), { pauseAfter: 800 });
+  await page.waitForURL(/\/weekend\/singapore-2026/);
 
   // --------------------------------------------------- Singapore race page (4:30)
-  await goto(page, "/weekend/singapore-2026");
-  log("race page: what the team published, and the Singapore data gap");
-  await pause(page, 3500);
-  await smoothScrollTo(page, page.getByText("Data gap: trackside energy"), 3500);
-
   log("race page: real programmes");
-  await smoothScrollTo(page, page.locator("#take-part"), 1200);
-  await pause(page, 3500);
+  await pause(page, 4000);
+  await smoothScrollTo(page, page.getByText("Data gap: trackside energy"), 3000);
 
   log("race page: getting there by MRT, compared with a taxi");
   await smoothScrollTo(page, page.locator("#getting-there"), 1200);
@@ -211,11 +226,10 @@ async function run() {
   await goto(page, "/share");
   log("share: pick a team figure, then save the card");
   await pause(page, 3500);
-  await ifPresent(
-    page.getByRole("group", { name: /Team figures/ }).locator("label:has(input[type=checkbox]:not(:checked):not(:disabled))"),
-    (l) => smoothClick(page, l, { pauseAfter: 2200 }),
-    "a spare team figure",
-  );
+  const spare = page
+    .getByRole("group", { name: /Team figures/ })
+    .locator("label:has(input[type=checkbox]:not(:checked):not(:disabled))");
+  await smoothClick(page, spare.first(), { pauseAfter: 2200 });
   const save = page.getByRole("button", { name: "Save the card" });
   await smoothClick(page, save, { pauseAfter: 3000 });
 
@@ -269,8 +283,11 @@ async function run() {
 
   // ------------------------------------------------------ how it works (12:00)
   await goto(page, "/how-it-works");
-  log("how it works: business model and pilot");
-  await readStory(page);
+  log("how it works: the worked number check, then the business model and pilot");
+  await pause(page, 3000);
+  await smoothScrollTo(page, page.locator("#check"), 5500);
+  await smoothScrollTo(page, page.locator("#return"), 4000);
+  await smoothScrollTo(page, page.locator("#pilot"), 6000);
 
   await goto(page, "/");
   log("close: back to the title page");
