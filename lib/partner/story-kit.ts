@@ -3,20 +3,11 @@
  * co-brand line (from each initiative's own `partners`, never hard-coded),
  * the figures a card may carry and the card sizes the kit exports.
  */
-import { storyKitFactIds } from "@/lib/ai/requests";
+import { STORY_KIT_INITIATIVE_IDS, storyKitFactIds } from "@/lib/ai/requests";
 import { getFact, initiatives } from "@/lib/data/load";
 import type { Initiative } from "@/lib/data/schemas";
 
-/** STEM Racing first: its World Finals were in Singapore, the race this desk is built around. */
-export const STORY_KIT_INITIATIVE_IDS = [
-  "stem-racing-world-finals",
-  "aleto-leadership",
-  "afbe-transition",
-  "racing-pride",
-  "gp-trust-industry-day",
-  "paddle-uk-seat",
-  "neurodiversity-week",
-] as const;
+export { STORY_KIT_INITIATIVE_IDS };
 
 export function storyKitInitiatives(): Initiative[] {
   return STORY_KIT_INITIATIVE_IDS.map((id) => initiatives.find((i) => i.id === id)).filter((i): i is Initiative => Boolean(i));
@@ -42,6 +33,31 @@ export function cardFactIds(initiative: Initiative): string[] {
   const own = storyKitFactIds(initiative.id).filter((id) => initiative.factIds.includes(id));
   const numeric = own.filter((id) => getFact(id).value !== null);
   return [...numeric, ...own.filter((id) => !numeric.includes(id))].slice(0, 2);
+}
+
+/**
+ * Written labels for the figures a card or the kit shows, in place of the
+ * fact base's catalogue wording. They read on from the figure and its unit
+ * ("16 students | from under-represented ethnic backgrounds took part"), so
+ * they never repeat the unit. Words only: the figure comes from the fact.
+ */
+const CARD_LABELS: Record<string, string> = {
+  "c25-stem-racing-students": "met the team at the World Finals in Singapore",
+  "c25-stem-racing-countries": "represented among those students",
+  "c25-stem-racing-singapore": "Where the World Finals were held",
+  "b25-aleto-network": "of mentees said the programme grew their professional network",
+  "b25-aleto-leadership": "said they grew in leadership, public speaking and confidence",
+  "b25-aleto-stem-interest": "came away more interested in STEM careers",
+  "b25-afbe-helpful": "of attendees found the Transition Event helpful",
+  "b25-afbe-students": "from under-represented ethnic backgrounds took part",
+  "b25-racing-pride-award": "The Formula Student Diversity and Inclusion Award, sponsored again with Racing Pride",
+  "b25-inclusion-participants": "at inclusion events through the year",
+  "c25-gp-trust-students": "at the Motorsport Industry Day",
+  "b25-paddle-seat": "of a bespoke para-canoe seat, built with Paddle UK",
+};
+
+export function cardLabel(factId: string): string {
+  return CARD_LABELS[factId] ?? getFact(factId).metric;
 }
 
 export const CARD_SIZES = [

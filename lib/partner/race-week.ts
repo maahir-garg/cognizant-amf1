@@ -42,15 +42,24 @@ export function jointCognizantFacts(): Fact[] {
   return [...joint.filter((f) => f.value !== null), ...joint.filter((f) => f.value === null)];
 }
 
-/** Facts added in the most recent extraction pass: what is new since the desk last looked. */
-export function newestFacts(): { date: string; facts: Fact[] } {
-  const date = facts.reduce((max, f) => (f.extractedAt > max ? f.extractedAt : max), "");
-  return { date, facts: facts.filter((f) => f.extractedAt === date) };
-}
-
-/** Figures the latest report restated, which must not be compared across years. */
-export function restatedFacts(): Fact[] {
-  return facts.filter((f) => f.flags.some((flag) => flag.kind === "restated"));
+/**
+ * The report's own progress figures from its target chart (2025 report,
+ * p. 15): what partners should quote for progress instead of comparing
+ * yearly totals, which were restated. Labels come from each fact's period.
+ */
+export function progressFigures(): { id: string; label: string }[] {
+  return facts
+    .filter((f) => f.sourceId === "esg-2025" && f.page === 15 && f.tags.includes("targets"))
+    .map((f) => ({
+      id: f.id,
+      label: /Scope 1 and 2/.test(f.metric)
+        ? "Scope 1 and 2: fuel and electricity used directly, against the baseline year"
+        : /Scope 3/.test(f.metric)
+          ? "Scope 3: the value chain, against the baseline year"
+          : /net zero|residual/i.test(f.metric)
+            ? `Net zero residual footprint, ${f.period} target`
+            : `Footprint target for ${f.period}`,
+    }));
 }
 
 export type PostAngle = {

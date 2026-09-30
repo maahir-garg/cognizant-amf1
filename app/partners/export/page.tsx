@@ -18,6 +18,30 @@ const PRESETS: { id: string; label: string; note: string; filter: MetricFilter; 
 
 const ENDPOINT = "/api/partner/metrics";
 
+/** The integration path in four steps. Words only; nothing here claims a live feed. */
+const INTEGRATION_STEPS = [
+  {
+    when: "Today",
+    title: "Pull the CSV or JSON",
+    body: "Point Excel, Power BI or Tableau at an export URL. Every row carries its status, page and quote.",
+  },
+  {
+    when: "Today",
+    title: "Refresh when the team publishes",
+    body: "Schedule the BI tool to refresh after each report. Figures change only when the team publishes new ones.",
+  },
+  {
+    when: "Pilot",
+    title: "A key and a scope per partner",
+    body: "Each partner gets a key limited to its own programmes, plus the audit records of the drafts it approved.",
+  },
+  {
+    when: "Pilot",
+    title: "Hosted with a named data owner",
+    body: "Run in Cognizant's cloud with the team's data owner, who signs off each new fact before it reaches the export.",
+  },
+];
+
 export default async function ExportPage() {
   const h = await headers();
   const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
@@ -70,7 +94,21 @@ export default async function ExportPage() {
           </ul>
         </DeskSection>
 
-        <div className="flex flex-col gap-10 lg:col-span-4">
+        <DeskSection id="integration" title="How a partner connects it" note="Today, then the pilot" className="lg:col-span-8 lg:row-start-2">
+          <ol className="grid gap-px overflow-hidden border-y border-line bg-line md:grid-cols-4">
+            {INTEGRATION_STEPS.map((step, i) => (
+              <li key={step.title} className="flex flex-col gap-2 bg-bg py-4 md:px-4 md:first:pl-0">
+                <span className="kicker text-ink-3">
+                  <span className="num">{i + 1}</span> · {step.when}
+                </span>
+                <span className="font-semibold text-ink">{step.title}</span>
+                <span className="text-[0.875em] leading-snug text-ink-2">{step.body}</span>
+              </li>
+            ))}
+          </ol>
+        </DeskSection>
+
+        <div className="flex flex-col gap-10 lg:col-span-4 lg:row-span-2 lg:row-start-1 lg:col-start-9">
           <DeskSection id="params" title="Query parameters">
             <dl className="flex flex-col divide-y divide-line border-y border-line text-[0.875em]">
               {[

@@ -19,11 +19,14 @@ test.describe("partner golden path", () => {
     await expect(
       page.getByRole("navigation", { name: "Impact desk" }).getByRole("link", { name: "This race week" }),
     ).toHaveAttribute("aria-current", "page");
-    for (const title of ["Published for this race", "Joint with Cognizant", "Not published", "Suggested post"]) {
+    for (const title of ["Published for this race", "Progress figures to use", "Joint with Cognizant", "Not published", "Suggested post"]) {
       await expect(page.getByRole("heading", { name: title })).toBeVisible();
     }
     await expect(page.getByText(/^Data gap · /).first()).toBeVisible();
     await expect(page.getByText(/Updated when the team publishes/).first()).toBeVisible();
+    // The suggested post is a Singapore angle, with its own approval trail.
+    await expect(page.getByText(/races at the Singapore Grand Prix this week/)).toBeVisible({ timeout: 15_000 });
+    await expect(page.locator("#suggested").getByRole("button", { name: "Send for review" })).toBeVisible();
     expect(errors, errors.join("\n")).toEqual([]);
   });
 
@@ -43,7 +46,8 @@ test.describe("partner golden path", () => {
     await expect(draft.getByText("Figures checked")).toBeVisible();
 
     // A citation chip opens the report page it came from.
-    await chips.first().click();
+    // Open a chip for a report figure (the partnership title comes from the team website, which has no page).
+    await draft.getByRole("button", { name: /^Source \d+: Students engaged/ }).first().click();
     await expectDrawerWithPage(page);
     await closeDrawer(page);
 
@@ -72,10 +76,10 @@ test.describe("partner golden path", () => {
   test("check my draft: 257 passes with a citation, 275 is held back and one click fixes it", async ({ page }) => {
     await page.goto("/partners/check");
     const input = page.getByLabel("Your draft");
-    const summary = page.getByText(/matched · \d+ held back/);
+    const summary = page.getByText(/matched · \d+ need wording · \d+ held back/);
 
     await input.fill(DEMO_LINE);
-    await expect(summary).toContainText("✓ 1 matched · 0 held back");
+    await expect(summary).toContainText("✓ 1 matched · 0 need wording · 0 held back");
     const chip = page.getByRole("button", { name: /^Source 1: / });
     await expect(chip).toBeVisible();
     await expect(page.getByRole("cell", { name: "257", exact: true })).toBeVisible();
@@ -86,14 +90,27 @@ test.describe("partner golden path", () => {
     await expect(page.getByRole("button", { name: "Send for review" })).toBeEnabled();
 
     await input.fill(TYPO_LINE);
-    await expect(summary).toContainText("0 matched · 1 held back");
+    await expect(summary).toContainText("0 matched · 0 need wording · 1 held back");
     await expect(page.getByRole("cell", { name: /Held back/ })).toBeVisible();
     await expect(page.getByRole("cell", { name: "275", exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: "Send for review" })).toBeDisabled();
 
     await page.getByRole("button", { name: "Use the published figure" }).click();
     await expect(input).toHaveValue(DEMO_LINE);
-    await expect(summary).toContainText("✓ 1 matched · 0 held back");
+    await expect(summary).toContainText("✓ 1 matched · 0 need wording · 0 held back");
+  });
+
+  test("check my draft: right numbers in the wrong framing never pass green", async ({ page }) => {
+    await page.goto("/partners/check");
+    await page.getByRole("button", { name: "Try right numbers, wrong framing" }).click();
+    const summary = page.getByText(/matched · \d+ need wording · \d+ held back/);
+    await expect(summary).toContainText("0 matched · 5 need wording · 1 held back");
+    await expect(page.getByRole("cell", { name: "Matched", exact: true })).toHaveCount(0);
+    await expect(page.getByText(/count of students, not schools/)).toBeVisible();
+    await expect(page.getByText(/European races only/).first()).toBeVisible();
+    await expect(page.getByText(/Don't compare yearly totals/).first()).toBeVisible();
+    await expect(page.getByText(/not unequal pay/).first()).toBeVisible();
+    await expect(page.getByRole("button", { name: "Send for review" })).toBeDisabled();
   });
 
   test("scenarios: every output is labelled Estimated", async ({ page }) => {
@@ -140,6 +157,9 @@ test.describe("partner golden path", () => {
     await expect(page.getByRole("heading", { name: "Published baselines" })).toBeVisible();
     const slots = page.getByText(/^Not measured yet · /);
     expect(await slots.count()).toBeGreaterThanOrEqual(3);
+    await expect(page.getByText("Charity time saved")).toBeVisible();
+    // The cost range is our assumption, never presented as a team figure.
+    await expect(page.getByText("Assumption · not a team or Cognizant figure")).toBeVisible();
     // Baselines are real report figures, each with a status.
     await expect(
       page

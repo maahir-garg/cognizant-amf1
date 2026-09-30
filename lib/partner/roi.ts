@@ -17,7 +17,15 @@ export const ROI_BASELINES: Baseline[] = [
   { factId: "b25-accelerate-sentiment", why: "Sentiment on posts about a partner-led programme." },
 ];
 
-export type PilotMetric = { id: string; name: string; definition: string; method: string; audience: "partner" | "fan" };
+export type PilotMetric = {
+  id: string;
+  name: string;
+  definition: string;
+  method: string;
+  audience: "partner" | "charity" | "fan";
+  /** The published figure a pilot result is read against, when there is one. */
+  baselineFactId?: string;
+};
 
 export const PILOT_METRICS: PilotMetric[] = [
   {
@@ -42,6 +50,36 @@ export const PILOT_METRICS: PilotMetric[] = [
     audience: "partner",
   },
   {
+    id: "partner-amplification",
+    name: "Partner amplification",
+    definition: "Impressions on posts partners publish from the desk, against the partner impressions the team already reports.",
+    method: "Partners' own platform analytics for posts with a desk audit record.",
+    audience: "partner",
+    baselineFactId: "c24-esg-impressions-partners",
+  },
+  {
+    id: "post-sentiment",
+    name: "Sentiment on desk posts",
+    definition: "Share of positive reactions to posts drafted on the desk, read against a partner-led programme's published sentiment.",
+    method: "The same social listening method the team's report uses.",
+    audience: "partner",
+    baselineFactId: "b25-accelerate-sentiment",
+  },
+  {
+    id: "charity-time-saved",
+    name: "Charity time saved",
+    definition: "Hours a charity's comms lead spends turning the team's figures into a post and a funder paragraph, before and with the story kit.",
+    method: "Timed in a baseline week, then logged from the story kit's approval trail.",
+    audience: "charity",
+  },
+  {
+    id: "charity-outcome",
+    name: "One outcome the charity reports",
+    definition: "A single measure each charity chooses and publishes itself, such as mentees in work a year on, shown beside the team's figures.",
+    method: "Supplied and sourced by the charity, then checked like any other fact before it appears.",
+    audience: "charity",
+  },
+  {
     id: "story-completion",
     name: "Story completion",
     definition: "Share of visitors who reach the final chapter of the story.",
@@ -63,3 +101,27 @@ export const PILOT_METRICS: PilotMetric[] = [
     audience: "fan",
   },
 ];
+
+/**
+ * A first-year cost range for the 2027 pilot. Not a team or Cognizant
+ * figure: it is our planning assumption, built from the pilot team in
+ * docs/ROI.md and an assumed cost per person, so every step is shown and
+ * can be replaced with real rates.
+ */
+export const PILOT_COST_ASSUMPTION = {
+  people: [
+    { role: "Product lead", fte: 1 },
+    { role: "Engineers", fte: 2 },
+    { role: "ESG data analyst", fte: 1 },
+    { role: "Designer", fte: 0.5 },
+  ],
+  /** Assumed fully loaded annual cost per full-time person, GBP. */
+  perPerson: { low: 90_000, high: 130_000 },
+  /** Assumed model, hosting and tooling for a season, GBP. */
+  running: { low: 10_000, high: 30_000 },
+} as const;
+
+export function pilotCostRange(a = PILOT_COST_ASSUMPTION): { fte: number; low: number; high: number } {
+  const fte = a.people.reduce((sum, p) => sum + p.fte, 0);
+  return { fte, low: fte * a.perPerson.low + a.running.low, high: fte * a.perPerson.high + a.running.high };
+}

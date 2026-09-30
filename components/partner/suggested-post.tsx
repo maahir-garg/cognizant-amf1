@@ -1,23 +1,38 @@
 "use client";
 
-import Link from "next/link";
 import { AiText } from "@/components/shared/ai-text";
 import { useAiText } from "@/lib/ai/client";
-import { narrativeRequest } from "@/lib/ai/requests";
-import { PARTNER_ID } from "@/lib/config";
+import { raceWeekPostRequest } from "@/lib/ai/requests";
+import { HERO_RACE_ID, PARTNER_ID } from "@/lib/config";
+import { draftKey } from "@/lib/partner/approvals";
+import { footnotedPlainText } from "@/lib/partner/citations";
+import { ApprovalPanel } from "./approval-panel";
 
-/** This week's suggested LinkedIn post, from the same request the Narratives tab uses, so its approval trail carries over. */
+/**
+ * This week's suggested LinkedIn post: only what the team has published
+ * about the race's city (the STEM Racing World Finals and the trackside STEM
+ * programme Cognizant supports online), with its own approval trail here.
+ */
 export function SuggestedPost() {
-  const { data, error, loading } = useAiText(narrativeRequest("linkedin-post", { partnerId: PARTNER_ID, pillars: ["community"] }));
+  const request = raceWeekPostRequest(PARTNER_ID, HERO_RACE_ID);
+  const { data, error, loading } = useAiText(request);
   return (
-    <div className="flex flex-col gap-4 rounded-[4px] border border-line bg-surface p-5">
-      <p className="kicker">Suggested post · LinkedIn</p>
-      {loading && <p className="text-ink-3">Drafting from the fact base…</p>}
-      {error && <p className="text-conflict">Could not draft this post: {error}</p>}
-      {data && <AiText response={data} className="text-[1.0625rem]" />}
-      <Link href="/partners/narratives?format=linkedin-post&focus=community" className="link self-start font-medium">
-        Review and approve in Narratives
-      </Link>
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 rounded-md border border-line bg-surface p-5">
+        <p className="kicker">Suggested post · LinkedIn · Singapore</p>
+        {loading && <p className="text-ink-3">Drafting from the fact base…</p>}
+        {error && <p className="text-conflict">Could not draft this post: {error}</p>}
+        {data && <AiText response={data} className="text-[1.0625rem]" />}
+      </div>
+      {data && data.guardrail.passed && (
+        <ApprovalPanel
+          draftKey={draftKey("race-week", data.text)}
+          title="Race-week post"
+          text={data.text}
+          factIds={data.citations}
+          copyText={() => footnotedPlainText(data)}
+        />
+      )}
     </div>
   );
 }
