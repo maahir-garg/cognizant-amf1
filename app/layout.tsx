@@ -4,22 +4,23 @@ import { SiteFooter } from "@/components/shared/site-footer";
 import { SiteHeader } from "@/components/shared/site-header";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { APP_NAME, APP_TAGLINE, isDemoMode } from "@/lib/config";
+import { APP_NAME, isDemoMode } from "@/lib/config";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: { default: APP_NAME, template: `%s · ${APP_NAME}` },
-  description: `${APP_TAGLINE} A concept prototype that turns Aston Martin Aramco's published ESG data into a trusted, personalised view of impact.`,
+  description:
+    "The story of the AMR26 off camera: where it is built, how it is moved round the world, what powers the garage, who the team reaches and how far it has to go. Every figure opens to the page of the team's own report it came from.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0b1a16",
-  colorScheme: "dark",
+  themeColor: "#f5f3ec",
+  colorScheme: "light",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-GB" className="dark">
+    <html lang="en-GB">
       <body className="flex min-h-dvh flex-col">
         <TooltipProvider delayDuration={150}>
           <ProvenanceProvider>

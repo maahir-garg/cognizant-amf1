@@ -1,6 +1,6 @@
 /** Product constants. Rename the product here and nowhere else. */
 export const APP_NAME = "Impact Lap";
-export const APP_TAGLINE = "Aston Martin Aramco's impact, one lap at a time.";
+export const APP_TAGLINE = "The story of the AMR26 off camera, every figure sourced.";
 export const TEAM_NAME = "Team Growthbeans";
 export const FOOTER_LABEL = "Concept prototype · Team Growthbeans · Cognizant × Aston Martin Aramco";
 export const HERO_RACE_ID = "singapore-2026";
