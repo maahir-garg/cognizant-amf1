@@ -1,0 +1,192 @@
+/*
+ * Scrollytelling (DESIGN.md, "Scrollytelling"). Only opacity and transform
+ * animate. Inactive layers are also visibility: hidden, so nothing inside
+ * them is focusable or rendered at partial opacity once the fade ends.
+ */
+
+.story {
+  /* Header (56px) + chapter tracker (40px): where the sticky stage starts. */
+  --story-top: 96px;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chapter {
+  scroll-margin-top: var(--story-top);
+}
+
+.scrolly {
+  position: relative;
+}
+
+.stage {
+  position: sticky;
+  top: var(--story-top);
+  height: calc(100svh - var(--story-top));
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 600ms var(--ease),
+    visibility 0s linear 600ms;
+}
+.layer[data-active] {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 600ms var(--ease),
+    visibility 0s;
+}
+
+/* The picture box: full width over the top of the stage on phones, the right 70% from 1024px. */
+.imageBox {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: min(60svh, 78vw);
+  overflow: hidden;
+  background: var(--surface-2);
+  --pos: var(--mpos);
+}
+.imageBox[data-shape="square"] {
+  height: min(60svh, 100vw);
+}
+
+.zoomer {
+  position: absolute;
+  inset: 0;
+  transform: scale(var(--s, 1));
+  transform-origin: var(--mox, 50%) var(--moy, 50%);
+  transition:
+    transform 900ms var(--ease),
+    transform-origin 900ms var(--ease);
+}
+.layer[data-active] .zoomer {
+  will-change: transform;
+}
+
+.image {
+  object-fit: cover;
+  object-position: var(--pos);
+}
+
+.credit {
+  position: absolute;
+  left: 16px;
+  top: calc(min(60svh, 78vw) + 8px);
+}
+.imageBox[data-shape="square"] + .credit {
+  top: calc(min(60svh, 100vw) + 8px);
+}
+
+/* Graphic layers sit on the chapter ground, never over the photo. */
+.graphicBox {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 76%;
+  display: flex;
+  /* Phones: pin the graphic to the top of the stage; the card rests below it. */
+  align-items: flex-start;
+  justify-content: center;
+  padding: 16px 16px 8px;
+}
+.graphicInner {
+  width: 100%;
+  max-width: 840px;
+}
+
+.steps {
+  position: relative;
+  z-index: 1;
+  margin: calc(var(--story-top) - 100svh) 0 0;
+  padding: 0;
+  list-style: none;
+  /* Let clicks through to the graphic between cards. */
+  pointer-events: none;
+}
+
+.step {
+  display: flex;
+  min-height: 100svh;
+  align-items: flex-end;
+  padding: 0 16px 5svh;
+}
+.step:last-child {
+  padding-bottom: 50svh;
+}
+
+.card {
+  pointer-events: auto;
+  width: 100%;
+  max-width: 560px;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: var(--white);
+  padding: 20px 20px 24px;
+}
+
+@media (min-width: 1024px) {
+  .story {
+    /* Cards line up with the page frame (.wrap); the picture starts at 30% or just inside the card, whichever is further right. */
+    --col: calc(max(0px, (100vw - 1440px) / 2) + min(5vw, 80px));
+    --card-w: min(420px, 34vw);
+    --img-left: max(30vw, calc(var(--col) + var(--card-w) - 64px));
+  }
+  .imageBox,
+  .imageBox[data-shape="square"] {
+    left: var(--img-left);
+    height: 100%;
+    --pos: var(--dpos);
+  }
+  .zoomer {
+    transform-origin: var(--ox, 50%) var(--oy, 50%);
+  }
+  .credit,
+  .imageBox[data-shape="square"] + .credit {
+    top: auto;
+    left: var(--col);
+    bottom: 16px;
+  }
+  .graphicBox {
+    left: var(--img-left);
+    height: 100%;
+    align-items: center;
+    /* Clear the card column where it overlaps the picture box. */
+    padding: 32px min(5vw, 80px) 32px max(48px, calc(var(--col) + var(--card-w) - var(--img-left) + 56px));
+  }
+  .step {
+    align-items: center;
+    padding: 0 0 0 var(--col);
+  }
+  .step:last-child {
+    padding-bottom: 50svh;
+  }
+  .card {
+    width: var(--card-w);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .layer {
+    transition:
+      opacity 120ms linear,
+      visibility 0s linear 120ms !important;
+  }
+  .layer[data-active] {
+    transition:
+      opacity 120ms linear,
+      visibility 0s !important;
+  }
+  .zoomer {
+    transform: none !important;
+    transition: none !important;
+  }
+}
