@@ -1,4 +1,4 @@
-# Impact Lap design spec (from the design director; implement exactly unless it conflicts with AGENTS.md)
+# Off Camera design spec (from the design director; implement exactly unless it conflicts with AGENTS.md)
 
 Reference: Straits Times "No mere child's play" visual feature. Principles taken: one idea per screen, opaque caption cards on a fixed column over a sticky visual, a full viewport of breathing room between cards, serif storytelling with sans metadata, graphics introduced by a chapter card. Motion: opacity 0.5s ease-in-out; transforms 0.4-0.9s cubic-bezier(.4,0,.2,1). No scroll-scrubbed video.
 
@@ -61,7 +61,7 @@ Implement tones as scopes: `:root` = paper tokens; `[data-tone="green"]` redefin
 - Charts (Recharts or SVG): one highlight (racing), others ink-3/line, direct labels, baseline only.
 
 ## Chrome and controls
-- Header 56px, solid paper, 1px line below. Wordmark "Impact Lap" Newsreader 600 20px beside a 6x16 lime bar (lime bar on paper is fine: it's not text). Nav Archivo 15/500; active 2px ink underline + aria-current. Mobile: "Menu" text button opens a full-screen paper sheet. Offline demo pill: 12px label with 1px border.
+- Header 56px, solid paper, 1px line below. Wordmark "Off Camera" Newsreader 600 20px beside a 6x16 lime bar (lime bar on paper is fine: it's not text). Nav Archivo 15/500; active 2px ink underline + aria-current. Mobile: "Menu" text button opens a full-screen paper sheet. Offline demo pill: 12px label with 1px border.
 - Footer: green ground, on-green text, 3 columns (about the prototype, sources and method, status legend), green-line hairlines.
 - Buttons 4px radius. Primary: lime bg, lime-ink text, Archivo 16/600, height 48 fan / 40 partner, padding 0 20px, hover #BCC900, active translateY(1px). One per view. Secondary: 1px ink border (on-green on green), transparent. Tertiary: underlined link.
 - Choice chips: native radios visually hidden but focusable; chip min 48px, 1px line-strong, Archivo 16/500; selected 2px ink border + lime-tint fill + a ✓ in the text.

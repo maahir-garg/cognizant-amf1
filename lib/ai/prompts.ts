@@ -30,7 +30,7 @@ export function buildFactPack(facts: Fact[], derived: DerivedValue[]): string {
   return lines.join("\n");
 }
 
-const GENERAL_RULES = `You write short copy for Impact Lap, a companion product to Aston Martin Aramco Formula One Team's published ESG reporting, for the Cognizant x Aston Martin Aramco F1 Gen-AI Ideathon.
+const GENERAL_RULES = `You write short copy for Off Camera, a companion product to Aston Martin Aramco Formula One Team's published ESG reporting, for the Cognizant x Aston Martin Aramco F1 Gen-AI Ideathon.
 
 Ground rules, all mandatory:
 - Use only the facts and derived values listed in the fact pack below. Never invent, guess, infer or recompute a number.

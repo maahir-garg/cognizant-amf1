@@ -1,6 +1,6 @@
-# Impact Lap design system
+# Off Camera design system
 
-Impact Lap reads like a newspaper visual feature about a racing car, not like an ESG report and not like an AI dashboard. Warm paper, racing green, serif storytelling, condensed numbers, one lime accent. Every figure opens to the page of the team's own report it came from.
+Off Camera reads like a newspaper visual feature about a racing car, not like an ESG report and not like an AI dashboard. Warm paper, racing green, serif storytelling, condensed numbers, one lime accent. Every figure opens to the page of the team's own report it came from.
 
 The reference is the Straits Times visual feature "No mere child's play": one idea per screen, opaque caption cards on a fixed column over a sticky picture, a full viewport of breathing room between cards, serif prose with sans-serif metadata, and graphics that a chapter card introduces before they appear.
 
@@ -153,7 +153,7 @@ Source lines come from `factCitation(fact)` and `sourceShortName(id)` in `lib/da
 
 ## Chrome and controls
 
-- **Header.** 56 px, solid paper, 1px line below, sticky. Wordmark "Impact Lap" in Newsreader 600 20 px beside a 6 × 16 px lime bar. Nav: The story, Singapore GP, Partners, How it works, Sources, in Archivo 15/500; the active link has a 2px ink underline and `aria-current="page"`. Below 768 px a "Menu" text button opens a full-screen paper sheet. An "Offline demo" pill (12 px kicker, 1px border) shows in demo mode.
+- **Header.** 56 px, solid paper, 1px line below, sticky. Wordmark "Off Camera" in Newsreader 600 20 px beside a 6 × 16 px lime bar. Nav: The story, Singapore GP, Partners, How it works, Sources, in Archivo 15/500; the active link has a 2px ink underline and `aria-current="page"`. Below 768 px a "Menu" text button opens a full-screen paper sheet. An "Offline demo" pill (12 px kicker, 1px border) shows in demo mode.
 - **Footer.** Green ground, three columns: about the prototype, sources and method, and the status legend with a Data gap example.
 - **Buttons.** 4 px radius. Primary: lime fill, lime-ink text, Archivo 16/600, 48 px on fan pages (`size="lg"`) and 40 px on the partner desk (default size), padding 0 20px, hover `lime-hover`, pressed moves down 1px. One primary per view. Secondary: `variant="outline"`, 1px ink border (on-green on green), transparent. Tertiary: `variant="link"`, underlined.
 - **Choice chips.** Native radios, visually hidden but focusable. Chip at least 48 px tall, 1px line-strong, Archivo 16/500. Selected: 2px ink border, lime-tint fill and a ✓ in the text.

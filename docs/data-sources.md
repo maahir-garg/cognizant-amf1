@@ -1,6 +1,6 @@
 # Data sources and extraction
 
-All figures in Impact Lap come from the documents below. `data/sources.json` is the machine-readable registry.
+All figures in Off Camera come from the documents below. `data/sources.json` is the machine-readable registry.
 
 | id | Document | Pages | How it's used |
 |---|---|---|---|

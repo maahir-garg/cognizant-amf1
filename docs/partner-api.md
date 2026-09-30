@@ -1,6 +1,6 @@
 # Partner metrics API
 
-`GET /api/partner/metrics` is a read-only, unauthenticated export of Impact Lap's fact base, meant for a partner's own
+`GET /api/partner/metrics` is a read-only, unauthenticated export of Off Camera's fact base, meant for a partner's own
 BI tools (Power BI, Tableau, a spreadsheet, a script). It requires no network beyond the running app: there is no
 external call, no API key and no rate limit in this prototype. CORS is open (`Access-Control-Allow-Origin: *`).
 

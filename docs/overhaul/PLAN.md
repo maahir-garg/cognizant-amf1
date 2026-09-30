@@ -4,7 +4,7 @@ Pitch: Thursday 8 Oct 2026, team presentations from 12:40 at Cognizant Singapore
 
 ## Goals
 
-1. A fan understands, within the first screen, what Impact Lap is and what they get from it.
+1. A fan understands, within the first screen, what Off Camera is and what they get from it.
 2. The story follows the AMR26 from the campus to the circuit and beyond, one idea per screen, with the smoothness and restraint of a Straits Times visual feature.
 3. Every number opens to the report page it came from. No simulated data in the product.
 4. Cognizant and community partners get a desk they would open every race week: sourced facts, checked drafts, an approval trail, exports.

@@ -1,11 +1,11 @@
-# Impact Lap overhaul: final brief (v1, locked)
+# Off Camera overhaul: final brief (v1, locked)
 
 Repo: /Users/maahirgarg/Downloads/cognizant-amf1. Next.js 16 (read node_modules/next/dist/docs for anything routing-related; params/searchParams are Promises; middleware is `proxy`). Read AGENTS.md first: the non-negotiables (no fabricated data, every number via FactValue/InlineFact/AiText with status, offline, NO AI attribution anywhere incl. commits, British English) still apply. Design spec: design-spec.md in the same folder as this file.
 
 Pitch: 8 Oct 2026, 15 minutes including live demo. Singapore Grand Prix 9-11 Oct 2026.
 
 ## The product in one line
-Impact Lap is the story of the AMR26 off camera: where it is built, how it is moved round the world, what powers the garage, who the team reaches, and how far it has to go. Every number opens to the page of the team's own report it came from. Fans get the side of the team they never see on the broadcast and a way to take part at their next race; Cognizant and the team's community partners get a desk that turns the same checked facts into content they can publish.
+Off Camera is the story of the AMR26 off camera: where it is built, how it is moved round the world, what powers the garage, who the team reaches, and how far it has to go. Every number opens to the page of the team's own report it came from. Fans get the side of the team they never see on the broadcast and a way to take part at their next race; Cognizant and the team's community partners get a desk that turns the same checked facts into content they can publish.
 
 ## Why a fan uses it (answer this on screen, in plain words, near the top)
 1. The story behind the car, told like a visual feature, not an ESG report.
@@ -50,4 +50,4 @@ Impact Lap is the story of the AMR26 off camera: where it is built, how it is mo
 - Remove `/start`, `/lap`, `/act` (redirect to `/` in next.config), their components and lib (lap.ts, credits, quiz-beat etc.), `/api/events/stream`, lib/live, events/counters data + schemas (+ tests).
 
 ## Header nav
-Impact Lap wordmark · The story · Singapore GP · Partners · How it works · Sources. Offline-demo pill.
+Off Camera wordmark · The story · Singapore GP · Partners · How it works · Sources. Offline-demo pill.

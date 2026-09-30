@@ -84,3 +84,4 @@ One line per judgement call: decision, then reason.
 - `StatusLegend` defaults to Verified and Estimated. Reason: nothing in the product is simulated any more, so a Simulated key would imply there is.
 - Removed backdrop blur and shadows from the sheet and dialog primitives and gave the overlay a light ink tint. Reason: the spec bans glass, blur and drop shadows.
 - Replaced the partner hero (parallax photo with gradient overlay) and the scroll-reveal wrapper with plain markup. Reason: both broke spec rules (photo overlays, text starting at opacity 0); the partner engineer rebuilds the page next.
+- Renamed the product from Impact Lap to Off Camera, with the tagline "The side of Aston Martin Aramco you never see on the broadcast." Reason: the story is about the operations fans never see on the broadcast; the old name suggested a lap-by-lap game the product no longer is. The partner section keeps the name Impact desk.

@@ -8,9 +8,9 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
-# Impact Lap: working agreement for anyone (human or agent) touching this repo
+# Off Camera: working agreement for anyone (human or agent) touching this repo
 
-Impact Lap is a concept prototype for the Cognizant × Aston Martin Aramco F1 (AMF1) Gen-AI Ideathon, Singapore, pitched on 8 Oct 2026. It turns AMF1's published ESG data into (A) a personalised, story-led experience for F1 fans and (B) a trusted impact dashboard for partners such as Cognizant. Read this file, then `DESIGN.md`, before changing anything.
+Off Camera is a concept prototype for the Cognizant × Aston Martin Aramco F1 (AMF1) Gen-AI Ideathon, Singapore, pitched on 8 Oct 2026. It turns AMF1's published ESG data into (A) a personalised, story-led experience for F1 fans and (B) a trusted impact dashboard for partners such as Cognizant. Read this file, then `DESIGN.md`, before changing anything.
 
 ## Non-negotiables
 
