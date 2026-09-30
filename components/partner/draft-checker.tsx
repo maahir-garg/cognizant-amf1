@@ -89,7 +89,19 @@ function MarkedDraft({ check }: { check: DraftCheck }) {
   );
 }
 
-function FindingDetail({ f, n }: { f: DraftFinding; n?: number }) {
+/**
+ * The closest published figure written the way the draft wrote its number
+ * ("275" -> "257", "£1,400" -> "£1,500"). Abbreviated numbers ("144.8m")
+ * are left for the writer to fix by hand.
+ */
+function replacementFor(f: DraftFinding): string | null {
+  const value = f.nearest ? getFact(f.nearest).value : null;
+  if (value === null || /[a-z]/i.test(f.raw.replace(/per ?cent/i, ""))) return null;
+  const formatted = new Intl.NumberFormat("en-GB", { maximumFractionDigits: 2, useGrouping: f.raw.includes(",") || Math.abs(value) >= 10000 }).format(Math.abs(value));
+  return f.raw.replace(/\d[\d,]*(?:\.\d+)?/, formatted);
+}
+
+function FindingDetail({ f, n, onFix }: { f: DraftFinding; n?: number; onFix?: (f: DraftFinding) => void }) {
   if (f.status === "matched" && f.factId) {
     const fact = getFact(f.factId);
     return (
@@ -125,6 +137,11 @@ function FindingDetail({ f, n }: { f: DraftFinding; n?: number }) {
             </span>
           </span>
         )}
+        {f.nearest && onFix && replacementFor(f) && (
+          <Button variant="outline" size="sm" className="self-start" onClick={() => onFix(f)}>
+            Use the published figure
+          </Button>
+        )}
         {f.alternatives.length > 0 && (
           <span className="text-[0.8125rem] text-ink-3">
             Published figures with this value: <span className="font-mono text-[0.75rem]">{f.alternatives.join(", ")}</span>
@@ -142,6 +159,13 @@ export function DraftChecker() {
   const check = useMemo(() => checkDraft(deferred), [deferred]);
   const numbers = citationNumbers(check);
   const inputId = useId();
+  // Offsets refer to the normalised text; only splice when the draft is already in that form.
+  const fix = check.text === text
+    ? (f: DraftFinding) => {
+        const replacement = replacementFor(f);
+        if (replacement) setText(text.slice(0, f.start) + replacement + text.slice(f.end));
+      }
+    : undefined;
   const hasText = check.text.trim().length > 0;
 
   const blocked =
@@ -203,13 +227,13 @@ export function DraftChecker() {
 
             {check.findings.length > 0 && (
               <div className="relative overflow-x-auto">
-                <table className="w-full min-w-[34rem] border-collapse text-left text-[0.875rem] min-[1800px]:text-[0.9375rem]">
-                  <thead className="border-b border-line-strong">
+                <table className="w-full border-collapse max-md:block md:min-w-[34rem] text-left text-[0.875rem] min-[1800px]:text-[0.9375rem]">
+                  <thead className="border-b border-line-strong max-md:hidden">
                     <tr>
-                      <th scope="col" className="kicker py-2 pr-4 font-semibold">
+                      <th scope="col" className="kicker py-2 pr-4 font-semibold whitespace-nowrap">
                         In your draft
                       </th>
-                      <th scope="col" className="kicker py-2 pr-4 font-semibold">
+                      <th scope="col" className="kicker py-2 pr-4 font-semibold whitespace-nowrap">
                         Result
                       </th>
                       <th scope="col" className="kicker py-2 font-semibold">
@@ -217,11 +241,11 @@ export function DraftChecker() {
                       </th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="max-md:block">
                     {check.findings.map((f) => (
-                      <tr key={`${f.start}-${f.raw}`} className="border-b border-line align-top">
-                        <td className="num py-3 pr-4 text-right text-[1.0625rem] font-semibold whitespace-nowrap text-ink">{f.raw}</td>
-                        <td className="py-3 pr-4 whitespace-nowrap">
+                      <tr key={`${f.start}-${f.raw}`} className="border-b border-line align-top max-md:grid max-md:grid-cols-[auto_minmax(0,1fr)] max-md:gap-x-4 max-md:py-3">
+                        <td className="num py-3 pr-4 text-right text-[1.0625rem] font-semibold whitespace-nowrap text-ink max-md:py-0 max-md:text-left">{f.raw}</td>
+                        <td className="py-3 pr-4 whitespace-nowrap max-md:py-0 max-md:self-center">
                           <span
                             className={cn(
                               "kicker inline-flex items-center gap-1.5",
@@ -234,8 +258,8 @@ export function DraftChecker() {
                             {RESULT_LABEL[f.status]}
                           </span>
                         </td>
-                        <td className="py-3">
-                          <FindingDetail f={f} n={f.factId ? numbers.get(f.factId) : undefined} />
+                        <td className="py-3 max-md:col-span-2 max-md:pt-2 max-md:pb-0">
+                          <FindingDetail f={f} n={f.factId ? numbers.get(f.factId) : undefined} onFix={fix} />
                         </td>
                       </tr>
                     ))}

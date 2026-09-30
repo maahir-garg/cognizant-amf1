@@ -95,6 +95,8 @@ export function ApprovalPanel({
   };
 
   const current = APPROVAL_STATES.indexOf(record.state);
+  // The last step is done, not in progress, once approved.
+  const done = (i: number) => i < current || record.state === "approved";
   const approvedEvent = record.state === "approved" ? record.history.at(-1) : undefined;
   const submitted = [...record.history].reverse().find((e) => e.state === "in-review");
 
@@ -107,12 +109,12 @@ export function ApprovalPanel({
               aria-hidden
               className={cn(
                 "flex size-5 items-center justify-center rounded-full border text-[0.6875rem] font-semibold",
-                i < current && "border-ink bg-ink text-bg",
-                i === current && "border-2 border-ink bg-lime-tint text-ink",
+                done(i) && "border-ink bg-ink text-bg",
+                i === current && !done(i) && "border-2 border-ink bg-lime-tint text-ink",
                 i > current && "border-line-strong text-ink-3",
               )}
             >
-              {i < current ? "✓" : i + 1}
+              {done(i) ? "✓" : i + 1}
             </span>
             <span className={cn("whitespace-nowrap", i === current ? "font-semibold text-ink" : "text-ink-3")}>{APPROVAL_LABEL[s]}</span>
             {i < APPROVAL_STATES.length - 1 && <span aria-hidden className="h-px w-3 bg-line-strong xl:w-5" />}

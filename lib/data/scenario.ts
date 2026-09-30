@@ -64,6 +64,7 @@ const num = (id: string): number => {
   return v;
 };
 
+const count = (n: number, noun: string) => `${n} ${noun}${n === 1 ? "" : "s"}`;
 const fact = (id: string): ScenarioTerm => ({ kind: "fact", id });
 const input = (text: string): ScenarioTerm => ({ kind: "input", text });
 const output = (id: string): ScenarioTerm => ({ kind: "output", id });
@@ -97,8 +98,8 @@ export function runScenario(inp: ScenarioInput): ScenarioOutput[] {
       label: "Extra students at Make A Mark Day",
       value: students,
       unit: "students",
-      formula: `${inp.mamEditions} editions x ${perEdition} students (2025 Make A Mark Day) x ${inp.turnoutPct}% turnout`,
-      terms: [input(`${inp.mamEditions} editions`), fact("c25-mam-day-students"), input(`${inp.turnoutPct}% turnout`)],
+      formula: `${count(inp.mamEditions, "edition")} x ${perEdition} students (2025 Make A Mark Day) x ${inp.turnoutPct}% turnout`,
+      terms: [input(`${count(inp.mamEditions, "edition")}`), fact("c25-mam-day-students"), input(`${inp.turnoutPct}% turnout`)],
       operator: "×",
       factIds: ["c25-mam-day-students"],
       assumptions: [sameFormat, turnoutNote],
@@ -109,8 +110,8 @@ export function runScenario(inp: ScenarioInput): ScenarioOutput[] {
       label: "Schools and community groups represented",
       value: schools,
       unit: "schools and groups",
-      formula: `${inp.mamEditions} editions x ${schoolsPerEdition} schools and groups (2025 Make A Mark Day)`,
-      terms: [input(`${inp.mamEditions} editions`), fact("c25-mam-day-schools")],
+      formula: `${count(inp.mamEditions, "edition")} x ${schoolsPerEdition} schools and groups (2025 Make A Mark Day)`,
+      terms: [input(`${count(inp.mamEditions, "edition")}`), fact("c25-mam-day-schools")],
       operator: "×",
       factIds: ["c25-mam-day-schools"],
       assumptions: [sameFormat],
@@ -121,8 +122,8 @@ export function runScenario(inp: ScenarioInput): ScenarioOutput[] {
       label: "Students meeting the Early Careers team",
       value: careers,
       unit: "students",
-      formula: `${inp.mamEditions} editions x ${careersPerEdition} students (2025 Make A Mark Day) x ${inp.turnoutPct}% turnout`,
-      terms: [input(`${inp.mamEditions} editions`), fact("c25-mam-day-early-careers"), input(`${inp.turnoutPct}% turnout`)],
+      formula: `${count(inp.mamEditions, "edition")} x ${careersPerEdition} students (2025 Make A Mark Day) x ${inp.turnoutPct}% turnout`,
+      terms: [input(`${count(inp.mamEditions, "edition")}`), fact("c25-mam-day-early-careers"), input(`${inp.turnoutPct}% turnout`)],
       operator: "×",
       factIds: ["c25-mam-day-early-careers"],
       assumptions: [sameFormat, turnoutNote],
@@ -148,8 +149,8 @@ export function runScenario(inp: ScenarioInput): ScenarioOutput[] {
       label: "Extra mentees a year",
       value: mentees,
       unit: "mentees",
-      formula: `${inp.mentoringCohorts} cohorts x ${cohortSize} students (2025 Aleto cohort, programme page)`,
-      terms: [input(`${inp.mentoringCohorts} cohorts`), fact("b25-aleto-cohort")],
+      formula: `${count(inp.mentoringCohorts, "cohort")} x ${cohortSize} students (2025 Aleto cohort, programme page)`,
+      terms: [input(`${count(inp.mentoringCohorts, "cohort")}`), fact("b25-aleto-cohort")],
       operator: "×",
       factIds: ["b25-aleto-cohort"],
       assumptions: ["Uses the smaller of the two published cohort sizes (see Data quality)."],

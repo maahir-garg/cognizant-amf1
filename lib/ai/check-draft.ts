@@ -204,7 +204,7 @@ function currencyOf(raw: string): "GBP" | "USD" | "EUR" | null {
   return null;
 }
 
-type Candidate = { fact: Fact; score: number; contextual: boolean };
+type Candidate = { fact: Fact; score: number; overlap: number; contextual: boolean };
 
 function scoreCandidates(n: FoundNumber, text: string, end: number, sentence: Set<string>, pool: Fact[]): Candidate[] {
   const after = followingWords(text, end);
@@ -228,7 +228,7 @@ function scoreCandidates(n: FoundNumber, text: string, end: number, sentence: Se
     // those units. It needs at least one shared word to count as context.
     const contextual = isPercent || isMoney ? overlap >= 1 : overlap >= 1 || unitMatch;
     const score = overlap + (unitMatch ? 3 : 0) + (exact ? 1 : 0) + (f.status === "verified" ? 0.5 : 0);
-    out.push({ fact: f, score, contextual });
+    out.push({ fact: f, score, overlap, contextual });
   }
   return out.sort((a, b) => b.score - a.score || a.fact.id.localeCompare(b.fact.id));
 }
@@ -304,7 +304,7 @@ export function checkDraft(input: string, pool: Fact[] = allFacts): DraftCheck {
         factId: best.fact.id,
         alternatives: contextual
           .slice(1)
-          .filter((c) => c.score >= best.score - 2)
+          .filter((c) => c.overlap >= 2 || c.score >= best.score - 2)
           .slice(0, 3)
           .map((c) => c.fact.id),
         reason: `Matches a published figure: ${best.fact.metric} (${factCitation(best.fact).label}).`,

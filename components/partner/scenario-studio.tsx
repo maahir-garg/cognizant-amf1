@@ -75,15 +75,20 @@ function CompositionBar({ outputs }: { outputs: ScenarioOutput[] }) {
   const total = parts.reduce((s, o) => s + o.value, 0);
   if (total === 0) return null;
   const labels = ["Make A Mark Day", "STEM programme", "Mentoring"];
+  // Segments too narrow for their label get it below the bar, right-aligned, with a leader.
+  const small = (o: ScenarioOutput) => o.value / total < 0.18;
+  const label = (o: ScenarioOutput, i: number) => (
+    <>
+      <span className="font-semibold text-ink">{nf.format(o.value)}</span> {labels[i]}
+    </>
+  );
   return (
     <figure className="flex flex-col gap-2" aria-label="Extra young people reached, by programme">
       <div className="flex gap-0.5">
         {parts.map((o, i) =>
           o.value > 0 ? (
-            <div key={o.id} className="flex min-w-0 flex-col gap-1.5" style={{ flexGrow: o.value, flexBasis: 0 }}>
-              <span className="num truncate text-[0.8125rem] text-ink-2">
-                <span className="font-semibold text-ink">{nf.format(o.value)}</span> {labels[i]}
-              </span>
+            <div key={o.id} className="flex min-w-0 flex-col justify-end gap-1.5" style={{ flexGrow: o.value, flexBasis: 0 }}>
+              {!small(o) && <span className="num truncate text-[0.8125rem] text-ink-2">{label(o, i)}</span>}
               <span
                 aria-hidden
                 className={cn(
@@ -96,6 +101,18 @@ function CompositionBar({ outputs }: { outputs: ScenarioOutput[] }) {
           ) : null,
         )}
       </div>
+      {parts.some((o) => o.value > 0 && small(o)) && (
+        <div className="flex flex-col items-end gap-0.5">
+          {parts.map((o, i) =>
+            o.value > 0 && small(o) ? (
+              <span key={o.id} className="num flex items-center gap-2 text-[0.8125rem] text-ink-2">
+                <span aria-hidden className="h-3 w-px bg-ink-3" />
+                {label(o, i)}
+              </span>
+            ) : null,
+          )}
+        </div>
+      )}
       <figcaption className="flex flex-wrap items-center gap-2 text-[0.8125rem] text-ink-3">
         <StatusBadge status="estimated" /> Hatched because every segment is a projection from published baselines.
       </figcaption>
@@ -170,8 +187,8 @@ export function ScenarioStudio() {
         </div>
 
         <div className="relative overflow-x-auto">
-          <table className="w-full min-w-[40rem] border-collapse text-left text-[0.875rem] min-[1800px]:text-[0.9375rem]">
-            <thead className="border-b border-line-strong">
+          <table className="w-full border-collapse max-md:block md:min-w-[40rem] text-left text-[0.875rem] min-[1800px]:text-[0.9375rem]">
+            <thead className="border-b border-line-strong max-md:hidden">
               <tr>
                 <th scope="col" className="kicker h-10 pr-4 font-semibold">
                   Outcome
@@ -184,25 +201,25 @@ export function ScenarioStudio() {
                 </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="max-md:block">
               {(["make-a-mark", "stem", "mentoring"] as ScenarioGroup[]).map((g) => (
                 <Fragment key={g}>
-                  <tr>
-                    <th scope="rowgroup" colSpan={3} className="kicker pt-4 pb-1 text-left text-ink-3">
+                  <tr className="max-md:block">
+                    <th scope="rowgroup" colSpan={3} className="kicker pt-4 pb-1 text-left text-ink-3 max-md:block">
                       {GROUP_LABEL[g]}
                     </th>
                   </tr>
                   {outputs
                     .filter((o) => o.group === g)
                     .map((o) => (
-                      <tr key={o.id} className="border-b border-line align-top">
-                        <td className="py-2.5 pr-4 text-ink">{o.label}</td>
-                        <td className="num py-2.5 pr-4 text-right whitespace-nowrap">
+                      <tr key={o.id} className="border-b border-line align-top max-md:flex max-md:flex-col max-md:gap-1 max-md:py-2.5">
+                        <td className="py-2.5 pr-4 text-ink max-md:p-0">{o.label}</td>
+                        <td className="num py-2.5 pr-4 text-right whitespace-nowrap max-md:p-0 max-md:text-left">
                           <span className="text-[1.0625rem] font-semibold text-ink">{nf.format(o.value)}</span>{" "}
                           <span className="text-ink-2">{o.unit}</span>
                           <StatusBadge status="estimated" compact className="ml-2 align-middle" />
                         </td>
-                        <td className="py-2.5">
+                        <td className="py-2.5 max-md:p-0">
                           <Formula o={o} byId={byId} />
                         </td>
                       </tr>

@@ -36,18 +36,18 @@ export const ShareCard = forwardRef<
         <p className={cn("font-sans font-semibold tracking-[0.04em] text-ink uppercase", wide ? "text-[22px]" : "text-[28px]")}>{coBrand}</p>
       </div>
 
-      <div className={cn("flex", wide ? "flex-row items-end gap-14" : "flex-col gap-16")}>
+      <div className={cn("flex", wide ? "flex-row items-center gap-14" : tall ? "flex-col gap-16" : "flex-col gap-10")}>
         <h2
           className={cn(
             "font-serif leading-[1.04] font-medium tracking-[-0.01em] text-balance",
-            wide ? "max-w-[520px] flex-1 text-[64px]" : tall ? "text-[112px]" : "text-[92px]",
+            wide ? "max-w-[480px] flex-1 self-center text-[56px]" : tall ? "text-[112px]" : "text-[80px]",
           )}
         >
           {title}
         </h2>
 
         {facts.length > 0 ? (
-          <div className={cn("flex", wide ? "flex-1 flex-col gap-8" : "flex-col gap-12")}>
+          <div className={cn("flex", wide ? "flex-1 flex-col gap-6" : tall ? "flex-col gap-12" : "flex-col gap-8")}>
             {facts.map((f, i) => {
               const p = factParts(f);
               const value = f.value === null ? f.valueText : `${p.prefix}${p.value}${p.unit === "%" || p.unit === "×" ? p.unit : ""}${p.suffix}`;
@@ -58,16 +58,16 @@ export const ShareCard = forwardRef<
                     className={cn(
                       "big-num leading-[0.9]",
                       i === 0 ? "text-lime" : "text-ink",
-                      f.value === null ? (wide ? "text-[48px]" : "text-[72px]") : wide ? "text-[104px]" : "text-[150px]",
+                      f.value === null ? (wide ? "text-[48px]" : "text-[72px]") : wide ? "text-[88px]" : tall ? "text-[150px]" : "text-[124px]",
                     )}
                   >
                     {value}
-                    {unit && <span className={cn("ml-3 font-sans font-medium text-ink-2", wide ? "text-[32px]" : "text-[44px]")}>{unit}</span>}
+                    {unit && <span className={cn("ml-3 font-sans font-medium text-ink-2", wide ? "text-[28px]" : "text-[44px]")}>{unit}</span>}
                   </span>
-                  <span className={cn("max-w-[24ch] font-serif leading-[1.2] text-ink", wide ? "text-[26px]" : "text-[40px]")}>
+                  <span className={cn("font-serif leading-[1.2] text-ink", wide ? "text-[22px]" : "max-w-[24ch] text-[40px]")}>
                     {f.metric}
                   </span>
-                  <span className={cn("flex items-center gap-3 font-sans font-semibold tracking-[0.06em] text-ink-2 uppercase", wide ? "text-[18px]" : "text-[24px]")}>
+                  <span className={cn("flex items-center gap-3 font-sans font-semibold tracking-[0.06em] text-ink-2 uppercase", wide ? "text-[16px]" : "text-[24px]")}>
                     <StatusMark status={f.status} className={wide ? "size-4" : "size-5"} />
                     {STATUS_LABEL[f.status] ?? f.status}
                   </span>

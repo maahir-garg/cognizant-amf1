@@ -4,7 +4,7 @@
  * the figures a card may carry and the card sizes the kit exports.
  */
 import { storyKitFactIds } from "@/lib/ai/requests";
-import { initiatives } from "@/lib/data/load";
+import { getFact, initiatives } from "@/lib/data/load";
 import type { Initiative } from "@/lib/data/schemas";
 
 /** STEM Racing first: its World Finals were in Singapore, the race this desk is built around. */
@@ -33,11 +33,15 @@ export function coBrandLine(initiative: Initiative): string {
   return partners.length ? `${partners.join(" · ")} × Aston Martin Aramco` : "Aston Martin Aramco";
 }
 
-/** At most two figures per card: the charity's own outcomes first, disputed figures left out. */
+/**
+ * At most two figures per card: the charity's own outcomes first, disputed
+ * figures left out, and numbers before wording (a venue or a role reads
+ * better in the copy than as a card figure).
+ */
 export function cardFactIds(initiative: Initiative): string[] {
-  return storyKitFactIds(initiative.id)
-    .filter((id) => initiative.factIds.includes(id))
-    .slice(0, 2);
+  const own = storyKitFactIds(initiative.id).filter((id) => initiative.factIds.includes(id));
+  const numeric = own.filter((id) => getFact(id).value !== null);
+  return [...numeric, ...own.filter((id) => !numeric.includes(id))].slice(0, 2);
 }
 
 export const CARD_SIZES = [

@@ -63,8 +63,8 @@ export default function DataQualityPage() {
               <p className="max-w-[70ch] text-[0.875em] text-ink-2">{KIND[g.kind].advice}</p>
             </div>
             <div className="relative overflow-x-auto">
-              <table className="w-full min-w-[52rem] border-collapse text-left text-[0.875rem] min-[1800px]:text-[0.9375rem]">
-                <thead className="border-b border-line-strong">
+              <table className="w-full border-collapse max-md:block md:min-w-[52rem] text-left text-[0.875rem] min-[1800px]:text-[0.9375rem]">
+                <thead className="border-b border-line-strong max-md:hidden">
                   <tr>
                     <th scope="col" className="kicker h-10 w-[30%] pr-6 font-semibold">
                       Figure
@@ -77,18 +77,18 @@ export default function DataQualityPage() {
                     </th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="max-md:block">
                   {g.rows.map(({ fact, flag }) => (
-                    <tr key={`${fact.id}-${flag.kind}`} className="border-b border-line align-top">
-                      <td className="py-3 pr-6">
+                    <tr key={`${fact.id}-${flag.kind}`} className="border-b border-line align-top max-md:flex max-md:flex-col max-md:gap-2 max-md:py-3">
+                      <td className="py-3 pr-6 max-md:p-0">
                         <div className="flex flex-col gap-1.5">
                           <span className="leading-snug text-ink">{fact.metric}</span>
                           <FactValue id={fact.id} size="sm" showFlags />
                           <span className="font-mono text-[0.75rem] text-ink-3">{fact.id}</span>
                         </div>
                       </td>
-                      <td className="max-w-[65ch] py-3 pr-6 leading-relaxed text-ink-2">{flag.note}</td>
-                      <td className="py-3">
+                      <td className="max-w-[65ch] py-3 pr-6 leading-relaxed text-ink-2 max-md:p-0">{flag.note}</td>
+                      <td className="py-3 max-md:p-0">
                         <ul className="flex flex-col gap-2">
                           {flag.relatedFactIds
                             .filter((id) => findFact(id))

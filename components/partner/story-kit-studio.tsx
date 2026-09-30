@@ -40,7 +40,7 @@ function CardPreview({ size, coBrand, title, factIds, fileStem }: { size: CardSi
   const [boxRef, boxWidth] = useWidth<HTMLDivElement>();
   const [busy, setBusy] = useState(false);
   // Tall cards are capped by height so a 9:16 preview never runs off a projector screen.
-  const maxWidth = size.height > size.width ? Math.round(560 * (size.width / size.height)) : 640;
+  const maxWidth = size.height > size.width ? Math.round(660 * (size.width / size.height)) : 640;
   const scale = boxWidth ? Math.min(boxWidth, maxWidth) / size.width : 0;
 
   const download = async () => {
@@ -183,7 +183,7 @@ export function StoryKitStudio({ initialId }: { initialId?: string }) {
         </div>
       </div>
 
-      <div className="flex min-w-0 flex-col gap-4 lg:col-span-7">
+      <div className="flex min-w-0 flex-col gap-4 lg:sticky lg:top-32 lg:col-span-7 lg:self-start">
         <div className="flex flex-wrap items-baseline justify-between gap-4 border-t-2 border-ink pt-3">
           <h2 className="text-[1.0625rem] font-semibold">Share card</h2>
           <p className="text-[0.875em] text-ink-3">Figures carry their status and page. No free text is added.</p>
