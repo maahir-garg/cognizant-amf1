@@ -27,7 +27,7 @@ export function StoryHero() {
         <h1 id="story-title" className="h1-feature mx-auto">
           {STORY_TITLE}
         </h1>
-        <p className="dek mx-auto max-w-[44ch]">{STORY_DEK}</p>
+        <p className="dek mx-auto max-w-[44ch] lg:max-w-[56ch]">{STORY_DEK}</p>
         <DepthToggle className="mt-2" />
         <a href="#what-you-get" className="mt-1 flex flex-col items-center gap-2 text-ink-3 hover:text-ink">
           <span className="kicker text-current">Scroll to follow the car</span>

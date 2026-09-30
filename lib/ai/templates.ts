@@ -127,7 +127,7 @@ const CHAPTER_OPENERS: Record<string, { new: string; "die-hard": string; close?:
   },
   beyond: {
     new: "Away from racing, the team works with students, mentors and communities, some of them a long way from Silverstone.",
-    "die-hard": "Belong and Community in brief: STEM outreach, mentoring, and what the removal projects give back locally.",
+    "die-hard": "Belong and Community: STEM outreach, mentoring, and what the removal projects give back locally.",
   },
   finish: {
     new: "The team has set targets to cut its emissions, and it is further along on some than on others.",
