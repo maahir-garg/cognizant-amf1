@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
+import { APP_NAME } from "@/lib/config";
 import { sourceShortName, travelModes } from "@/lib/data/load";
 import type { Race } from "@/lib/data/schemas";
 import { useTripPlan } from "@/lib/fan/storage";
@@ -116,7 +117,7 @@ export function TripPlanner({ race, initial }: { race: Race; initial: TripInput 
           )}
         </p>
         <p className="font-sans text-[0.9375rem] text-ink-2">
-          Coming from further away? The journey to {race.country} isn&apos;t compared yet: the fact base only holds factors for
+          Coming from further away? The journey to {race.country} isn&apos;t compared yet: {APP_NAME} only has sourced factors for
           local travel.
         </p>
         <details className="group">

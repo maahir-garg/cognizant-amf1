@@ -165,7 +165,7 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
 
   return (
     <div className="wrap grid gap-10 pt-10 pb-36 sm:pt-14 lg:grid-cols-12 lg:gap-6 lg:py-16">
-      <div className="flex flex-col gap-4 lg:col-span-12">
+      <div className="flex flex-col gap-4 lg:col-span-6">
         <Link href={`/weekend/${raceId}`} className="kicker w-fit text-ink-3 underline decoration-1 underline-offset-[3px] hover:text-ink">
           ← {raceShortName(race)} race page
         </Link>
@@ -175,9 +175,10 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
       </div>
 
       {/* Preview first on phones, beside the controls from 1024 px. */}
-      <div className="flex flex-col gap-6 lg:order-2 lg:col-span-5 lg:col-start-8">
-        <div className="lg:sticky lg:top-20">
-          <div ref={wrapperRef} className="mx-auto w-full max-w-[360px] lg:max-w-[400px]">
+      <div className="flex flex-col gap-6 lg:col-span-5 lg:col-start-8 lg:row-span-2 lg:row-start-1">
+        <div className="flex flex-col lg:sticky lg:top-20">
+          {/* From 1024 px the preview is sized to the viewport height, so the save bar under it is always on screen. */}
+          <div ref={wrapperRef} className="mx-auto w-full max-w-[360px] lg:max-w-[min(400px,calc((100svh-260px)*0.5625))]">
             <div
               className="overflow-hidden rounded-md border border-line-strong"
               style={{ height: SHARE_CARD_HEIGHT * scale }}
@@ -189,7 +190,7 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
               </div>
             </div>
           </div>
-          <div className="mx-auto mt-6 flex w-full max-w-[400px] flex-col gap-3">
+          <div className="mx-auto mt-6 flex w-full max-w-[400px] flex-col gap-3 lg:order-3">
             <p className="kicker">Suggested caption</p>
             {caption ? <AiText response={caption} className="text-lg" /> : <p className="font-serif text-lg text-ink-3">Writing a caption from your figures…</p>}
             <Button variant="outline" size="lg" className="w-fit" onClick={copyCaption} disabled={!caption}>
@@ -203,7 +204,7 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
           */}
           <div
             data-tone="paper"
-            className="fixed inset-x-0 bottom-0 z-30 flex items-center gap-3 border-t border-line-strong bg-bg px-4 py-3 lg:static lg:z-auto lg:mx-auto lg:mt-6 lg:w-full lg:max-w-[400px] lg:flex-col lg:items-start lg:border-t-0 lg:bg-transparent lg:p-0"
+            className="fixed inset-x-0 bottom-0 z-30 flex items-center gap-3 border-t border-line-strong bg-bg px-4 py-3 lg:static lg:z-auto lg:order-2 lg:mx-auto lg:mt-4 lg:w-full lg:max-w-[400px] lg:flex-col lg:items-start lg:border-t-0 lg:bg-transparent lg:p-0"
           >
             <button
               type="button"
@@ -233,7 +234,7 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
         </div>
       </div>
 
-      <div className="flex flex-col gap-10 lg:order-1 lg:col-span-6">
+      <div className="flex flex-col gap-10 lg:col-span-6">
         <fieldset className="flex flex-col gap-3">
           <legend className="mb-1 flex flex-col gap-1">
             <span className="h3">Team figures</span>
