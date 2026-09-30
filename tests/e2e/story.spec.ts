@@ -72,6 +72,9 @@ test.describe("the story", () => {
   test("the chapter tracker lists every chapter", async ({ page }) => {
     await page.goto("/");
     const tracker = page.getByRole("navigation", { name: /chapter/i });
+    // Phones fold the chapter list (and the depth toggle) behind one button.
+    const menu = tracker.getByText("Chapters and detail");
+    if (await menu.isVisible()) await menu.click();
     const items = (await tracker.getByRole("link").allInnerTexts()).map((t) => t.toLowerCase());
     for (const chapter of CHAPTERS)
       expect(
