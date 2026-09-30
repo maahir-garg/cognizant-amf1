@@ -389,7 +389,7 @@ export const CHAPTERS: Chapter[] = [
           { key: "stem", factId: "c25-stem-racing-students", label: "met at the STEM Racing World Finals" },
           { key: "maaden", factId: "c25-maaden-target", label: "the Unearth Your Greatness target" },
           { key: "charity", factId: "c25-charity-2025", label: "raised for charities over the year" },
-          { key: "schools", factId: "e25-ethiopia-children", label: "children at schools built with the Ethiopia woodland project" },
+          { key: "schools", factId: "e25-ethiopia-children", label: "at schools built with the Ethiopia woodland project" },
           { key: "removals", factId: "e25-removals", label: "of carbon removed by projects in Ethiopia, Kenya and the USA" },
           { key: "mentoring", factId: "b25-accelerate-pairs", label: "of mentors and mentees in Accelerate Women" },
         ],

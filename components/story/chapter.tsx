@@ -64,7 +64,7 @@ function PhotoLayer({ image, scale }: { image: ImageKey; scale: number }) {
 
 function GraphicLayer({ layer }: { layer: Exclude<Layer, { kind: "photo" }> }) {
   return (
-    <div className={styles.graphicBox}>
+    <div className={styles.graphicBox} data-kind={layer.kind}>
       <div className={styles.graphicInner}>
         {layer.kind === "graphic" && <StoryGraphic graphic={layer.graphic} />}
         {layer.kind === "tiles" && <TilesGraphic title={layer.title} tiles={layer.tiles} />}

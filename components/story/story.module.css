@@ -132,6 +132,10 @@
   width: 100%;
   max-width: 840px;
 }
+/* A quote is short: centre it in its box on phones too. */
+.graphicBox[data-kind="quote"] {
+  align-items: center;
+}
 
 .steps {
   position: relative;
@@ -199,6 +203,7 @@
   .graphicBox {
     left: var(--img-left);
     height: 100%;
+    align-items: center;
     /* Clear the card column where it overlaps the picture box, and stop at the page frame on the right. */
     padding: 32px var(--col) 32px max(48px, calc(var(--col) + var(--card-w) - var(--img-left) + 56px));
   }
