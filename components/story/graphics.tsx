@@ -263,7 +263,10 @@ export function TargetsGraphic({ highlight }: { highlight?: string[] }) {
               <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5 text-[0.875rem]">
                 <span className={cn(lit && "font-semibold")}>{r.label}</span>
                 <span className="flex items-baseline gap-2">
-                  <Figure id={r.progressId} className="font-semibold" />
+                  {/* A fall reads as "down 74%", never a signed "-74%". */}
+                  <Figure id={r.progressId} className="font-semibold">
+                    {(getFact(r.progressId).value ?? 0) < 0 ? "down" : "up"} {formatFact(getFact(r.progressId)).replace(/^[-−]/, "")}
+                  </Figure>
                   <span className="text-ink-3">
                     {target.period} target cut <Figure id={r.targetId} className="text-ink-2" />
                   </span>

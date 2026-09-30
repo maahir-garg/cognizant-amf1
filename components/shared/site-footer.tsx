@@ -47,7 +47,7 @@ export function SiteFooter() {
             Reading the labels
           </h2>
           <StatusLegend variant="list" />
-          <DataGap className="mt-1">The team has not published this figure, so we show nothing rather than guess.</DataGap>
+          <DataGap className="mt-1">The team has not published this figure, so the page shows a gap rather than a guess.</DataGap>
         </section>
       </div>
       <div className="border-t border-line">

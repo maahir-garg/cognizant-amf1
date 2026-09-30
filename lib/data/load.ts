@@ -20,7 +20,6 @@ import {
   Race,
   Source,
   TravelMode,
-  type Pillar,
 } from "./schemas";
 
 function parse<T extends z.ZodType>(schema: T, data: unknown, file: string): z.infer<T>[] {
@@ -59,8 +58,9 @@ export function getSource(id: string): Source {
   return source;
 }
 
-export function factsByPillar(pillar: Pillar): Fact[] {
-  return facts.filter((f) => f.pillar === pillar);
+/** The reports print different values for this figure. Fan pages and AI copy leave these out; /sources and the desk show them. */
+export function isDisputed(fact: Fact): boolean {
+  return fact.flags.some((f) => f.kind === "source-conflict");
 }
 
 export function factsWithTag(tag: string): Fact[] {

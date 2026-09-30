@@ -31,7 +31,7 @@ const CONTENTS = [
 ] as const;
 
 const NOW_AND_PILOT = [
-  ["Fan pledges and cards", "Kept on the fan's device", "Counted as they happen, with consent"],
+  ["Fan quick checks and cards", "Kept on the fan's device", "Counted as they happen, with consent"],
   ["Trackside energy by source", "European races in the 2025 report; a gap for Singapore", "One to two weeks after each race"],
   ["Freight by mode", "Annual total", "Monthly"],
   ["Charity totals", "Annual, as published", "Per event, once the charity confirms"],
@@ -70,7 +70,7 @@ const RETURNS: { name: string; measure: string; baseline: string | { id: string;
 
 const PHASES = [
   ["Q4 2026", "Data-sharing agreement, approval workflow, a baseline week of manual timings."],
-  ["Pre-season to race 6", "Live with published facts."],
+  ["Pre-season to race 6", "In use by fans and partners, with published facts only."],
   ["Mid-season", "Add one approved per-race feed, trackside energy or freight, with a named owner."],
   ["Season end", "Evaluate against the baseline and decide on the sponsor tier."],
 ] as const;
@@ -181,7 +181,7 @@ export default async function HowItWorksPage() {
             <p className="kicker text-ink-3">Generated for this page</p>
             <h3 className="h3">The four steps on one real draft</h3>
           </div>
-          <LiveDraft request={request} response={response} title="A LinkedIn post for Cognizant from Community facts, in a warm tone." />
+          <LiveDraft request={request} response={response} title="A LinkedIn post for Cognizant from Community facts." />
         </div>
       </ExplainerSection>
 

@@ -361,7 +361,7 @@ export const CHAPTERS: Chapter[] = [
         zoom: { scale: 1, origin: { x: 50, y: 45 } },
       },
       {
-        copy: "That launch was with Maaden, whose name is on the car. Unearth Your Greatness is a free STEM learning programme that aims to reach {f:c25-maaden-target} over the next few years.",
+        copy: "That launch was with Maaden, whose name is on the car. Unearth Your Greatness is a free STEM learning programme that aims to reach {f:c25-maaden-target}.",
         zoom: { scale: 1.12, origin: { x: 22, y: 22 } },
       },
       {

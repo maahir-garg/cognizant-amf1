@@ -1,7 +1,7 @@
 import { FactValue } from "@/components/shared/fact-value";
 import { DataGap } from "@/components/shared/status-badge";
 import { APP_NAME } from "@/lib/config";
-import { findFact, getSource, initiatives, sourceLink, sourceShortName } from "@/lib/data/load";
+import { findFact, getSource, initiatives, isDisputed, sourceLink, sourceShortName } from "@/lib/data/load";
 import type { Race } from "@/lib/data/schemas";
 import { raceCityName, raceProgrammes, WAYS_IN, type Programme } from "@/lib/fan/race";
 import { SectionHead } from "./section-head";
@@ -17,9 +17,17 @@ function whereLabel(p: Programme, race: Race): string {
   return `In ${raceCityName(race)} · ${p.initiative.year}`;
 }
 
-/** One headline figure per card, with its metric as the caption: a bare percentage means nothing out of context. */
+/**
+ * One headline figure per card, with its metric as the caption: a bare
+ * percentage means nothing out of context. Disputed figures stay on /sources.
+ */
 function cardFactIds(p: Programme): string[] {
-  return p.initiative.factIds.filter((id) => findFact(id)?.value !== null).slice(0, 1);
+  return p.initiative.factIds
+    .filter((id) => {
+      const f = findFact(id);
+      return f && f.value !== null && !isDisputed(f);
+    })
+    .slice(0, 1);
 }
 
 function ProgrammeCard({ programme, race }: { programme: Programme; race: Race }) {

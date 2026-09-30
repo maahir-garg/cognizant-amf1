@@ -108,7 +108,12 @@ export const Fact = z
      * no other digits (the verifier checks), so templates can't leak numbers.
      */
     phrase: z.string().optional(),
-    /** Interests and partner tags used by the relevance engine, e.g. "stem", "partner:cognizant". */
+    /**
+     * Plain label shown on fan pages in place of `metric` when the report's
+     * wording is technical or is itself the disputed part (no digits).
+     */
+    fanLabel: z.string().optional(),
+    /** Topic and partner tags used to pick facts for AI copy, e.g. "stem", "partner:cognizant". */
     tags: z.array(z.string()).default([]),
     extractedAt: IsoDate,
     notes: z.string().optional(),
@@ -282,7 +287,7 @@ export const AiRequest = z.object({
   factIds: z.array(Slug).min(1),
   derived: z.array(DerivedValue).default([]),
   fan: FanProfile.optional(),
-  /** Free-form knobs, e.g. { pillar: "environment", partner: "cognizant", tone: "punchy" }. */
+  /** Free-form knobs, e.g. { chapter: "campus", partner: "cognizant", format: "post" }. */
   params: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({}),
 });
 export type AiRequest = z.infer<typeof AiRequest>;
