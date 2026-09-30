@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const PORT = 3300;
+// E2E_PORT lets parallel worktrees run the suite without reusing each other's server.
+const PORT = Number(process.env.E2E_PORT ?? 3300);
 const BASE_URL = `http://localhost:${PORT}`;
 
 /**
