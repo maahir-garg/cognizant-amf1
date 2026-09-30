@@ -37,8 +37,8 @@ export default async function StoryPage() {
     <div className={styles.story}>
       <StoryHero />
       <WhatYouGet />
-      <div id="story">
-        <ChapterTracker chapters={CHAPTERS.map((c) => ({ id: c.id, number: c.number, label: c.short }))} />
+      <div id="story" className={styles.storyTimeline}>
+        <ChapterTracker chapters={CHAPTERS.map((c) => ({ id: c.id, number: c.number, label: c.name }))} />
         {CHAPTERS.map((c) => (
           <StoryChapter key={c.id} chapter={c} total={CHAPTERS.length} preloaded={preloaded?.[c.id] ?? null} />
         ))}

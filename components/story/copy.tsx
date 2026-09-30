@@ -7,7 +7,12 @@ export function StoryCopy({ copy }: { copy: string }) {
   return (
     <>
       {parseCopy(copy).map((part, i) =>
-        part.kind === "fact" ? <InlineFact key={i} id={part.id} /> : <Fragment key={i}>{part.text}</Fragment>,
+        part.kind === "fact" ? (
+          // Padding with matching negative margin: a taller tap target without opening up the line.
+          <InlineFact key={i} id={part.id} className="-my-2.5 py-2.5" />
+        ) : (
+          <Fragment key={i}>{part.text}</Fragment>
+        ),
       )}
     </>
   );

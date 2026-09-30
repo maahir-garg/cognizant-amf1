@@ -26,7 +26,7 @@ function usableInCopy(f: Fact): boolean {
 /* ------------------------------------------------------------------ fan */
 
 /** The story's chapters at "/", in reading order (lib/story/chapters.ts holds the copy). */
-export const CHAPTER_IDS = ["campus", "supply-chain", "moving", "circuit", "beyond", "finish"] as const;
+export const CHAPTER_IDS = ["campus", "supply-chain", "moving-the-team", "circuit", "beyond", "finish"] as const;
 export type ChapterId = (typeof CHAPTER_IDS)[number];
 
 /**
@@ -39,7 +39,7 @@ export type ChapterId = (typeof CHAPTER_IDS)[number];
 export const FAN_CHAPTER_FACTS: Record<ChapterId, string[]> = {
   campus: ["e24-solar-panels", "e25-cups-removed", "e25-circularity", "e25-biodiversity-net-gain"],
   "supply-chain": ["e25-supply-chain-share", "e25-supply-chain", "e25-freight-logistics", "e25-hq-energy"],
-  moving: ["e25-saf-avoided", "e25-saf-airfreight-cut", "e24-sea-freight-shift", "e25-travel-logistics-cut"],
+  "moving-the-team": ["e25-saf-avoided", "e25-saf-airfreight-cut", "e24-sea-freight-shift", "e25-travel-logistics-cut"],
   circuit: ["e25-event-energy-cut", "e25-trackside-gbr-hvo", "e25-trackside-gbr-grid", "e25-trackside-gbr-solar"],
   beyond: ["c25-stem-racing-students", "e25-ethiopia-children", "c25-maaden-target", "b25-accelerate-pairs"],
   finish: ["e25-progress-scope12", "e25-progress-scope3", "e25-target-scope3", "e25-target-netzero-year"],

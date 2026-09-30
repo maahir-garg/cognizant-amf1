@@ -116,7 +116,7 @@ const CHAPTER_OPENERS: Record<string, { new: string; "die-hard": string; close?:
     new: "Most of the team's carbon comes from the things it buys, not from racing itself.",
     "die-hard": "Scope three dominates, and within it the goods and services the team buys.",
   },
-  moving: {
+  "moving-the-team": {
     new: "Getting cars and kit to every race means a lot of flying, so the team is shipping more by sea and paying for a lower-carbon jet fuel.",
     "die-hard": "Freight is counted before Sustainable Aviation Fuel certificates, alongside the team's first certificate purchase and a shift from air to sea.",
   },

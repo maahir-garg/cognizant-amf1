@@ -2,7 +2,9 @@ import Image from "next/image";
 import { APP_NAME } from "@/lib/config";
 import { getSource } from "@/lib/data/load";
 import { STORY_DEK, STORY_IMAGES, STORY_TITLE, WHAT_YOU_GET } from "@/lib/story/chapters";
+import { cn } from "@/lib/utils";
 import { DepthToggle } from "./chapter-depth";
+import styles from "./story.module.css";
 
 /** "2025" from "Make A Mark ESG Report 2025", so the byline follows the source record. */
 function reportYear(): string {
@@ -32,8 +34,8 @@ export function StoryHero() {
           <span aria-hidden className="block h-6 w-px bg-current" />
         </a>
       </div>
-      <figure className="relative w-full">
-        <div className="relative h-[min(45svh,66vw)] w-full overflow-hidden bg-surface-2 lg:h-[max(45svh,28vw)] [@media(min-width:1024px)_and_(max-height:820px)]:h-[max(42svh,26vw)]">
+      <figure className={cn("relative w-full", styles.heroBand)}>
+        <div className="relative h-[min(45svh,66vw)] w-full overflow-hidden bg-[var(--hero-ground)] lg:h-[max(45svh,28vw)] [@media(min-width:1024px)_and_(max-height:820px)]:h-[max(42svh,26vw)]">
           <Image
             src={img.src}
             alt={img.alt}
