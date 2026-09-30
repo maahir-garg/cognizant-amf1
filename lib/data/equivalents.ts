@@ -70,3 +70,25 @@ export function compareTrips(distanceKm: number, returnTrip = true): TripOption[
     return { mode, kgCO2e, savingVsCarKg: carKg - kgCO2e };
   });
 }
+
+export function getTravelMode(id: string): TravelMode {
+  const m = travelModes.find((t) => t.id === id);
+  if (!m) throw new Error(`Unknown travel mode "${id}"`);
+  return m;
+}
+
+/** kg CO2e for one passenger covering `distanceKm` one way, doubled for a return trip. */
+export function tripKg(modeId: string, distanceKm: number, returnTrip = true): number {
+  return getTravelMode(modeId).kgCO2ePerPassengerKm * distanceKm * (returnTrip ? 2 : 1);
+}
+
+/**
+ * How one mode compares with another for the same distance, per passenger.
+ * `ratio` is baseline / mode, so 5 means "five times lower than the baseline";
+ * it does not depend on distance. Infinity when the mode emits nothing.
+ */
+export function modeRatio(modeId: string, baselineId: string): number {
+  const mode = getTravelMode(modeId).kgCO2ePerPassengerKm;
+  const base = getTravelMode(baselineId).kgCO2ePerPassengerKm;
+  return mode === 0 ? Infinity : base / mode;
+}

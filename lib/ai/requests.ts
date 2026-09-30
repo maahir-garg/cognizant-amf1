@@ -49,8 +49,12 @@ export function shareCaptionRequest(fan: FanProfile, factIds: string[], raceId: 
   return { task: "share-caption", factIds, derived: [], fan, params: { raceId } };
 }
 
-/** Default figures printed on the fan share card / used by the warm-cache script. */
-export const DEFAULT_SHARE_FACT_IDS = ["est-freight-per-round", "e25-saf-airfreight-cut", "c25-mam-day-students"];
+/**
+ * Default figures printed on the fan share card / used by the warm-cache
+ * script. Verified and unflagged only: never a per-round estimate or a
+ * disputed total (lib/fan/share.ts holds the full curated list).
+ */
+export const DEFAULT_SHARE_FACT_IDS = ["e25-saf-airfreight-cut", "c25-stem-racing-students"];
 
 /* -------------------------------------------------------------- partner */
 

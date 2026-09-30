@@ -41,11 +41,20 @@ let cachedProfile: FanProfile | null = null;
 
 function getProfileSnapshot(): FanProfile | null {
   if (typeof window === "undefined") return null;
-  const raw = window.localStorage.getItem(PROFILE_KEY);
+  let raw: string | null = null;
+  try {
+    raw = window.localStorage.getItem(PROFILE_KEY);
+  } catch {
+    // Blocked storage reads as "no profile yet".
+  }
   if (raw === cachedProfileRaw) return cachedProfile;
   cachedProfileRaw = raw;
-  const parsed = raw ? FanProfile.safeParse(JSON.parse(raw)) : null;
-  cachedProfile = parsed?.success ? parsed.data : null;
+  try {
+    const parsed = raw ? FanProfile.safeParse(JSON.parse(raw)) : null;
+    cachedProfile = parsed?.success ? parsed.data : null;
+  } catch {
+    cachedProfile = null;
+  }
   return cachedProfile;
 }
 
@@ -63,7 +72,11 @@ export function useFanProfile() {
 
   const clearProfile = useCallback(() => {
     if (typeof window === "undefined") return;
-    window.localStorage.removeItem(PROFILE_KEY);
+    try {
+      window.localStorage.removeItem(PROFILE_KEY);
+    } catch {
+      // Nothing stored to clear.
+    }
     window.dispatchEvent(new CustomEvent(LOCAL_EVENT, { detail: PROFILE_KEY }));
   }, []);
 
