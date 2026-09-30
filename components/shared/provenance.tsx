@@ -4,16 +4,21 @@
  * Provenance drawer. One instance lives in the root layout; any component can
  * open it for a fact with `useProvenance().openFact(id)` or by rendering
  * <FactValue id=... />. It shows the source, page, verbatim quote, formula,
- * assumptions and data-quality flags for the fact.
+ * assumptions and data-quality flags for the fact. On fan pages it leads with
+ * the fact's plain sentence and leaves the workings (ids, the verifier, the
+ * flag notes) to /partners and /sources.
  */
 import { ArrowUpRight, ChevronLeft } from "lucide-react";
+import Link from "next/link";
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { findFact, getSource, sourceLink, sourceShortName } from "@/lib/data/load";
+import { factPhrase } from "@/lib/ai/templates";
+import { findFact, getSource, isDisputed, sourceLink, sourceShortName } from "@/lib/data/load";
 import type { Fact } from "@/lib/data/schemas";
 import { factParts, formatDate, formatFact } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { StatusBadge, StatusMark } from "./status-badge";
+import { useFanSurface } from "./surface";
 
 type ProvenanceCtx = { openFact: (id: string) => void };
 const Ctx = createContext<ProvenanceCtx | null>(null);
@@ -51,8 +56,10 @@ export function ProvenanceProvider({ children }: { children: ReactNode }) {
 }
 
 function FactDetail({ fact, canGoBack, onBack, onOpen }: { fact: Fact; canGoBack: boolean; onBack: () => void; onOpen: (id: string) => void }) {
+  const fan = useFanSurface();
   const source = fact.sourceId ? getSource(fact.sourceId) : undefined;
   const fragments = fact.quote?.split(/\s*…\s*/) ?? [];
+  const plain = fan ? factPhrase(fact) : "";
   return (
     <div className="flex flex-col">
       <SheetHeader className="gap-4 border-b border-line p-6 pr-14">
@@ -63,10 +70,11 @@ function FactDetail({ fact, canGoBack, onBack, onOpen }: { fact: Fact; canGoBack
         )}
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
           <StatusBadge status={fact.status} />
-          {fact.flags.some((f) => f.kind === "source-conflict") && <StatusBadge status="conflict" />}
+          {!fan && isDisputed(fact) && <StatusBadge status="conflict" />}
           <span className="kicker text-ink-3">{PILLAR_LABELS[fact.pillar]}</span>
         </div>
-        <SheetTitle className="h3 text-ink">{fact.metric}</SheetTitle>
+        <SheetTitle className="h3 text-ink">{plain || fact.metric}</SheetTitle>
+        {plain && <p className="-mt-2 text-sm leading-snug text-ink-3">{fact.fanLabel ?? fact.metric}</p>}
         <SheetDescription asChild className="text-ink">
           <div>
             {fact.value === null ? (
@@ -102,10 +110,14 @@ function FactDetail({ fact, canGoBack, onBack, onOpen }: { fact: Fact; canGoBack
                 </p>
               ))}
             </blockquote>
-            <p className="mt-2 text-xs text-ink-3">
-              Checked automatically: <code className="font-mono">npm run verify:data</code> finds this text on page {fact.page} and the value
-              inside it.
-            </p>
+            {fan ? (
+              <p className="mt-2 text-xs text-ink-3">Matched word for word {fact.page ? `on page ${fact.page} of the report` : "in the source"}.</p>
+            ) : (
+              <p className="mt-2 text-xs text-ink-3">
+                Checked automatically: <code className="font-mono">npm run verify:data</code> finds this text on page {fact.page} and the
+                value inside it.
+              </p>
+            )}
           </Section>
         )}
 
@@ -142,7 +154,17 @@ function FactDetail({ fact, canGoBack, onBack, onOpen }: { fact: Fact; canGoBack
           </Section>
         )}
 
-        {fact.flags.length > 0 && (
+        {fan && fact.flags.length > 0 && (
+          <p className="text-sm">
+            The team&apos;s reports print this figure in more than one way.{" "}
+            <Link href="/sources" className="link">
+              Sources
+            </Link>{" "}
+            explains which one is used here.
+          </p>
+        )}
+
+        {!fan && fact.flags.length > 0 && (
           <Section title="Data-quality notes">
             <ul className="flex flex-col gap-3">
               {fact.flags.map((flag, i) => (
@@ -172,16 +194,18 @@ function FactDetail({ fact, canGoBack, onBack, onOpen }: { fact: Fact; canGoBack
           </Section>
         )}
 
-        <dl className="grid grid-cols-2 gap-3 border-t border-line pt-4 text-xs">
-          <div>
-            <dt className="kicker text-ink-3">Fact ID</dt>
-            <dd className="mt-1 font-mono break-all text-ink">{fact.id}</dd>
-          </div>
-          <div>
-            <dt className="kicker text-ink-3">Extracted</dt>
-            <dd className="num mt-1 text-ink">{formatDate(fact.extractedAt)}</dd>
-          </div>
-        </dl>
+        {!fan && (
+          <dl className="grid grid-cols-2 gap-3 border-t border-line pt-4 text-xs">
+            <div>
+              <dt className="kicker text-ink-3">Fact ID</dt>
+              <dd className="mt-1 font-mono break-all text-ink">{fact.id}</dd>
+            </div>
+            <div>
+              <dt className="kicker text-ink-3">Extracted</dt>
+              <dd className="num mt-1 text-ink">{formatDate(fact.extractedAt)}</dd>
+            </div>
+          </dl>
+        )}
       </div>
     </div>
   );
