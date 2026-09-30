@@ -456,12 +456,12 @@ export const CHAPTERS: Chapter[] = [
         highlight: ["baseline", "current", "target-2030"],
       },
       {
-        copy: "Split it up and progress is uneven. Emissions from the fuel and electricity the team uses directly have changed by {f:e25-progress-scope12} since the baseline year: already past the end-of-decade target of a {f:e25-target-scope12} cut.",
+        copy: "Split it up and progress is uneven. Emissions from the fuel and electricity the team uses directly are already past the end-of-decade target of a {f:e25-target-scope12} cut.",
         layer: 0,
         highlight: ["scope12"],
       },
       {
-        copy: "The supply chain is harder. Emissions across the rest of the value chain have changed by {f:e25-progress-scope3}, against a target of a {f:e25-target-scope3} cut by the end of the decade.",
+        copy: "The supply chain is harder. Emissions across the rest of the value chain have moved much less, against a target of a {f:e25-target-scope3} cut by the end of the decade.",
         layer: 0,
         highlight: ["scope3"],
       },
