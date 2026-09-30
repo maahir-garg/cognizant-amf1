@@ -8,7 +8,7 @@ import { closeDrawer, expectDrawerWithPage, watchConsole } from "./helpers";
  * ROI -> the metrics export. Runs against the production build in demo mode.
  */
 
-const DEMO_LINE = "Make A Mark Day brought 257 students to the factory for AI, coding and careers sessions with Cognizant.";
+const DEMO_LINE = "Make A Mark Day brought 257 students to the factory for AI, coding and careers sessions with partners including Cognizant.";
 const TYPO_LINE = DEMO_LINE.replace("257", "275");
 
 test.describe("partner golden path", () => {

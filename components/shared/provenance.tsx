@@ -110,7 +110,11 @@ function FactDetail({ fact, canGoBack, onBack, onOpen }: { fact: Fact; canGoBack
               ))}
             </blockquote>
             {fan ? (
-              <p className="mt-2 text-xs text-ink-3">Matched word for word {fact.page ? `on page ${fact.page} of the report` : "in the source"}.</p>
+              <p className="mt-2 text-xs text-ink-3">
+                {source?.kind === "pdf" && fact.page
+                  ? `Matched word for word on page ${fact.page} of the ${sourceShortName(source.id)}.`
+                  : "Matched word for word in the source."}
+              </p>
             ) : (
               <p className="mt-2 text-xs text-ink-3">
                 Checked automatically: <code className="font-mono">npm run verify:data</code> finds this text on page {fact.page} and the

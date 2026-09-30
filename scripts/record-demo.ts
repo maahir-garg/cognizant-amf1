@@ -248,7 +248,7 @@ async function run() {
   log("desk: trust moment 2, 275 is held back, 257 passes with a citation");
   const draft = page.getByLabel("Your draft");
   await smoothClick(page, draft, { pauseAfter: 400 });
-  await draft.fill("Make A Mark Day brought 275 students to the factory for AI, coding and careers sessions with Cognizant.");
+  await draft.fill("Make A Mark Day brought 275 students to the factory for AI, coding and careers sessions with partners including Cognizant.");
   await pause(page, 4500);
   await smoothClick(page, page.getByRole("button", { name: "Use the published figure" }), { pauseAfter: 4500 });
 

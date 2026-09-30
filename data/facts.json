@@ -26,7 +26,7 @@
     ],
     "extractedAt": "2026-09-24",
     "phrase": "The team's whole footprint for the year, from suppliers to flights, came to {v}.",
-    "fanLabel": "The team's whole footprint for the year, before SAF certificates"
+    "fanLabel": "Total footprint for the year, before SAF certificates"
   },
   {
     "id": "e25-ghg-total-safc",
@@ -81,7 +81,7 @@
     ],
     "extractedAt": "2026-09-24",
     "phrase": "The restated baseline the team now measures itself against is {v}.",
-    "fanLabel": "The baseline-year footprint the team measures its targets against"
+    "fanLabel": "Baseline-year footprint, the one the targets are measured against"
   },
   {
     "id": "m23-ghg-total-original",

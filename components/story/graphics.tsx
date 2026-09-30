@@ -40,7 +40,7 @@ function Figure({ id, className, children }: { id: string; className?: string; c
       type="button"
       onClick={() => openFact(id)}
       className={cn("num inline-flex items-center gap-1.5 text-left hover:underline hover:decoration-1 hover:underline-offset-[3px]", className)}
-      aria-label={`${f.metric}: ${formatFact(f)}. ${f.status}. ${cite.label}. Show source.`}
+      aria-label={`${f.fanLabel ?? f.metric}: ${formatFact(f)}. ${f.status}. ${cite.label}. Show source.`}
     >
       {children ?? formatFact(f)}
       <StatusMark status={f.status} />
