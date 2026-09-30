@@ -77,7 +77,7 @@ const PHASES = [
 
 export default async function HowItWorksPage() {
   // A real draft through the same engine the desk uses: cache in the offline demo, the model with a key, a template otherwise.
-  const request = narrativeRequest("linkedin-post", { partnerId: PARTNER_ID, pillars: ["community"], tone: "warm" });
+  const request = narrativeRequest("linkedin-post", { partnerId: PARTNER_ID, pillars: ["community"] });
   const response = await runGeneration(request);
 
   return (
