@@ -6,36 +6,24 @@
  * Signatures are shared contract (lead-owned). The fact selection inside
  * each builder may be tuned by the AI workstream.
  */
-import { facts, getFact, initiatives, quizzes } from "@/lib/data/load";
-import type { AiRequest, DerivedValue, FanProfile, Pillar } from "@/lib/data/schemas";
+import { facts, getFact, initiatives, isDisputed, quizzes } from "@/lib/data/load";
+import type { AiRequest, DerivedValue, Fact, FanProfile, Pillar } from "@/lib/data/schemas";
 
 type Built = AiRequest;
 
-const byTagAndPillar = (pillar: Pillar, tags: string[], limit: number): string[] => {
-  const pool = facts.filter((f) => f.pillar === pillar && f.status !== "simulated" && !f.tags.includes("data-quality"));
-  const scored = pool
-    .map((f) => ({
-      id: f.id,
-      score: (f.tags.includes("hero") ? 3 : 0) + f.tags.filter((t) => tags.includes(t)).length * 2 + (f.value !== null ? 1 : 0),
-    }))
-    .sort((a, b) => b.score - a.score || a.id.localeCompare(b.id));
-  return scored.slice(0, limit).map((s) => s.id);
-};
+/**
+ * Never handed to the model or a template: the pay gap and the workforce
+ * split only make sense beside the report's own explanation (p55), which a
+ * generated paragraph cannot guarantee to carry.
+ */
+export const NEVER_IN_AI_COPY = ["b25-pay-gap-median", "b25-pay-gap-mean", "b25-women-share"];
+
+/** Facts generated copy may use at all: real, undisputed and not held back above. */
+function usableInCopy(f: Fact): boolean {
+  return f.status !== "simulated" && !isDisputed(f) && !NEVER_IN_AI_COPY.includes(f.id);
+}
 
 /* ------------------------------------------------------------------ fan */
-
-/** Sector intro for the fan lap. New fans get more context, die-hards fewer, denser facts. */
-export function fanStoryRequest(fan: FanProfile, pillar: Pillar): Built {
-  const limit = fan.level === "die-hard" ? 4 : fan.level === "casual" ? 3 : 2;
-  const tags = [...fan.interests, fan.cityId === "singapore" ? "singapore" : ""].filter(Boolean);
-  return {
-    task: "fan-story",
-    factIds: byTagAndPillar(pillar, tags, limit),
-    derived: [],
-    fan,
-    params: { pillar },
-  };
-}
 
 /** The story's chapters at "/", in reading order (lib/story/chapters.ts holds the copy). */
 export const CHAPTER_IDS = ["campus", "supply-chain", "moving", "circuit", "beyond", "finish"] as const;
@@ -104,9 +92,9 @@ export type NarrativeFormat = (typeof NARRATIVE_FORMATS)[number];
 /** Facts a partner narrative may draw on: partner-tagged first, then headline ESG facts. */
 export function partnerNarrativeFactIds(partnerId: string, pillars: Pillar[]): string[] {
   const tag = `partner:${partnerId}`;
-  const partnerFacts = facts.filter((f) => f.tags.includes(tag) && f.status !== "simulated").map((f) => f.id);
+  const partnerFacts = facts.filter((f) => f.tags.includes(tag) && usableInCopy(f)).map((f) => f.id);
   const hero = facts
-    .filter((f) => f.tags.includes("hero") && pillars.includes(f.pillar) && !partnerFacts.includes(f.id))
+    .filter((f) => f.tags.includes("hero") && usableInCopy(f) && pillars.includes(f.pillar) && !partnerFacts.includes(f.id))
     .map((f) => f.id);
   // Reserve room for hero facts so a narrower `pillars` selection actually
   // changes the fact set instead of being swamped by partner-tagged facts
@@ -135,21 +123,19 @@ export type StoryKitFormat = (typeof STORY_KIT_FORMATS)[number];
 /**
  * An initiative's own facts for charity copy: the charity's own outcomes
  * (facts tagged `charity:*` that measure how participants felt) before its
- * headcounts, then everything else, with figures the reports print
- * inconsistently left out while an undisputed one remains.
+ * headcounts, then everything else. Figures the reports print inconsistently
+ * are left out, and nothing from outside the initiative is borrowed: a
+ * programme with no usable figures of its own gets no story kit.
  */
 export function storyKitFactIds(initiativeId: string): string[] {
   const initiative = initiatives.find((i) => i.id === initiativeId);
   if (!initiative) throw new Error(`Unknown initiative "${initiativeId}"`);
-  const own = initiative.factIds.map(getFact);
-  const undisputed = own.filter((f) => !f.flags.some((flag) => flag.kind === "source-conflict"));
-  const pool = undisputed.length ? undisputed : own;
-  const rank = (f: (typeof own)[number]) => {
+  const own = initiative.factIds.map(getFact).filter(usableInCopy);
+  const rank = (f: Fact) => {
     const charity = f.tags.some((t) => t.startsWith("charity:"));
     return charity ? (f.unit === "%" ? 0 : 1) : 2;
   };
-  const ids = [...pool].sort((a, b) => rank(a) - rank(b)).map((f) => f.id);
-  return ids.length ? ids : byTagAndPillar(initiative.pillar, initiative.interests, 2);
+  return [...own].sort((a, b) => rank(a) - rank(b)).map((f) => f.id);
 }
 
 /** Impact copy for a community / charity partner, grounded in its initiative's facts. */
@@ -159,16 +145,9 @@ export function storyKitRequest(initiativeId: string, format: StoryKitFormat): B
 
 /* ------------------------------------------------------- demo personas */
 
-/** Personas the offline cache is warmed for. Keep in sync with docs/DEMO_SCRIPT.md. */
-export const DEMO_PERSONAS: FanProfile[] = [
-  { level: "new", cityId: "singapore", interests: ["environment", "stem"] },
-  { level: "casual", cityId: "singapore", interests: ["community", "inclusion"] },
-  { level: "die-hard", cityId: "london", interests: ["environment", "tech"] },
-  { level: "new", cityId: "kuala-lumpur", interests: ["stem", "tech"] },
-];
-
-/** Sanity helper for tests: every id a builder returns must exist. */
-export function assertFactIds(req: Built): Built {
-  req.factIds.forEach(getFact);
-  return req;
-}
+/**
+ * Profiles the offline cache is warmed for. The product only ever sets the
+ * reading depth (the story toggle and the quick check), so these are the
+ * default fan at both depths.
+ */
+export const DEMO_PERSONAS: FanProfile[] = [STORY_DEFAULT_FAN, { ...STORY_DEFAULT_FAN, level: "die-hard" }];

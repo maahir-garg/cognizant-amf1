@@ -15,10 +15,10 @@ function words(text: string): number {
 }
 
 describe("demo request set", () => {
-  it("covers every persona, format and initiative the offline demo can hit", () => {
+  it("covers every depth, format and story-kit initiative the offline demo can hit", () => {
     // Sanity check that the enumeration itself isn't trivially empty; the
     // exact count moves if data/*.json changes, so just check it's large.
-    expect(requests.length).toBeGreaterThan(100);
+    expect(requests.length).toBeGreaterThan(50);
   });
 });
 

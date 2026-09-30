@@ -8,8 +8,8 @@
  * checked by verify:data to contain no other numbers, so templates cannot
  * leak an unsourced figure.
  */
-import { getCity, initiatives } from "@/lib/data/load";
-import type { AiRequest, DerivedValue, Fact, Interest, Pillar } from "@/lib/data/schemas";
+import { initiatives } from "@/lib/data/load";
+import type { AiRequest, DerivedValue, Fact, Initiative, Pillar } from "@/lib/data/schemas";
 import { unitLabel } from "@/lib/format";
 
 /* ------------------------------------------------------------- values */
@@ -17,7 +17,7 @@ import { unitLabel } from "@/lib/format";
 const nf = (max = 2) => new Intl.NumberFormat("en-GB", { maximumFractionDigits: max });
 
 /** A fact's value written for prose: "more than £140,000", "about 20,000 tCO₂e", "16%". */
-export function proseValue(f: Fact, abs = false): string {
+function proseValue(f: Fact, abs = false): string {
   if (f.value === null) return f.valueText ?? "";
   const v = abs ? Math.abs(f.value) : f.value;
   const lead = f.qualifier === "at-least" ? "more than " : f.qualifier === "approximately" ? "about " : "";
@@ -42,8 +42,13 @@ function fill(f: Fact): string {
     .replace("{n}", f.value === null ? "" : f.unit === "year" ? String(f.value) : nf(0).format(f.value));
 }
 
+/** The fact's hand-written sentence with its value filled in and no citation, or "" when it has no phrase. */
+export function factPhrase(f: Fact): string {
+  return fill(f);
+}
+
 /** One cited sentence for a fact. Falls back to a plain construction when no phrase exists. */
-export function factSentence(f: Fact): string {
+function factSentence(f: Fact): string {
   const text =
     fill(f) ||
     (f.value === null ? `${f.metric}: ${f.valueText}.` : `The team reports ${lowerFirst(f.metric)} at ${proseValue(f)}.`);
@@ -64,9 +69,13 @@ function derivedValue(d: DerivedValue): string {
 
 const PROPER_FIRST = new Set(["Cognizant", "Arm", "Make", "Singapore", "Citi", "Northamptonshire", "Ultra-runner", "F1's", "AFBE-UK"]);
 
+/** Words that only start a sentence, so they lower-case even before a name ("At European races"). */
+const PLAIN_FIRST = new Set(["At", "In", "On", "By", "With", "From", "For", "Across", "Over", "Since", "During", "After", "That", "This"]);
+
 function lowerFirst(s: string): string {
   const [first, second = ""] = s.split(/\s/);
   if (PROPER_FIRST.has(first) || /^[A-Z]{2,}/.test(first) || /^\d/.test(first)) return s;
+  if (PLAIN_FIRST.has(first)) return s.charAt(0).toLowerCase() + s.slice(1);
   // "Racing Pride partnership", "Aleto Foundation ...": a capitalised second word marks a name.
   if (!/^(The|A|An)$/.test(first) && /^[A-Z]/.test(second)) return s;
   return s.charAt(0).toLowerCase() + s.slice(1);
@@ -77,28 +86,6 @@ function stripFinal(s: string): string {
 }
 
 /* --------------------------------------------------------------- labels */
-
-const INTEREST_LABELS: Record<Interest, string> = {
-  environment: "the environment",
-  community: "community work",
-  inclusion: "inclusion",
-  stem: "STEM",
-  tech: "technology",
-};
-
-const SECTOR_OPENERS: Record<Pillar, string> = {
-  environment: "Sector one: the carbon behind a Formula One season.",
-  belong: "Sector two: who gets a seat at the table.",
-  community: "Sector three: what the team does away from the track.",
-  governance: "Scrutineering: how you can tell any of this is true.",
-};
-
-const JOURNEY_OPENERS: Record<string, string> = {
-  factory: "Start where the car is prepared.",
-  freight: "Follow the car and garage equipment between races.",
-  circuit: "At the circuit, the team meets the host community.",
-  "after-race": "The work continues after the flag.",
-};
 
 const PILLAR_TITLES: Record<Pillar, string> = {
   environment: "Environment",
@@ -167,31 +154,10 @@ function fanChapterTemplate(req: AiRequest, facts: Fact[]): string {
   return [copy?.[level], ...lines, copy?.close].filter(Boolean).join(" ");
 }
 
+/** Every fan-story request is a story chapter; anything else just tells its facts. */
 function fanStoryTemplate(req: AiRequest, facts: Fact[]): string {
   if (typeof req.params.chapter === "string") return fanChapterTemplate(req, facts);
-  const fan = req.fan;
-  const pillar = (req.params.pillar as Pillar) ?? facts[0]?.pillar ?? "environment";
-  const opener = typeof req.params.stage === "string" ? JOURNEY_OPENERS[req.params.stage] ?? SECTOR_OPENERS[pillar] : SECTOR_OPENERS[pillar];
-  if (!fan || facts.length === 0) return [opener, ...facts.map(factSentence)].join(" ");
-
-  const interest = INTEREST_LABELS[fan.interests[0]] ?? fan.interests[0];
-  const city = getCity(fan.cityId);
-  const lines = facts.map(factSentence);
-
-  if (fan.level === "die-hard") return [opener, ...lines].join(" ");
-
-  if (fan.level === "casual") {
-    return [opener, `Picked for someone into ${interest}: ${lowerFirst(lines[0])}`, ...lines.slice(1, 2)].join(" ");
-  }
-
-  // New fans: fewer facts, a friendlier frame, and a pointer to the sources.
-  const where = city ? ` in ${city.name}` : "";
-  return [
-    opener,
-    `Because you follow ${interest}${where}, we've started here: ${lowerFirst(lines[0])}`,
-    ...lines.slice(1, 2),
-    "Tap any number to see the page it comes from.",
-  ].join(" ");
+  return facts.map(factSentence).join(" ");
 }
 
 /* ------------------------------------------------------------ quiz-reveal */
@@ -232,7 +198,7 @@ function shareCaptionTemplate(req: AiRequest, facts: Fact[]): string {
 /* --------------------------------------------------------- linkedin-post */
 
 const POST_INTRO = "Impact stories are only as good as the data behind them. Here's what Cognizant and Aston Martin Aramco have to show.";
-const POST_CLOSING = "Every figure here links back to the team's published report. That's the standard we hold ourselves to.";
+const POST_CLOSING = "Every figure here links back to the page of the team's published report it came from.";
 
 function linkedinPostTemplate(_req: AiRequest, facts: Fact[]): string {
   const parts: string[] = [POST_INTRO];
@@ -278,6 +244,27 @@ function groupForBrief(facts: Fact[]): { title: string; facts: Fact[] }[] {
   return [...topics.slice(0, 3), { title: "Also of note", facts: topics.slice(3).flatMap((g) => g.facts) }];
 }
 
+/** Phrases that lean on the sentence before ("They came from ..."). */
+const LEANS_ON_PREVIOUS = /^(They|Those|These|It)\b/;
+
+/**
+ * One bullet per fact, except that a phrase leaning on the one before joins
+ * its antecedent's bullet (same topic) or is dropped, so no bullet starts
+ * with an orphaned "They".
+ */
+function briefBullets(facts: Fact[]): string[] {
+  const bullets: { topic: string; text: string }[] = [];
+  for (const f of facts) {
+    if (LEANS_ON_PREVIOUS.test(f.phrase ?? "")) {
+      const prev = bullets.at(-1);
+      if (prev && prev.topic === f.topic) prev.text += ` ${factSentence(f)}`;
+      continue;
+    }
+    bullets.push({ topic: f.topic, text: factSentence(f) });
+  }
+  return bullets.map((b) => `- ${b.text}`);
+}
+
 function quarterlyBriefTemplate(req: AiRequest, facts: Fact[]): string {
   const narrow = req.params.pillars === "community";
   const title = narrow
@@ -287,10 +274,10 @@ function quarterlyBriefTemplate(req: AiRequest, facts: Fact[]): string {
     "What the partnership and the team's wider programme delivered, drawn from the team's published reports. Estimates are marked as such.";
   const sections = groupForBrief(facts).map((g) => {
     const intro = SECTION_INTROS[g.title] ?? "";
-    return [g.title, intro, ...g.facts.map((f) => `- ${factSentence(f)}`)].filter(Boolean).join("\n");
+    return [g.title, intro, ...briefBullets(g.facts)].filter(Boolean).join("\n");
   });
   const notes =
-    "Data notes\nWhere the source reports disagree with themselves, the figure carries a quality flag in the dashboard. Nothing here is published without a source.";
+    "Data notes\nWhere the source reports disagree with themselves, the figure carries a quality flag on the desk's Data quality page. Nothing here is published without a source.";
   return [title, summary, ...sections, notes].join("\n\n");
 }
 
@@ -302,8 +289,7 @@ function leadershipUpdateTemplate(req: AiRequest, facts: Fact[]): string {
     ? "Leadership update: community impact with Aston Martin Aramco"
     : "Leadership update: the Aston Martin Aramco partnership";
   // Bullets stand alone, so skip phrases that lean on the one before ("They came from ...").
-  const standalone = facts.filter((f) => !/^(They|Those|These|It)\b/.test(f.phrase ?? ""));
-  const pool = standalone.length >= 4 ? standalone : facts;
+  const pool = facts.filter((f) => !LEANS_ON_PREVIOUS.test(f.phrase ?? ""));
   // One bullet per topic first, so four bullets don't all describe the same programme.
   const firstOfTopic = pool.filter((f, i) => pool.findIndex((g) => g.topic === f.topic) === i);
   const ordered = [...firstOfTopic, ...pool.filter((f) => !firstOfTopic.includes(f))];
@@ -357,46 +343,58 @@ function scenarioExplanationTemplate(req: AiRequest): string {
 
 /* ------------------------------------------------------------ story kit */
 
+/** Names that end in one of these read as "the ..." ("the Racing Pride partnership"); event names don't ("Neurodiversity Week"). */
+const TAKES_ARTICLE = /\b(programme|partnership|seat|internships|tours|Day|Event|Finals)(,.*)?$/;
+
+/**
+ * The programme as a sentence names it: the partner suffix dropped (the
+ * partner is named separately), "The" moved to the article, and a common
+ * first word lower-cased ("the para-canoe seat", "Unearth Your Greatness").
+ */
+function programmeName(initiative: Initiative): string {
+  const bare = initiative.name
+    .replace(/\s*\((with [^)]*)\)$/, "")
+    .replace(/\s+with\s+(the\s+)?[A-Z].*$/, "")
+    .replace(/^The\s+/, "");
+  const named = lowerFirst(bare);
+  return TAKES_ARTICLE.test(named) ? `the ${named}` : named;
+}
+
 function storyKitTemplate(req: AiRequest, facts: Fact[]): string {
   const initiative = initiatives.find((i) => i.id === req.params.initiative);
-  // "Para-canoe seat with Paddle UK" -> "Para-canoe seat": the partner is named separately.
-  const name = (initiative?.name ?? "this programme")
-    .replace(/\s*\((with [^)]*)\)$/, "")
-    .replace(/\s+with\s+[A-Z].*$/, "")
-    .replace(/^The\s+/, "");
-  const partner = initiative?.partners.find((p) => p !== "Cognizant") ?? "our organisation";
-  const own = facts.filter((f) => initiative?.factIds.includes(f.id));
-  const wider = facts.filter((f) => !initiative?.factIds.includes(f.id));
-
-  const lines = [
-    ...own.map(factSentence),
-    ...(wider.length ? [`Across the team's wider ${PILLAR_TITLES[wider[0].pillar].toLowerCase()} work: ${lowerFirst(factSentence(wider[0]))}`] : []),
-  ];
+  const name = initiative ? programmeName(initiative) : "this programme";
+  const partners = initiative?.partners.filter((p) => p !== "Cognizant") ?? [];
+  const lines = facts.map(factSentence);
 
   if (req.params.format === "funder") {
     // One formal, third-person paragraph for a grant or funder report; the
     // citations become numbered footnotes when it is copied.
-    const named = initiative?.partners.some((p) => p !== "Cognizant");
+    const who = partners.length > 1 ? `${partners.slice(0, -1).join(", ")} and ${partners.at(-1)}` : partners[0];
+    // "The Aleto Foundation ... on its leadership programme", not the charity's name twice.
+    const own = partners.length === 1 ? name.replace(new RegExp(`^the ${partners[0].replace(/^The /, "")}\\s+`), "its ") : name;
+    const opener = !who
+      ? `The Aston Martin Aramco Formula One Team runs ${name}.`
+      : own === "its partnership"
+        ? `${who} is a partner of the Aston Martin Aramco Formula One Team.`
+        : `${who} ${partners.length > 1 ? "work" : "works"} with the Aston Martin Aramco Formula One Team on ${own}.`;
     return [
-      named
-        ? `${partner} works with the Aston Martin Aramco Formula One Team on the ${lowerFirst(name)}.`
-        : `The Aston Martin Aramco Formula One Team runs the ${lowerFirst(name)}.`,
+      opener,
       ...lines.slice(0, 3),
       "The figures are taken from the team's published reporting and are referenced in the footnotes.",
     ].join(" ");
   }
 
-  const intro = `At ${partner}, we've been working with the Aston Martin Aramco Formula One Team on the ${lowerFirst(name)}.`;
+  // The charity's own post, so it speaks as "we"; the team is always "the team".
+  const intro = `We've been working with the Aston Martin Aramco Formula One Team on ${name}.`;
   const body: string[] = [];
   for (const l of lines) {
     body.push(l);
     if (words([intro, ...body].join(" ")) >= 55) break;
   }
-  let text = [intro, ...body, "Every figure here comes from the team's published report, so you can check it yourself."].join(" ");
+  let text = [intro, ...body, "Every figure here comes from the team's published report, so anyone can check it."].join(" ");
   const extras = [
-    "We're proud to be part of it, and there's more to come.",
-    `If you'd like to get involved with ${name}, we'd love to hear from you.`,
-    "Thank you to everyone at the team who gives their time to make it happen.",
+    "Thank you to everyone at the team who gives their time to it.",
+    `To find out more about ${name}, get in touch.`,
   ];
   for (const e of extras) if (words(text) < 60) text += ` ${e}`;
   return text;

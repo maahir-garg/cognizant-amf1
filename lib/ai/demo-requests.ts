@@ -1,9 +1,9 @@
 /**
- * Enumerates every AI request the offline demo can hit: every persona x
- * pillar, every story chapter at both depths, every quiz visible to that
- * persona (both outcomes), every persona's share caption, every partner
- * narrative format (all pillars and community only), the default scenario,
- * every verified non-Cognizant initiative's story kit (every format).
+ * Enumerates every AI request the offline demo can hit: every story chapter
+ * at both depths, every quiz reveal a depth can show (both outcomes), the
+ * default share caption, every partner narrative format (all pillars and
+ * community only), the default scenario, and every story-kit initiative in
+ * every format.
  *
  * Shared by scripts/warm-cache.ts (which sends these through the live
  * pipeline when a key is configured) and tests/unit/ai-templates.test.ts
@@ -11,18 +11,17 @@
  * deterministic templates, with no network involved).
  */
 import { HERO_RACE_ID } from "@/lib/config";
-import { initiatives, quizzes } from "@/lib/data/load";
+import { quizzes } from "@/lib/data/load";
 import { PILLARS, type AiRequest } from "@/lib/data/schemas";
 import { runScenario, SCENARIO_DEFAULTS, scenarioDerivedValues } from "@/lib/data/scenario";
+import { STORY_KIT_INITIATIVE_IDS } from "@/lib/partner/story-kit";
 import {
   CHAPTER_IDS,
   DEFAULT_SHARE_FACT_IDS,
   DEMO_PERSONAS,
-  STORY_DEFAULT_FAN,
   NARRATIVE_FORMATS,
   STORY_KIT_FORMATS,
   fanChapterRequest,
-  fanStoryRequest,
   narrativeRequest,
   quizRevealRequest,
   scenarioExplanationRequest,
@@ -34,7 +33,7 @@ export function enumerateDemoRequests(): AiRequest[] {
   const reqs: AiRequest[] = [];
 
   for (const persona of DEMO_PERSONAS) {
-    for (const pillar of PILLARS) reqs.push(fanStoryRequest(persona, pillar));
+    for (const chapter of CHAPTER_IDS) reqs.push(fanChapterRequest(persona, chapter));
 
     for (const quiz of quizzes) {
       if (!quiz.levels.includes(persona.level)) continue;
@@ -43,20 +42,6 @@ export function enumerateDemoRequests(): AiRequest[] {
     }
 
     reqs.push(shareCaptionRequest(persona, DEFAULT_SHARE_FACT_IDS, HERO_RACE_ID));
-  }
-
-  // The story at "/": both depths for the default fan and every persona.
-  const seen = new Set<string>();
-  for (const persona of [STORY_DEFAULT_FAN, ...DEMO_PERSONAS]) {
-    for (const level of ["new", "die-hard"] as const) {
-      for (const chapter of CHAPTER_IDS) {
-        const req = fanChapterRequest({ ...persona, level }, chapter);
-        const key = JSON.stringify(req);
-        if (seen.has(key)) continue;
-        seen.add(key);
-        reqs.push(req);
-      }
-    }
   }
 
   for (const format of NARRATIVE_FORMATS) {
@@ -68,9 +53,8 @@ export function enumerateDemoRequests(): AiRequest[] {
   const scenarioFactIds = [...new Set(scenarioOutputs.flatMap((o) => o.factIds))];
   reqs.push(scenarioExplanationRequest(scenarioDerivedValues(scenarioOutputs), scenarioFactIds));
 
-  for (const initiative of initiatives) {
-    if (initiative.status !== "verified" || initiative.partners.includes("Cognizant")) continue;
-    for (const format of STORY_KIT_FORMATS) reqs.push(storyKitRequest(initiative.id, format));
+  for (const id of STORY_KIT_INITIATIVE_IDS) {
+    for (const format of STORY_KIT_FORMATS) reqs.push(storyKitRequest(id, format));
   }
 
   return reqs;
