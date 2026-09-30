@@ -4,7 +4,7 @@ import { APP_NAME } from "@/lib/config";
 import { factCitation } from "@/lib/data/load";
 import type { Fact } from "@/lib/data/schemas";
 import { factParts } from "@/lib/format";
-import type { CardSize } from "@/lib/partner/story-kit";
+import { cardLabel, type CardSize } from "@/lib/partner/story-kit";
 import { cn } from "@/lib/utils";
 
 const STATUS_LABEL: Record<string, string> = { verified: "Verified", estimated: "Estimated" };
@@ -65,7 +65,7 @@ export const ShareCard = forwardRef<
                     {unit && <span className={cn("ml-3 font-sans font-medium text-ink-2", wide ? "text-[28px]" : "text-[44px]")}>{unit}</span>}
                   </span>
                   <span className={cn("font-serif leading-[1.2] text-ink", wide ? "text-[22px]" : "max-w-[24ch] text-[40px]")}>
-                    {f.metric}
+                    {cardLabel(f.id)}
                   </span>
                   <span className={cn("flex items-center gap-3 font-sans font-semibold tracking-[0.06em] text-ink-2 uppercase", wide ? "text-[16px]" : "text-[24px]")}>
                     <StatusMark status={f.status} className={wide ? "size-4" : "size-5"} />

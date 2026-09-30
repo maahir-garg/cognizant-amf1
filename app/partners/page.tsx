@@ -10,7 +10,7 @@ import { factCitation, getFact, getSource } from "@/lib/data/load";
 import { formatDate } from "@/lib/format";
 import {
   jointCognizantFacts,
-  newestFacts,
+  progressFigures,
   POST_ANGLES,
   RACE_DATA_GAPS,
   raceFacts,
@@ -33,14 +33,6 @@ const CAPTIONS: Record<string, string> = {
   "c24-esg-impressions-partners": "Extra impressions when partners, Cognizant included, shared the team's stories",
 };
 
-// Target years come from each fact's period, so the labels follow the data.
-const NEW_LABELS: Record<string, string> = {
-  "e25-progress-scope12": "Scope 1 and 2 against the baseline year",
-  "e25-progress-scope3": "Scope 3 against the baseline year",
-  "e25-target-2030-tco2e": `${getFact("e25-target-2030-tco2e").period} target footprint`,
-  "e25-target-2050-tco2e": `${getFact("e25-target-2050-tco2e").period} residual footprint`,
-};
-
 /** "9 to 11 Oct 2026", or "30 Sept to 2 Oct 2026" across a month. */
 function dateRange(start: string, end: string): string {
   const [a, b] = [formatDate(start), formatDate(end)];
@@ -56,7 +48,7 @@ export default function RaceWeekPage() {
   const joint = jointCognizantFacts().filter((f) => !published.some((p) => p.id === f.id));
   const programmes = raceInitiatives(race);
   const latest = getSource("esg-2025");
-  const changes = newestFacts();
+  const progress = progressFigures();
   const restatement = getFact("g25-restatement");
 
   const numeric = (list: typeof published) => list.filter((f) => f.value !== null).map((f) => f.id);
@@ -100,15 +92,15 @@ export default function RaceWeekPage() {
           )}
         </DeskSection>
 
-        <DeskSection id="changed" title="What changed since the last report" className="lg:col-span-4">
+        <DeskSection id="progress" title="Progress figures to use" note="From the report's own target chart" className="lg:col-span-4">
           <div className="flex flex-col gap-3">
             <p className="text-ink-2">
-              New in the fact base on {formatDate(changes.date)}: the report&apos;s own progress figures from its target chart. Use these
-              for progress, not a comparison of yearly totals.
+              When a post talks about progress, quote these. Don&apos;t compare one year&apos;s total with another&apos;s: earlier years
+              were restated.
             </p>
             <div className="flex flex-col divide-y divide-line border-y border-line">
-              {changes.facts.map((f) => (
-                <FactRow key={f.id} id={f.id} label={NEW_LABELS[f.id]} />
+              {progress.map((f) => (
+                <FactRow key={f.id} id={f.id} label={f.label} />
               ))}
             </div>
           </div>

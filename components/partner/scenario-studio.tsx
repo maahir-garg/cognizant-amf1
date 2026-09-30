@@ -161,6 +161,13 @@ export function ScenarioStudio() {
             </div>
           );
         })}
+        <p className="flex flex-col gap-1 border-l-2 border-conflict pl-3 text-[0.875em] leading-snug text-ink-2">
+          <StatusBadge status="conflict" />
+          <span>
+            The reports print two sizes for the same Aleto cohort, <InlineFact id="b25-aleto-cohort" /> and{" "}
+            <InlineFact id="b25-aleto-cohort-highlights" />. Mentoring uses the smaller, so it does not overstate reach.
+          </span>
+        </p>
         <p className="text-[0.875em] text-ink-3">
           Levers are your planning assumptions. Every output multiplies them by a figure the team has published, and nothing else.
         </p>

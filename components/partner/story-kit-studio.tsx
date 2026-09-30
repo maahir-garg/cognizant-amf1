@@ -11,7 +11,7 @@ import { STORY_KIT_FORMATS, storyKitFactIds, storyKitRequest, type StoryKitForma
 import { factCitation, getFact } from "@/lib/data/load";
 import { draftKey } from "@/lib/partner/approvals";
 import { citationsToFootnotes, footnotedPlainText } from "@/lib/partner/citations";
-import { CARD_SIZES, cardFactIds, coBrandLine, storyKitInitiatives, type CardSize } from "@/lib/partner/story-kit";
+import { CARD_SIZES, cardFactIds, cardLabel, coBrandLine, coBrandPartners, storyKitInitiatives, type CardSize } from "@/lib/partner/story-kit";
 import { ApprovalPanel } from "./approval-panel";
 import { ChoiceChips } from "./choice-chips";
 import { ShareCard } from "./share-card";
@@ -124,6 +124,12 @@ export function StoryKitStudio({ initialId }: { initialId?: string }) {
             Card and copy co-branded as <span className="font-semibold text-ink">{coBrand}</span>, from the programme&apos;s own partner
             list.
           </p>
+          {coBrandPartners(initiative).length > 1 && (
+            <p className="border-l-2 border-estimated pl-3 text-[0.875em] text-ink">
+              Needs partner approval: the card names {coBrandPartners(initiative).slice(1).join(" and ")} as well. Check with them before
+              posting.
+            </p>
+          )}
           {summary && <p className="text-[0.875em] text-ink-3">{summary}</p>}
         </div>
 
@@ -134,18 +140,29 @@ export function StoryKitStudio({ initialId }: { initialId?: string }) {
           <ul className="flex flex-col divide-y divide-line border-y border-line">
             {ownFacts.map((id) => (
               <li key={id} className="flex flex-col gap-1 py-2.5">
-                <span className="text-[0.875em] leading-snug text-ink-2">{getFact(id).metric}</span>
-                <span className="flex flex-wrap items-baseline gap-x-2">
-                  <InlineFact id={id} />
-                  <span className="text-[0.8125rem] text-ink-3">{factCitation(getFact(id)).label}</span>
+                {/* Figure first, then the written label that follows it on the card ("93% of mentees said ..."). */}
+                <span className="leading-snug text-ink-2">
+                  {getFact(id).value !== null && (
+                    <>
+                      <InlineFact id={id} />{" "}
+                    </>
+                  )}
+                  {cardLabel(id)}
+                  {getFact(id).value === null && (
+                    <>
+                      {": "}
+                      <InlineFact id={id} className="font-medium" />
+                    </>
+                  )}
                 </span>
+                <span className="text-[0.8125rem] text-ink-3">{factCitation(getFact(id)).label}</span>
               </li>
             ))}
           </ul>
           {left.length > 0 && (
             <p className="text-[0.875em] text-ink-3">
-              Left out because the reports print it differently in places: <span className="font-mono text-[0.75rem]">{left.join(", ")}</span>.
-              See Data quality.
+              {left.length === 1 ? "One figure is" : "Some figures are"} left out because the reports print{" "}
+              {left.length === 1 ? "it" : "them"} differently in different places. The desk&apos;s Data quality tab has the detail.
             </p>
           )}
         </section>
