@@ -3,7 +3,7 @@
  * dates, the programmes the team has reported there, whether trackside
  * energy is published, and when the sources were last checked.
  */
-import { findFact, getCity, heroRace, initiatives, races, sources } from "@/lib/data/load";
+import { findFact, getCity, initiatives, races, sources } from "@/lib/data/load";
 import type { Initiative, Race } from "@/lib/data/schemas";
 import { formatDate } from "@/lib/format";
 import { EUROPEAN_TRACKSIDE_RACE_IDS } from "./trackside";
@@ -130,4 +130,3 @@ export function orderedRaces(): Race[] {
   );
 }
 
-export { heroRace };

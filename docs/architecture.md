@@ -2,17 +2,15 @@
 
 Off Camera has one idea at its core: **a fact base with provenance, and nothing on screen that isn't in it**. The fan story, the partner desk and the AI all sit on top of that fact base and a small set of deterministic functions. The prototype runs entirely from files in the repo; production would replace those files with governed feeds without changing the layers above.
 
-Parts marked **(pending build)** are specified in `docs/overhaul/overhaul-brief.md` but not yet in the code on this branch.
-
 ## What changed in the September 2026 overhaul
 
-| Removed                                                                                                                       | Added                                                                                                 |
-| ----------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `/start` (questionnaire), `/lap` and `/act`, now permanent redirects to `/` in `next.config.ts`                               | `/` as the single scroll-led story, following the report's footprint map                              |
-| The simulated race-weekend feed: `lib/live`, `/api/events/stream`, `data/events.json`, `data/counters.json` and their schemas | `/how-it-works` for judges and partners (pending build; copy in `docs/overhaul/how-it-works-copy.md`) |
-| Impact credits and the milestone post request                                                                                 | Check my draft on the partner desk (pending build)                                                    |
-| The three illustrative `sg-*` initiatives                                                                                     | Draft to approved state with reviewer and timestamp on narratives (pending build)                     |
-| Anything with `status: "simulated"` in the product; a unit test now enforces this                                             | "This race week", Data quality, ROI and Export tabs on the desk (pending build)                       |
+| Removed                                                                                                                       | Added                                                                                  |
+| ----------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `/start` (questionnaire), `/lap` and `/act`, now permanent redirects to `/` in `next.config.ts`                               | `/` as the single scroll-led story, following the report's footprint map               |
+| The simulated race-weekend feed: `lib/live`, `/api/events/stream`, `data/events.json`, `data/counters.json` and their schemas | `/how-it-works` for judges and partners (copy in `docs/overhaul/how-it-works-copy.md`) |
+| Impact credits and the milestone post request                                                                                 | Check my draft on the partner desk                                                     |
+| The three illustrative `sg-*` initiatives                                                                                     | Draft to approved state with reviewer and timestamp on narratives                      |
+| Anything with `status: "simulated"` in the product; a unit test now enforces this                                             | "This race week", Data quality, ROI and Export tabs on the desk                        |
 
 ## System diagram (prototype)
 
@@ -33,10 +31,10 @@ flowchart LR
   end
 
   subgraph Engines["Deterministic functions (lib/data, lib/fan, lib/partner)"]
-    EQ[equivalents and travel ratio<br/>trip vs taxi or driving]
+    EQ[travel ratio<br/>trip vs taxi or driving]
     TRK[trackside<br/>European races by source]
     SCN[scenario model<br/>joint programmes only]
-    MATCH["number matching<br/>(Check my draft, pending build)"]
+    MATCH["number matching<br/>(Check my draft)"]
   end
 
   subgraph AI["AI layer (lib/ai)"]
@@ -70,42 +68,42 @@ flowchart LR
 
 ## Routes
 
-| Route                  | Audience                    | What it does                                                                                                                                                                                                                                                                               |
-| ---------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `/`                    | Fans                        | The story: title page, "What you'll get", six chapters (campus, supply chain, moving the team, at the circuit, beyond the track, the finish line), then "Your race weekend" for Singapore. Depth toggle "New to F1" / "Watched for years". Chapter tracker. (Story rebuild pending build.) |
-| `/weekend/[slug]`      | Fans                        | One race: what the team published for it (trackside energy by source where it exists, otherwise a data gap), linked programmes, getting there, season context in the detail layer. `singapore-2026` is the hero race.                                                                      |
-| `/share`               | Fans                        | 9:16 card: travel plan line, one team fact from a curated safe list, quiz badge if earned. PNG export in the browser (`html-to-image`). No name by default.                                                                                                                                |
-| `/quiz`                | Fans                        | The three-question knowledge check on its own.                                                                                                                                                                                                                                             |
-| `/partners`            | Cognizant, charity partners | The Impact desk. Tabs: This race week, Narratives, Check my draft, Scenarios, Story kit, Data quality, ROI, Export. Today the code has Overview, Narratives, Scenarios and Story kit as sub-routes; the tab set is pending build.                                                          |
-| `/how-it-works`        | Judges, partners            | The problem, the audiences, the four AI steps, the guardrail, what is real now versus the pilot, ROI measures, pilot and business model. Placeholder in code; full page pending build.                                                                                                     |
-| `/sources`             | Everyone                    | Fact explorer, quality flags and method.                                                                                                                                                                                                                                                   |
-| `/api/ai/generate`     | App                         | `POST AiRequest` returns a guarded `AiResponse`.                                                                                                                                                                                                                                           |
-| `/api/partner/metrics` | Partner BI tools            | Read-only JSON, or CSV with `?format=csv`. See `docs/partner-api.md`.                                                                                                                                                                                                                      |
+| Route                  | Audience                    | What it does                                                                                                                                                                                                                                                |
+| ---------------------- | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/`                    | Fans                        | The story: title page, "What you'll get", six chapters (campus, supply chain, moving the team, at the circuit, beyond the track, the finish line), then "Your race weekend" for Singapore. Depth toggle "New to F1" / "Watched for years". Chapter tracker. |
+| `/weekend/[slug]`      | Fans                        | One race: what the team published for it (trackside energy by source where it exists, otherwise a data gap), linked programmes, getting there, season context in the detail layer. `singapore-2026` is the hero race.                                       |
+| `/share`               | Fans                        | 9:16 card: travel plan line, one team fact from a curated safe list, quiz badge if earned. PNG export in the browser (`html-to-image`). No name by default.                                                                                                 |
+| `/quiz`                | Fans                        | The three-question knowledge check on its own.                                                                                                                                                                                                              |
+| `/partners`            | Cognizant, charity partners | The Impact desk. Tabs: This race week (`/partners`), Narratives, Check my draft (`/partners/check`), Scenarios, Story kit, Data quality, ROI, Export, each a sub-route.                                                                                     |
+| `/how-it-works`        | Judges, partners            | The problem, the audiences, the four AI steps on a real draft, the guardrail worked on a sentence, what is real now versus the pilot, ROI measures, pilot and business model.                                                                               |
+| `/sources`             | Everyone                    | Fact explorer, quality flags and method.                                                                                                                                                                                                                    |
+| `/api/ai/generate`     | App                         | `POST AiRequest` returns a guarded `AiResponse`.                                                                                                                                                                                                            |
+| `/api/partner/metrics` | Partner BI tools            | Read-only JSON, or CSV with `?format=csv`. See `docs/partner-api.md`.                                                                                                                                                                                       |
 
 ## Layers
 
 **Sources to fact base.** `scripts/extract-sources.ts` stores the text of every PDF page in `sources/text/<id>.json`. Each fact in `data/facts.json` carries a source, page and verbatim quote, or a derivation over other facts. Nothing is rendered that isn't a fact or a documented calculation over facts. The schema still allows `simulated`, but no shipped fact or initiative uses it and a unit test fails the build if one does.
 
-**Verification.** `npm run verify:data` runs in `npm run check` and in the unit tests. It normalises typography, finds each quote on its page, checks the value is inside the quote, and recomputes every estimate. Where the reports disagree with themselves, the fact carries a quality flag (`source-conflict`, `restated`, `not-comparable`, `inconsistent-equivalence`). Flags are shown on `/sources` and the partner desk; fan pages never show flagged or disputed figures (`FactValue` hides flags unless `showFlags` is set).
+**Verification.** `npm run verify:data` runs in `npm run check` and in the unit tests. It normalises typography, finds each quote on its page, checks the value is inside the quote, and recomputes every estimate. Where the reports disagree with themselves, the fact carries a quality flag (`source-conflict`, `restated`, `not-comparable`, `inconsistent-equivalence`). Flags are shown on `/sources` and the partner desk, never on fan pages (`FactValue` hides flags unless `showFlags` is set, and the provenance drawer drops flag notes, fact ids and the verifier line on fan routes). The one disputed figure fans see is the story's footprint total, the report's own target-chart value, under a plain `fanLabel`.
 
 **Deterministic functions.** Pure TypeScript over the fact base, unit-tested:
 
-- `lib/data/equivalents.ts`: the fan's trip compared with a taxi or driving, using DEFRA proxy factors from `data/travel-modes.json` (Estimated). Laps of Silverstone appear only where the report prints them (`e25-saf-laps`, `e25-cups-laps`).
+- `lib/fan/trip.ts` (over `lib/data/travel.ts`): the fan's last few kilometres to the circuit compared with a taxi or driving alone, using DEFRA proxy factors from `data/travel-modes.json` (Estimated). Laps of Silverstone appear only where the report prints them (`e25-saf-laps`, `e25-cups-laps`).
 - `lib/fan/trackside.ts`: trackside energy by source for the European races in the 2025 report.
 - `lib/data/scenario.ts`: what-ifs for joint programmes, multiplying verified baselines; no invented costs or elasticities.
 - `lib/data/numbers.ts`: number extraction and matching, shared by the verifier and the guardrail.
-- Check my draft (pending build): runs pasted copy through the same number matching against the whole fact base, suggests a citation for each matched number and holds back any number that matches nothing.
+- `lib/ai/check-draft.ts` (Check my draft): runs pasted copy through the same number matching against the whole fact base, suggests a citation for each matched number and holds back any number that matches nothing. The `/how-it-works` example runs a sentence through it and then the guardrail.
 
 **AI.** The model never sees the whole dataset.
 
-1. **Select.** Request builders (`lib/ai/requests.ts`) name the fact ids a request may use, and exclude what is not allowed (flagged figures on fan pages, pay-gap figures in personalisation).
+1. **Select.** Request builders (`lib/ai/requests.ts`) name the fact ids a request may use, and exclude what is not allowed: disputed figures, and the pay gap and workforce split, which need the report's own explanation beside them.
 2. **Explain and draft.** The prompt (`lib/ai/prompts.ts`) contains only those facts; the model must cite `[F:id]` after each claim.
 3. **Check.** `lib/ai/guardrail.ts` extracts every number and rejects the text unless each matches a fact or derived value the text actually cites, and every cited id was supplied.
 4. **Fall back.** A rejected draft is retried once with the reasons, then replaced by a grounded template (`lib/ai/templates.ts`). `lib/ai/engine.ts` never throws to the route.
 
-In demo mode (the default, see `isDemoMode()` in `lib/config.ts`) responses come from `data/ai-cache/<task>.json`, falling back to templates, so the pitch never depends on a network. With `GEMINI_API_KEY` set and `DEMO_MODE=false`, the model drafts and the same check applies. Every response records `generator.kind` (`model` or `template`); the UI shows it beside the "Figures checked" label.
+In demo mode (the default, see `isDemoMode()` in `lib/config.ts`) responses come from `data/ai-cache/<task>.json`, falling back to templates, so the pitch never depends on a network. With `GEMINI_API_KEY` set and `DEMO_MODE=false`, the model drafts and the same check applies. Every response records `generator.kind` (`model` or `template`); the desk and `/how-it-works` show it beside the "Figures checked" label, while fan pages show one line, "Every number checked against the report".
 
-**Approvals (pending build).** Narratives move from draft to approved with a reviewer name and timestamp. In the prototype this state is stored in the browser's local storage; in the pilot it moves to a shared store with an audit log.
+**Approvals.** Narratives move from draft to approved with a reviewer name and timestamp. In the prototype this state is stored in the browser's local storage; in the pilot it moves to a shared store with an audit log.
 
 **No simulated feed.** The earlier simulated race-weekend replay, its counters and milestone posts were removed. A trackside or programme feed is part of the pilot plan, described in words (`docs/ROI.md`), not shown as working UI. Every figure is labelled "Updated when the team publishes".
 
@@ -120,7 +118,7 @@ flowchart LR
     LOG[Freight by mode<br/>monthly]
     ENERGY[Trackside energy by source<br/>after each race]
     PROG[Programme and charity totals<br/>per event]
-    FANS[Fan pledges and cards<br/>as they happen, consented]
+    FANS[Fan quick checks and cards<br/>as they happen, consented]
   end
 
   subgraph Platform["Cognizant data platform"]
@@ -156,7 +154,7 @@ Principles that carry over unchanged: every datum has a source record; estimates
 
 ## Rollout
 
-The pilot plan, team, phases and risks are in `docs/ROI.md`. In short: a data-sharing agreement and approval workflow in Q4 2026; live with published facts from pre-season to race 6; one approved per-race feed added mid-season; evaluation at season end.
+The pilot plan, team, phases and risks are in `docs/ROI.md`. In short: a data-sharing agreement and approval workflow in Q4 2026; launch with published facts from pre-season to race 6; one approved per-race feed added mid-season; evaluation at season end.
 
 ### What Cognizant would own
 

@@ -43,7 +43,8 @@ app/
   how-it-works/          for judges and partners: AI, guardrail, pilot plan, ROI
   sources/               fact explorer and data-quality flags (governance showcase)
   (fan)/                 weekend/[slug] race page, share card builder, quiz
-  partners/              impact desk: overview, narratives, scenarios, story-kit
+  partners/              Impact desk: this race week, narratives, check (my draft),
+                         scenarios, story kit, data quality, ROI, export
   api/ai/generate        POST AiRequest -> AiResponse
   api/partner/metrics    read-only JSON (and ?format=csv) for partner BI tools
                          (/start, /lap and /act redirect to / in next.config.ts)
@@ -51,7 +52,10 @@ components/
   ui/                    shadcn/ui primitives (restyled via tokens; keep edits minimal)
   shared/                trust components used everywhere: FactValue, InlineFact,
                          StatusBadge, StatusLegend, DataGap, ProvenanceProvider (drawer),
-                         AiText, FactTable, site header/nav/footer
+                         AiText, FactTable, site header/nav/footer; surface.ts tells
+                         fan routes from partner/sources/explainer routes
+  story/                 the scrollytelling story at /: hero, chapters, graphics, tracker
+  explainer/             /how-it-works sections, the live draft and the worked number check
   fan/  partner/         surface-specific components
 lib/
   config.ts              product name, footer label, isDemoMode()
@@ -62,11 +66,14 @@ lib/
   data/verify.ts         the audit behind `verify:data` (node-only)
   data/numbers.ts        number extraction and matching (verifier + guardrail)
   data/derive.ts         safe arithmetic for estimated facts
-  data/equivalents.ts    CO2e -> laps of Silverstone, flights, car-years, trips
-  data/relevance.ts      fan profile -> ranked initiatives
+  data/travel.ts         travel-mode factors: trip kg and mode-vs-mode ratios
   data/scenario.ts       what-if model for joint initiatives
-  fan/                   fan profile, profile codec, trackside rows
-  ai/                    guardrail, engine, templates, provider, prompts, cache, client hook
+  story/                 chapter copy and beats, graphic rows, race-week dates
+  fan/                   profile (reading depth), quiz, race, share, storage and
+                         local-keys, trip, trackside rows
+  partner/               race week, approvals, citations, CSV, metrics, ROI, story kit
+  ai/                    guardrail, engine, templates, provider, prompts, cache, client hook,
+                         requests and demo-requests, check-draft (Check my draft)
 data/                    facts, sources, initiatives, races, cities, conversion-factors,
                          travel-modes, quizzes, ai-cache/
 sources/                 original PDFs (gitignored), text/<id>.json (committed), external/
@@ -92,9 +99,10 @@ docs/                    architecture, data-sources, DECISIONS, DEMO_SCRIPT, ROI
 - Request/response: `AiRequest` / `AiResponse` in `lib/data/schemas.ts`. Client code uses `useAiText()` from `lib/ai/client.ts` and renders with `<AiText>`.
 - The model only ever receives the facts named in `factIds` (plus `derived` values) and must cite them inline as `[F:fact-id]` or `[D:derived-id]`.
 - `lib/ai/guardrail.ts` rejects any output whose numbers don't match a **cited** fact or derived value, or that cites unknown ids. Rejected output is regenerated once, then replaced by the grounded template (`lib/ai/templates.ts`). The UI never shows unguarded text.
-- Demo mode (`isDemoMode()` in `lib/config.ts`) is on unless `DEMO_MODE=false` **and** `GEMINI_API_KEY` is set. In demo mode responses come from `data/ai-cache/<task>.json` (one file per task, statically imported, mapping `cacheKey -> AiResponse`), falling back to the deterministic templates for any request outside the warmed set. `npm run warm-cache` fills the cache for every demo persona and path (`lib/ai/demo-requests.ts` enumerates them); without `GEMINI_API_KEY` it exits without writing, since the templates already cover the offline demo.
+- Demo mode (`isDemoMode()` in `lib/config.ts`) is on unless `DEMO_MODE=false` **and** `GEMINI_API_KEY` is set. In demo mode responses come from `data/ai-cache/<task>.json` (one file per task, statically imported, mapping `cacheKey -> AiResponse`), falling back to the deterministic templates for any request outside the warmed set. The committed cache files are empty (`{}`), so today every offline response is a grounded template. `npm run warm-cache` fills the cache for every demo request (`lib/ai/demo-requests.ts` enumerates them: story chapters at both depths, quiz reveals, the share caption, narratives, the scenario and the story kits); without `GEMINI_API_KEY` it exits without writing, since the templates already cover the offline demo.
 - In live mode (`GEMINI_API_KEY` set, `DEMO_MODE=false`) the engine tries the model up to twice, feeding a failed guardrail's reasons back into the retry prompt, then falls back to the template. `lib/ai/engine.ts` never throws to the route.
-- Generated text records who drafted it (`generator.kind: "model" | "template"`); the UI shows it.
+- Generated text records who drafted it (`generator.kind: "model" | "template"`); the desk and `/how-it-works` show it. Fan pages show one plain line instead, "Every number checked against the report".
+- House style for generated copy (enforced in `lib/ai/prompts.ts` and tested in `tests/unit/ai-prompts.test.ts`): third person for the team, no persona address ("As a new fan…"), falls in words ("down 74%", never "by -74%"), no hype words, lower case after a colon. The pay gap, the workforce split and disputed figures are never handed to generated copy.
 
 ## Workstreams and ownership
 
@@ -106,6 +114,8 @@ Work happens on branches named `rebuild/<stream>`. Stay inside your directories;
 | ai | `lib/ai` (except `guardrail.ts`, which needs lead review), `app/api/ai`, `scripts/warm-cache.ts`, `data/ai-cache`, `tests/unit/ai*.test.ts` |
 | fan | `app/(fan)`, `components/fan`, `lib/fan` |
 | partner | `app/partners`, `components/partner`, `app/api/partner`, `lib/partner` |
+| story | `components/story`, `lib/story` |
+| explainer | `app/how-it-works`, `components/explainer`, `docs/overhaul/how-it-works-copy.md` |
 | qa | `tests/e2e`, `playwright.config.ts`, `scripts/record-demo.ts`, `docs/DEMO_SCRIPT.md`, `docs/screenshots/` |
 
 ## Conventions
@@ -113,7 +123,7 @@ Work happens on branches named `rebuild/<stream>`. Stay inside your directories;
 - TypeScript strict. Server components by default; add `"use client"` only where there is state or browser APIs.
 - Next.js 16: `params`/`searchParams` are Promises; `middleware` is now `proxy`; no `next lint`.
 - Styling: Tailwind v4 with the tokens in `app/globals.css`. Follow `DESIGN.md`. No inline hex colours. Light paper theme by default; wrap a section in `data-tone="green"` for the green ground and use semantic tokens (`bg`, `ink`, `line`, `highlight`, status colours) so components work on both.
-- Data-quality flags and disputed figures (`source-conflict`) appear only on `/sources` and the partner desk, never on fan pages (`<FactValue showFlags>` is off by default).
+- Data-quality flags and disputed figures (`source-conflict`) appear only on `/sources` and the partner desk, never on fan pages (`<FactValue showFlags>` is off by default, and the provenance drawer drops flag notes on fan routes). The one exception is the story's footprint total and baseline, the report's own target-chart values, shown under a plain `fanLabel` (see `docs/DECISIONS.md`).
 - Copy: British English, sentence case, plain words. Say "the team" or "Aston Martin Aramco", not "AMF1", in fan-facing copy.
 - Comments explain why, not what. Match the density of the surrounding code.
 - Commits: small, conventional (`feat:`, `fix:`, `chore:`, `docs:`, `test:`), no attribution trailers.

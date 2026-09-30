@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { compareTrips, fanEquivalents, toEquivalent } from "@/lib/data/equivalents";
-import { facts, getFact, initiatives } from "@/lib/data/load";
-import { matchInitiatives } from "@/lib/data/relevance";
+import { modeRatio, tripKg } from "@/lib/data/travel";
+import { facts, initiatives } from "@/lib/data/load";
 import { runScenario, SCENARIO_DEFAULTS } from "@/lib/data/scenario";
 import { verifyData } from "@/lib/data/verify";
 
@@ -19,27 +18,14 @@ describe("fact base", () => {
   });
 });
 
-describe("equivalents", () => {
-  it("uses the team's own Silverstone lap equivalence", () => {
-    const e = toEquivalent(getFact("e25-saf-avoided").value!, "silverstone-lap");
-    expect(Math.round(e.units)).toBe(88153);
-    expect(e.display).toBe("88,000");
+describe("travel modes", () => {
+  it("prices a return trip per passenger", () => {
+    expect(tripKg("mrt", 10)).toBeCloseTo(0.572, 3);
+    expect(tripKg("mrt", 10, false)).toBeCloseTo(0.286, 3);
   });
-  it("returns F1-native equivalents first", () => {
-    expect(fanEquivalents(231.7).map((e) => e.factor.id)[0]).toBe("silverstone-lap");
-  });
-  it("compares trips against driving", () => {
-    const trips = compareTrips(10);
-    const mrt = trips.find((t) => t.mode.id === "mrt")!;
-    expect(mrt.kgCO2e).toBeCloseTo(0.572, 3);
-    expect(mrt.savingVsCarKg).toBeGreaterThan(0);
-  });
-});
-
-describe("relevance", () => {
-  it("puts Singapore initiatives first for a Singapore STEM fan", () => {
-    const m = matchInitiatives({ level: "new", cityId: "singapore", interests: ["stem"] });
-    expect(m[0].initiative.cityIds).toContain("singapore");
+  it("compares modes as a distance-free ratio", () => {
+    expect(modeRatio("mrt", "car")).toBeGreaterThan(modeRatio("mrt", "taxi"));
+    expect(modeRatio("walk", "taxi")).toBe(Infinity);
   });
 });
 

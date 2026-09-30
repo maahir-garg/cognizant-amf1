@@ -21,7 +21,7 @@ describe("share card facts", () => {
   });
   it("prints symbols with the figure and a true minus sign", () => {
     expect(shareFactValue("e25-saf-airfreight-cut")).toBe("31%");
-    expect(shareFactValue("e25-progress-scope12")).toBe("−74%");
+    expect(shareFactValue("e25-supply-chain-share")).toBe("81%");
   });
   it("names every page the figures come from", () => {
     expect(shareSourceLine(["e25-saf-airfreight-cut", "e25-supply-chain-share", "e24-solar-panels"])).toBe(

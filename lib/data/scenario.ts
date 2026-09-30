@@ -41,7 +41,7 @@ export const SCENARIO_LIMITS = {
 export type ScenarioGroup = "make-a-mark" | "stem" | "mentoring" | "total";
 
 /** One factor in a formula, for rendering: a published fact, a planning input, or another output. */
-export type ScenarioTerm = { kind: "fact"; id: string } | { kind: "input"; text: string } | { kind: "output"; id: string };
+type ScenarioTerm = { kind: "fact"; id: string } | { kind: "input"; text: string } | { kind: "output"; id: string };
 
 export type ScenarioOutput = {
   id: string;

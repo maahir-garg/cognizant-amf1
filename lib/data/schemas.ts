@@ -19,9 +19,8 @@ export const STATUSES = ["verified", "estimated", "simulated"] as const;
 export const Status = z.enum(STATUSES);
 export type Status = z.infer<typeof Status>;
 
-export const INTERESTS = ["environment", "community", "inclusion", "stem", "tech"] as const;
-export const Interest = z.enum(INTERESTS);
-export type Interest = z.infer<typeof Interest>;
+const INTERESTS = ["environment", "community", "inclusion", "stem", "tech"] as const;
+const Interest = z.enum(INTERESTS);
 
 const Slug = z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "lowercase-kebab id");
 const IsoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "YYYY-MM-DD");
@@ -47,7 +46,7 @@ export type Source = z.infer<typeof Source>;
 
 /* -------------------------------------------------------------------- facts */
 
-export const Derivation = z.object({
+const Derivation = z.object({
   /** Human-readable formula shown in the provenance drawer. */
   formula: z.string(),
   /** Machine expression over input ids in braces, e.g. "{a} / {b} * 100". */
@@ -55,7 +54,6 @@ export const Derivation = z.object({
   inputs: z.array(Slug).min(1),
   assumptions: z.array(z.string()).default([]),
 });
-export type Derivation = z.infer<typeof Derivation>;
 
 export const QUALITY_FLAGS = [
   "source-conflict",
@@ -108,7 +106,12 @@ export const Fact = z
      * no other digits (the verifier checks), so templates can't leak numbers.
      */
     phrase: z.string().optional(),
-    /** Interests and partner tags used by the relevance engine, e.g. "stem", "partner:cognizant". */
+    /**
+     * Plain label shown on fan pages in place of `metric` when the report's
+     * wording is technical or is itself the disputed part (no digits).
+     */
+    fanLabel: z.string().optional(),
+    /** Topic and partner tags used to pick facts for AI copy, e.g. "stem", "partner:cognizant". */
     tags: z.array(z.string()).default([]),
     extractedAt: IsoDate,
     notes: z.string().optional(),
@@ -241,7 +244,7 @@ export type Quiz = z.infer<typeof Quiz>;
 
 /* -------------------------------------------------------------- fan profile */
 
-export const FAN_LEVELS = ["new", "casual", "die-hard"] as const;
+const FAN_LEVELS = ["new", "casual", "die-hard"] as const;
 export const FanLevel = z.enum(FAN_LEVELS);
 export type FanLevel = z.infer<typeof FanLevel>;
 
@@ -254,7 +257,7 @@ export type FanProfile = z.infer<typeof FanProfile>;
 
 /* ---------------------------------------------------------------- AI layer */
 
-export const AI_TASKS = [
+const AI_TASKS = [
   "fan-story",
   "quiz-reveal",
   "share-caption",
@@ -282,7 +285,7 @@ export const AiRequest = z.object({
   factIds: z.array(Slug).min(1),
   derived: z.array(DerivedValue).default([]),
   fan: FanProfile.optional(),
-  /** Free-form knobs, e.g. { pillar: "environment", partner: "cognizant", tone: "punchy" }. */
+  /** Free-form knobs, e.g. { chapter: "campus", partner: "cognizant", format: "post" }. */
   params: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({}),
 });
 export type AiRequest = z.infer<typeof AiRequest>;

@@ -115,8 +115,8 @@ test.describe("fan golden path", () => {
       const figure = q.getByRole("button", { name: /Show source\.$/ });
       await expect(figure).toBeVisible();
       await expect(figure).toContainText(/Verified|Estimated/);
-      // The grounded explanation arrives from the offline cache or the template, with its check label.
-      await expect(q.getByText("Figures checked")).toBeVisible({ timeout: 15_000 });
+      // The grounded explanation arrives from the offline cache or the template, with its plain check label (fan pages never name the drafter).
+      await expect(q.getByText("Every number checked against the report")).toBeVisible({ timeout: 15_000 });
     }
 
     await expect(page.getByText("Badge earned")).toBeVisible();

@@ -25,7 +25,8 @@
       "hero"
     ],
     "extractedAt": "2026-09-24",
-    "phrase": "The team's whole footprint for the year, from suppliers to flights, came to {v}."
+    "phrase": "The team's whole footprint for the year, from suppliers to flights, came to {v}.",
+    "fanLabel": "Total footprint for the year, before SAF certificates"
   },
   {
     "id": "e25-ghg-total-safc",
@@ -79,7 +80,8 @@
       "environment"
     ],
     "extractedAt": "2026-09-24",
-    "phrase": "The restated baseline the team now measures itself against is {v}."
+    "phrase": "The restated baseline the team now measures itself against is {v}.",
+    "fanLabel": "Baseline-year footprint, the one the targets are measured against"
   },
   {
     "id": "m23-ghg-total-original",
@@ -307,8 +309,7 @@
       ]
     },
     "tags": [
-      "environment",
-      "hero"
+      "environment"
     ],
     "extractedAt": "2026-09-24",
     "phrase": "Emissions the team controls directly have fallen {abs} against its baseline year."
@@ -676,7 +677,7 @@
       "hero"
     ],
     "extractedAt": "2026-09-24",
-    "phrase": "That fuel cut the emissions tied to its air freight by {v}."
+    "phrase": "Sustainable Aviation Fuel certificates supported a {v} cut in the team's air-freight emissions."
   },
   {
     "id": "e25-saf-laps",
@@ -753,7 +754,7 @@
       "environment"
     ],
     "extractedAt": "2026-09-24",
-    "phrase": "That's {v} of the team's direct and electricity emissions, removed for good."
+    "phrase": "That is equal to {v} of the team's direct and electricity emissions. The team uses removals to deal with emissions it cannot yet eliminate."
   },
   {
     "id": "e25-ethiopia-children",
@@ -1951,9 +1952,7 @@
       ]
     },
     "tags": [
-      "environment",
-      "singapore",
-      "hero"
+      "environment"
     ],
     "extractedAt": "2026-09-24",
     "phrase": "Spread evenly across the calendar, moving the team's cars and kit comes to roughly {v} per race weekend."
@@ -2070,8 +2069,7 @@
     "page": 55,
     "quote": "our workforce is 84% men and 16% women",
     "tags": [
-      "inclusion",
-      "hero"
+      "inclusion"
     ],
     "extractedAt": "2026-09-24",
     "phrase": "Women make up {v} of the team's workforce."
@@ -2771,7 +2769,7 @@
       "partner:maaden"
     ],
     "extractedAt": "2026-09-24",
-    "phrase": "With Maaden, the team aims to reach {v} through a free STEM learning platform over the next few years."
+    "phrase": "With Maaden, the team aims to reach {v} through a free STEM learning platform."
   },
   {
     "id": "c25-aramco-interns",

@@ -18,7 +18,7 @@ export function SiteHeader({ demo }: { demo: boolean }) {
   );
 }
 
-export function Wordmark() {
+function Wordmark() {
   return (
     <Link href="/" className="flex shrink-0 items-center gap-2" aria-label={`${APP_NAME}, the story`}>
       <span aria-hidden className="block h-4 w-1.5 bg-lime" />
@@ -27,7 +27,7 @@ export function Wordmark() {
   );
 }
 
-export function DemoPill() {
+function DemoPill() {
   return (
     <span
       className="kicker shrink-0 rounded-sm border border-line-strong px-2 py-0.5 text-ink-2"

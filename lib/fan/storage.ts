@@ -8,11 +8,9 @@
  */
 import { useCallback, useSyncExternalStore } from "react";
 import { z } from "zod";
+import { LOCAL_EVENT, QUICK_CHECK_KEY, TRIP_PLAN_KEY, readStored } from "./local-keys";
 import { useFanProfile } from "./profile";
 import { DEFAULT_FAN, depthFromLevel, levelFromDepth, type Depth } from "./quiz";
-
-/** Same event profile.ts fires, so every hook re-reads after a same-tab write. */
-const LOCAL_EVENT = "impact-lap:local-storage";
 
 function subscribe(onChange: () => void) {
   window.addEventListener("storage", onChange);
@@ -21,14 +19,6 @@ function subscribe(onChange: () => void) {
     window.removeEventListener("storage", onChange);
     window.removeEventListener(LOCAL_EVENT, onChange);
   };
-}
-
-function readRaw(key: string): string | null {
-  try {
-    return window.localStorage.getItem(key);
-  } catch {
-    return null;
-  }
 }
 
 function write(key: string, value: unknown) {
@@ -46,7 +36,7 @@ function makeStore<T>(key: string, schema: z.ZodType<T>) {
   let lastRaw: string | null | undefined;
   let lastValue: T | null = null;
   const snapshot = (): T | null => {
-    const raw = readRaw(key);
+    const raw = readStored(key);
     if (raw === lastRaw) return lastValue;
     lastRaw = raw;
     try {
@@ -68,16 +58,16 @@ function makeStore<T>(key: string, schema: z.ZodType<T>) {
 
 /* -------------------------------------------------------------- quiz badge */
 
-export const QuizBadge = z.object({
+const QuizBadge = z.object({
   depth: z.enum(["new", "watched"]),
   answered: z.number().int().nonnegative(),
   /** How many answers matched the report. Shown to the fan only, never on the card. */
   matched: z.number().int().nonnegative(),
   completedAt: z.string(),
 });
-export type QuizBadge = z.infer<typeof QuizBadge>;
+type QuizBadge = z.infer<typeof QuizBadge>;
 
-const badgeStore = makeStore("impact-lap:quick-check", QuizBadge);
+const badgeStore = makeStore(QUICK_CHECK_KEY, QuizBadge);
 
 /** The quick-check badge, earned by answering every question for a depth. */
 export function useQuizBadge() {
@@ -86,15 +76,15 @@ export function useQuizBadge() {
 
 /* --------------------------------------------------------------- trip plan */
 
-export const TripPlan = z.object({
+const TripPlan = z.object({
   raceId: z.string(),
   cityId: z.string(),
   modeId: z.string(),
   km: z.number().positive(),
 });
-export type TripPlan = z.infer<typeof TripPlan>;
+type TripPlan = z.infer<typeof TripPlan>;
 
-const planStore = makeStore("impact-lap:trip-plan", TripPlan);
+const planStore = makeStore(TRIP_PLAN_KEY, TripPlan);
 
 /** The fan's chosen way to the circuit, from the race-page trip planner. */
 export function useTripPlan() {

@@ -117,6 +117,10 @@ export function verifyData(): Issue[] {
       }
     }
 
+    if (f.fanLabel && extractNumbers(f.fanLabel).length) {
+      issues.push({ level: "error", where, message: `fanLabel contains numbers: "${f.fanLabel}"` });
+    }
+
     for (const flag of f.flags) {
       for (const id of flag.relatedFactIds) {
         if (!factById.has(id)) issues.push({ level: "error", where, message: `flag references unknown fact "${id}"` });

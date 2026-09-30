@@ -3,7 +3,7 @@ import type { Fact } from "@/lib/data/schemas";
 const nf = (maxFrac: number) => new Intl.NumberFormat("en-GB", { maximumFractionDigits: maxFrac });
 
 /** "144.8m", "12.3k" for very large counts; full digits otherwise. */
-export function compact(value: number): string {
+function compact(value: number): string {
   const abs = Math.abs(value);
   if (abs >= 1e6) return `${nf(1).format(value / 1e6)}m`;
   if (abs >= 1e5) return `${nf(0).format(value / 1e3)}k`;

@@ -8,6 +8,7 @@ import { findFact } from "@/lib/data/load";
 import type { AiResponse, DerivedValue } from "@/lib/data/schemas";
 import { cn } from "@/lib/utils";
 import { useProvenance } from "./provenance";
+import { useFanSurface } from "./surface";
 
 /**
  * Renders generated text with its citations as numbered chips that open the
@@ -104,7 +105,9 @@ export function AiText({
   );
 }
 
-export function AiMeta({ response, className }: { response: AiResponse; className?: string }) {
+/** Fans get one plain line; partner and explainer pages also see who drafted the text and whether it came from the cache. */
+function AiMeta({ response, className }: { response: AiResponse; className?: string }) {
+  const fan = useFanSurface();
   const n = response.guardrail.checked.length;
   const drafter =
     response.generator.kind === "model" ? `Drafted by ${response.generator.model ?? "AI model"}` : "Drafted from a grounded template";
@@ -113,7 +116,7 @@ export function AiMeta({ response, className }: { response: AiResponse; classNam
       <Tooltip>
         <TooltipTrigger asChild>
           <span tabIndex={0} className="kicker inline-flex items-center gap-1 text-ink-2">
-            <Check className="size-3" strokeWidth={3} aria-hidden /> Figures checked
+            <Check className="size-3" strokeWidth={3} aria-hidden /> {fan ? "Every number checked against the report" : "Figures checked"}
           </span>
         </TooltipTrigger>
         <TooltipContent className="max-w-xs">
@@ -122,8 +125,8 @@ export function AiMeta({ response, className }: { response: AiResponse; classNam
             : `${n} figure${n === 1 ? "" : "s"} checked: each matches a cited fact or documented calculation.`}
         </TooltipContent>
       </Tooltip>
-      <span className="kicker text-ink-3">{drafter}</span>
-      {response.cached && <span className="kicker text-ink-3">Offline cache</span>}
+      {!fan && <span className="kicker text-ink-3">{drafter}</span>}
+      {!fan && response.cached && <span className="kicker text-ink-3">Offline cache</span>}
     </div>
   );
 }

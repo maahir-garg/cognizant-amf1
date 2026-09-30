@@ -10,7 +10,7 @@ import { AiRequest, type AiResponse } from "@/lib/data/schemas";
 
 export type AiRequestInput = z.input<typeof AiRequest>;
 
-export async function generate(input: AiRequestInput, signal?: AbortSignal): Promise<AiResponse> {
+async function generate(input: AiRequestInput, signal?: AbortSignal): Promise<AiResponse> {
   const res = await fetch("/api/ai/generate", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

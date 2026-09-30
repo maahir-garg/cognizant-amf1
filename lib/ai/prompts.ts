@@ -4,7 +4,6 @@
  * the shape rules for the task. The guardrail (lib/ai/guardrail.ts) is the
  * real enforcement; this file exists to make a first-attempt pass likely.
  */
-import { getCity } from "@/lib/data/load";
 import type { AiRequest, DerivedValue, Fact } from "@/lib/data/schemas";
 import { formatFact } from "@/lib/format";
 
@@ -25,7 +24,7 @@ function derivedLine(d: DerivedValue): string {
   return `[D:${d.id}] ${d.label} = ${nf.format(d.value)} ${d.unit}\n  formula: ${d.formula}`;
 }
 
-export function buildFactPack(facts: Fact[], derived: DerivedValue[]): string {
+function buildFactPack(facts: Fact[], derived: DerivedValue[]): string {
   const lines = [...facts.map(factLine), ...derived.map(derivedLine)];
   return lines.join("\n");
 }
@@ -36,37 +35,37 @@ Ground rules, all mandatory:
 - Use only the facts and derived values listed in the fact pack below. Never invent, guess, infer or recompute a number.
 - Immediately after using a fact or derived value, cite it exactly as written, e.g. [F:some-id] or [D:some-id]. Use the ids exactly as given, do not alter them.
 - Copy every figure exactly as it appears after "=" in the fact pack (same digits, punctuation and symbol). Do not reformat, round further, or add thousands separators that are not already there.
+- A figure with a minus sign is a fall. Put the fall in words and drop the sign: write "cut by 74%" or "down 74%", never "by -74%" or "down -74%".
 - Do not write any other number anywhere in the text: no extra years (a year is fine only if it is the value or period of a fact you cite), no counts of things you are describing, no ordinals written as digits.
 - Do not spell out quantities as number words either (do not write "three" or "first" to mean a count).
 - The first time you use a fact whose status is "estimated" or "simulated", say so in words (e.g. "an estimated", "a simulated demo figure").
-- Write in British English, sentence case, short plain sentences. No emoji, no exclamation marks, no markdown bold or headings unless a rule below asks for bullet points (then start each point with "- ").
-- Never use these words: unlock, empower, revolutionise, seamless, cutting-edge, journey (except a fan's own "lap"), game-changing, disrupt, leverage (as a verb).
+
+Style, all mandatory. Write like a good newspaper explainer:
+- British English spelling, sentence case, short plain sentences with one idea each. No emoji, no exclamation marks, no markdown bold or headings unless a rule below asks for bullet points (then start each point with "- ").
+- Refer to the team in the third person as "the team" or "Aston Martin Aramco". Never write "we", "our" or "us" for the team or for this product.
+- Never address the reader by who they are: do not mention their level, city or interests, and never open with "As a new fan", "As a long-time fan" or "Because you follow". Just explain the facts.
+- After a colon, carry on in lower case unless the next word is a name.
+- Never use these words: massive, huge, incredible, amazing, journey, unlock, empower, revolutionise, seamless, cutting-edge, game-changing, disrupt, leverage (as a verb), carbon neutral, carbon negative, offset.
 - Output only the requested copy, nothing else (no preamble, no notes to the reader).`;
 
 type TaskRules = (req: AiRequest) => string;
 
 const TASK_RULES: Record<AiRequest["task"], TaskRules> = {
   "fan-story": (req) => {
-    const level = req.fan?.level ?? "casual";
     const shape =
-      level === "new"
-        ? "Write 2-3 sentences for a fan who is new to F1: plain language, explain what the figures mean in everyday terms."
-        : level === "die-hard"
-          ? "Write 1-2 dense sentences for a die-hard fan: assume F1 knowledge, no hand-holding, pack in detail."
-          : "Write 2 sentences for a casual fan: friendly, a little more context than for a die-hard, less hand-holding than for a new fan.";
-    const stage =
+      req.fan?.level === "die-hard"
+        ? "Write 2 sentences for a reader who has watched F1 for years: assume they know the sport, and give the detail and the caveat that matter."
+        : "Write 2-3 sentences for a reader new to F1: plain words, and say what each figure means in everyday terms.";
+    const chapter =
       typeof req.params.chapter === "string"
         ? ` This is the closing paragraph of the "${req.params.chapter}" chapter of a visual story; keep to that chapter and the supplied facts.`
-        : typeof req.params.stage === "string"
-          ? ` Keep the copy about the ${req.params.stage} stage and the supplied facts.`
-          : "";
-    const personalisation = req.fan ? " Tailor it to the fan's interests and city, given below." : "";
-    return `Task: fan-story. ${shape} Address the fan directly as "you".${stage}${personalisation}`;
+        : "";
+    return `Task: fan-story. ${shape} Never more than 3 sentences. Explain the facts; do not address the reader or say who they are.${chapter}`;
   },
   "quiz-reveal": () =>
-    `Task: quiz-reveal. Write exactly one sentence that reacts to whether the fan answered the quiz correctly (see "correct" below) and restates the fact that answers it.`,
+    `Task: quiz-reveal. Write exactly one sentence that says whether the answer matched the report (see "correct" below) and restates the fact that answers it. Start with "Right:" or "Not quite:" and carry on in lower case.`,
   "share-caption": () =>
-    `Task: share-caption. Write exactly one line, at most 110 characters including spaces and the citation marker, written in the first person as the fan sharing their result. Make it sound like something a person would actually post, not a headline.`,
+    `Task: share-caption. Write exactly one line, at most 110 characters including spaces and the citation marker, in the first person as the fan sharing what they learned ("I", never "we"). Make it sound like something a person would actually post, not a headline.`,
   "linkedin-post": () =>
     `Task: linkedin-post. Write 80-140 words in a confident, co-branded Cognizant x Aston Martin Aramco voice, third person, suitable to post on LinkedIn. End with up to 3 hashtags on their own line; hashtags must be words only, never digits.`,
   "quarterly-brief": () =>
@@ -78,19 +77,18 @@ const TASK_RULES: Record<AiRequest["task"], TaskRules> = {
   "story-kit": (req) => {
     const format = req.params.format;
     return format === "post"
-      ? `Task: story-kit, format "post". Write 60-100 words in the voice of the charity or community partner talking about the collaboration, first person plural ("we"), warm and specific.`
+      ? `Task: story-kit, format "post". Write 60-100 words in the voice of the charity or community partner talking about the collaboration, first person plural ("we" means the charity, never the team), warm and specific. Name the team as "the team" or "Aston Martin Aramco".`
       : `Task: story-kit, format "funder". Write one paragraph of 40-110 words in formal third person, suitable for a charity's report to its funders: what the collaboration is, then its published outcomes. No first person, no hashtags.`;
   },
 };
 
+/**
+ * The request's knobs. The fan's city and interests are deliberately left
+ * out: the copy explains the facts and never restates who the reader is.
+ */
 function contextLines(req: AiRequest): string[] {
   const lines: string[] = [];
-  if (req.fan) {
-    const city = getCity(req.fan.cityId);
-    lines.push(
-      `Fan: level ${req.fan.level}, based in ${city?.name ?? req.fan.cityId}, interested in ${req.fan.interests.join(", ")}.`,
-    );
-  }
+  if (req.fan) lines.push(`Reading depth: ${req.fan.level === "die-hard" ? "watched F1 for years" : "new to F1"}.`);
   for (const [k, v] of Object.entries(req.params)) {
     lines.push(`${k}: ${v}`);
   }

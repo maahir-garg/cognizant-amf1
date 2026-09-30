@@ -5,6 +5,7 @@ import { factParts } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { useProvenance } from "./provenance";
 import { StatusBadge, StatusMark } from "./status-badge";
+import { useFanSurface } from "./surface";
 
 const SIZES = {
   sm: { value: "num text-lg font-semibold leading-tight", unit: "num text-sm font-medium", caption: "text-base" },
@@ -45,6 +46,7 @@ export function FactValue({
 }) {
   const fact = getFact(id);
   const { openFact } = useProvenance();
+  const fan = useFanSurface();
   const parts = factParts(fact);
   // Symbols read as part of the figure; words ("students", "tCO₂e") are set smaller.
   const inlineUnit = parts.unit === "%" || parts.unit === "×";
@@ -53,7 +55,8 @@ export function FactValue({
   const big = size === "lg" || size === "xl";
   const conflict = showFlags && fact.flags.some((f) => f.kind === "source-conflict");
   const qualitative = fact.value === null;
-  const text = caption ?? label ?? (showMetric ? fact.metric : undefined);
+  const metric = (fan && fact.fanLabel) || fact.metric;
+  const text = caption ?? label ?? (showMetric ? metric : undefined);
   const cite = factCitation(fact);
 
   return (
@@ -61,7 +64,7 @@ export function FactValue({
       type="button"
       onClick={() => openFact(id)}
       className={cn("group flex flex-col items-start gap-2 text-left", className)}
-      aria-label={`${fact.metric}: ${p.prefix}${p.value}${p.unit ? ` ${p.unit}` : ""}${p.suffix}. ${fact.status}. ${cite.label}. Show source.`}
+      aria-label={`${metric}: ${p.prefix}${p.value}${p.unit ? ` ${p.unit}` : ""}${p.suffix}. ${fact.status}. ${cite.label}. Show source.`}
     >
       {qualitative ? (
         <span className={cn("font-serif leading-snug font-semibold text-ink", big ? "text-2xl sm:text-3xl" : "text-lg")}>

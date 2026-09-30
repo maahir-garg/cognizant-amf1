@@ -33,11 +33,12 @@ const CAPTIONS: Record<string, string> = {
   "c24-esg-impressions-partners": "Extra impressions when partners, Cognizant included, shared the team's stories",
 };
 
+// Target years come from each fact's period, so the labels follow the data.
 const NEW_LABELS: Record<string, string> = {
   "e25-progress-scope12": "Scope 1 and 2 against the baseline year",
   "e25-progress-scope3": "Scope 3 against the baseline year",
-  "e25-target-2030-tco2e": "2030 target footprint",
-  "e25-target-2050-tco2e": "2050 residual footprint",
+  "e25-target-2030-tco2e": `${getFact("e25-target-2030-tco2e").period} target footprint`,
+  "e25-target-2050-tco2e": `${getFact("e25-target-2050-tco2e").period} residual footprint`,
 };
 
 /** "9 to 11 Oct 2026", or "30 Sept to 2 Oct 2026" across a month. */

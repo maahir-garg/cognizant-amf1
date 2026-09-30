@@ -1,7 +1,5 @@
 /** Product constants. Rename the product here and nowhere else. */
 export const APP_NAME = "Off Camera";
-export const APP_TAGLINE = "The side of Aston Martin Aramco you never see on the broadcast.";
-export const TEAM_NAME = "Team Growthbeans";
 export const FOOTER_LABEL = "Concept prototype · Team Growthbeans · Cognizant × Aston Martin Aramco";
 export const HERO_RACE_ID = "singapore-2026";
 /** Short public address printed on the share card, without the scheme. */

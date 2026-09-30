@@ -14,12 +14,11 @@
  */
 import type { ChapterId } from "@/lib/ai/requests";
 
-export type { ChapterId };
 
-export type Tone = "paper" | "green";
+type Tone = "paper" | "green";
 
 /** A focal point as percentages of the image box (object-position / transform-origin). */
-export type Focal = { x: number; y: number };
+type Focal = { x: number; y: number };
 
 export type ImageKey = "launch-quarter" | "launch-rear" | "render-rear" | "active-aero" | "launch-front";
 
@@ -84,9 +83,9 @@ export const STORY_IMAGES: Record<ImageKey, StoryImage> = {
 
 export type GraphicKey = "footprint" | "trackside" | "targets";
 
-export type StepFact = { id: string; caption: string };
+type StepFact = { id: string; caption: string };
 
-export type Quote = {
+type Quote = {
   text: string;
   speaker: string;
   role: string;
@@ -361,7 +360,7 @@ export const CHAPTERS: Chapter[] = [
         zoom: { scale: 1, origin: { x: 50, y: 45 } },
       },
       {
-        copy: "That launch was with Maaden, whose name is on the car. Unearth Your Greatness is a free STEM learning programme that aims to reach {f:c25-maaden-target} over the next few years.",
+        copy: "That launch was with Maaden, whose name is on the car. Unearth Your Greatness is a free STEM learning programme that aims to reach {f:c25-maaden-target}.",
         zoom: { scale: 1.12, origin: { x: 22, y: 22 } },
       },
       {
@@ -468,12 +467,6 @@ export const CHAPTERS: Chapter[] = [
     ],
   },
 ];
-
-export function getChapter(id: ChapterId): Chapter {
-  const c = CHAPTERS.find((x) => x.id === id);
-  if (!c) throw new Error(`Unknown chapter "${id}"`);
-  return c;
-}
 
 /* ----------------------------------------------------------- tokens */
 

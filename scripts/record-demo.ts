@@ -22,8 +22,8 @@ import { chromium, type Locator, type Page } from "@playwright/test";
 
 const ROOT = path.resolve(__dirname, "..");
 const OUT_DIR = path.join(ROOT, "docs/demo-video");
-const WEBM_PATH = path.join(OUT_DIR, "impact-lap-demo.webm");
-const MP4_PATH = path.join(OUT_DIR, "impact-lap-demo.mp4");
+const WEBM_PATH = path.join(OUT_DIR, "off-camera-demo.webm");
+const MP4_PATH = path.join(OUT_DIR, "off-camera-demo.mp4");
 const FFMPEG = process.env.FFMPEG ?? "ffmpeg";
 const FFPROBE = process.env.FFPROBE ?? "ffprobe";
 const MAX_MP4_BYTES = 60 * 1024 * 1024;
@@ -248,7 +248,7 @@ async function run() {
   log("desk: trust moment 2, 275 is held back, 257 passes with a citation");
   const draft = page.getByLabel("Your draft");
   await smoothClick(page, draft, { pauseAfter: 400 });
-  await draft.fill("Make A Mark Day brought 275 students to the factory for AI, coding and careers sessions with Cognizant.");
+  await draft.fill("Make A Mark Day brought 275 students to the factory for AI, coding and careers sessions with partners including Cognizant.");
   await pause(page, 4500);
   await smoothClick(page, page.getByRole("button", { name: "Use the published figure" }), { pauseAfter: 4500 });
 
