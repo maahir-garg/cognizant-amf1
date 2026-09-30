@@ -1,9 +1,12 @@
+"use client";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { DEFAULT_SHARE_FACT_IDS } from "@/lib/ai/requests";
 import type { Race } from "@/lib/data/schemas";
 import { raceShortName } from "@/lib/fan/race";
-import { planLine } from "@/lib/fan/trip";
+import { useTripPlan } from "@/lib/fan/storage";
+import { isTravelMode, planLine } from "@/lib/fan/trip";
 import { SHARE_CARD_HEIGHT, SHARE_CARD_WIDTH, ShareCard } from "./share-card";
 
 const PREVIEW_WIDTH = 240;
@@ -11,8 +14,15 @@ const SCALE = PREVIEW_WIDTH / SHARE_CARD_WIDTH;
 // The teaser stops below the source line: the bottom clear zone is empty by design and reads as a gap at this size.
 const VISIBLE_HEIGHT = 1600;
 
-/** The race page's hand-off to /share, with a small static preview of the default card. */
-export function CardTeaser({ race, modeId }: { race: Race; modeId: string }) {
+/**
+ * The race page's hand-off to /share, with a small preview of the default
+ * card. It follows the planner's saved plan, so the link and the preview
+ * change as soon as the fan picks a different way to the circuit; the
+ * server-rendered mode (from the GET params) is only the starting point.
+ */
+export function CardTeaser({ race, modeId: initialMode }: { race: Race; modeId: string }) {
+  const [plan] = useTripPlan();
+  const modeId = plan?.raceId === race.id && isTravelMode(plan.modeId) ? plan.modeId : initialMode;
   return (
     <section aria-labelledby="card-title" data-tone="green">
       <div className="wrap grid items-center gap-10 py-[clamp(48px,8vw,96px)] md:grid-cols-12 md:gap-6">

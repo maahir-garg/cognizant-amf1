@@ -52,14 +52,16 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
   const { profile } = useFanProfile();
 
   const [factIds, setFactIds] = useState<string[]>([...DEFAULT_SHARE_FACT_IDS]);
-  const [modeChoice, setModeChoice] = useState<string | null>(initialMode);
+  const [modeChoice, setModeChoice] = useState<string | null>(null);
   const [group, setGroup] = useState(false);
   const [showBadge, setShowBadge] = useState(true);
   const [busy, setBusy] = useState(false);
   const canShare = useSyncExternalStore(noopSubscribe, canShareFiles, () => false);
 
-  // An explicit ?mode= wins; otherwise the plan saved by the trip planner; otherwise the MRT.
-  const modeId = modeChoice ?? (plan?.raceId === raceId && isTravelMode(plan.modeId) ? plan.modeId : "mrt");
+  // A choice made on this page wins; then the plan the trip planner saved (always the fan's latest
+  // pick, so it beats a stale ?mode= link); then ?mode= for a fresh visit; then the MRT.
+  const saved = plan?.raceId === raceId && isTravelMode(plan.modeId) ? plan.modeId : null;
+  const modeId = modeChoice ?? saved ?? initialMode ?? "mrt";
   const line = modeId === NO_PLAN ? null : planLine(modeId, race, group);
   const hasBadge = Boolean(badge) && showBadge;
 

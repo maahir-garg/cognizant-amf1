@@ -15,7 +15,7 @@ export function GettingThere({ race, initial }: { race: Race; initial: TripInput
             id="getting-there-title"
             kicker="Getting there"
             title={`The easy way to ${destinationName(race)}`}
-            dek="Pick how you'll travel and see how it compares with a taxi or driving alone."
+            dek="The last few kilometres from where you're staying: see how your way compares with a taxi or driving alone."
           />
           <div className="flex flex-col gap-5 border-t border-line pt-6 font-serif text-[1.0625rem] leading-[1.45] text-ink sm:text-lg">
             <p>
