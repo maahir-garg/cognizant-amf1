@@ -110,8 +110,9 @@
 }
 
 @theme inline {
-  --font-serif: "Newsreader Variable", "Iowan Old Style", Georgia, serif;
-  --font-sans: "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
+  /* next/font Latin faces first (preloaded, metric-matched fallback), then the @fontsource faces for other scripts. */
+  --font-serif: var(--font-newsreader), "Newsreader Variable", "Iowan Old Style", Georgia, serif;
+  --font-sans: var(--font-archivo), "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono Variable", ui-monospace, "SFMono-Regular", monospace;
   --font-heading: var(--font-serif);
 

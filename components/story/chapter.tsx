@@ -41,7 +41,7 @@ function maxScale(chapter: Chapter, layer: number): number {
   return Math.max(1, ...chapter.steps.filter((s) => s.layer === layer).map((s) => s.zoom?.scale ?? 1));
 }
 
-function PhotoLayer({ image, scale, eager }: { image: ImageKey; scale: number; eager: boolean }) {
+function PhotoLayer({ image, scale }: { image: ImageKey; scale: number }) {
   const img = STORY_IMAGES[image];
   const vars = {
     "--dpos": `${img.desktop.x}% ${img.desktop.y}%`,
@@ -53,7 +53,8 @@ function PhotoLayer({ image, scale, eager }: { image: ImageKey; scale: number; e
     <>
       <div className={styles.imageBox} data-shape={img.shape} data-image={image} style={vars}>
         <div className={styles.zoomer}>
-          <Image src={img.src} alt="" fill sizes={sizes} loading={eager ? "eager" : "lazy"} className={styles.image} />
+          {/* Lazy by default; Scrolly starts the fetch and decode a few screens early. */}
+          <Image src={img.src} alt="" fill sizes={sizes} loading="lazy" className={styles.image} />
         </div>
       </div>
       <p className={cn(styles.credit, "kicker text-ink-3")}>Image: Aston Martin Aramco</p>
@@ -159,15 +160,15 @@ export function StoryChapter({
 }) {
   const layers: StageLayer[] = chapter.layers.map((l, i) =>
     l.kind === "photo"
-      ? { kind: "photo", node: <PhotoLayer image={l.image} scale={maxScale(chapter, i)} eager={chapter.number <= 2} /> }
+      ? { kind: "photo", node: <PhotoLayer image={l.image} scale={maxScale(chapter, i)} /> }
       : { kind: "graphic", node: <GraphicLayer layer={l} /> },
   );
   const firstUse = chapter.layers.map((_, i) => chapter.steps.findIndex((s) => s.layer === i));
   const steps: StageStep[] = chapter.steps.map((s, i) => {
     const layer = chapter.layers[s.layer];
-    const wide = layer.kind === "photo" && STORY_IMAGES[layer.image].shape === "landscape";
+    const box = layer.kind !== "photo" ? "graphic" : STORY_IMAGES[layer.image].shape === "landscape" ? "wide" : "tall";
     return {
-      box: wide ? "wide" : "tall",
+      box,
       node: <StepCard step={s} layer={layer} fallback={s.layer !== 0 && firstUse[s.layer] === i} />,
     };
   });

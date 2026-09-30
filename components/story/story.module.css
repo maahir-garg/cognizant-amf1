@@ -13,6 +13,7 @@
   /* Phone stage boxes: landscape photos keep the whole car; graphics and square crops get more height. */
   --box-wide: min(58svh, 78vw);
   --box-tall: min(58svh, 100vw);
+  --box-graphic: min(66svh, 118vw);
 }
 
 .chapter {
@@ -120,9 +121,9 @@
   top: 0;
   left: 0;
   right: 0;
-  height: var(--box-tall);
+  height: var(--box-graphic);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   padding: 12px 16px 8px;
   background: var(--bg);
@@ -154,6 +155,9 @@
 }
 .step[data-box="tall"] .stepInner {
   padding-top: calc(var(--box-tall) - 24px);
+}
+.step[data-box="graphic"] .stepInner {
+  padding-top: calc(var(--box-graphic) - 16px);
 }
 /* The last card rests in the first screen of its step; the extra half screen lets it scroll clear before the stage lets go. */
 .step:last-child {
@@ -202,7 +206,8 @@
     padding: 0 0 0 var(--col);
   }
   .stepInner,
-  .step[data-box="tall"] .stepInner {
+  .step[data-box="tall"] .stepInner,
+  .step[data-box="graphic"] .stepInner {
     align-items: center;
     padding-top: 0;
   }
@@ -261,7 +266,7 @@
     right: 0;
     bottom: -1px;
     height: 1px;
-    background: var(--ink-3);
+    background: var(--line-strong);
     transform-origin: 0 50%;
     animation: story-progress linear both;
     animation-timeline: --story;

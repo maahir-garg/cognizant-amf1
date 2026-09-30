@@ -193,7 +193,7 @@ export const CHAPTERS: Chapter[] = [
       {
         copy: "The car is measured too. On the sport's new circularity scale, where a perfectly circular car would score full marks, last season's car scored {f:e25-circularity}. Offcuts of carbon fibre, {f:e25-carbon-fibre-recycled} of them, were recycled.",
         layer: 1,
-        highlight: ["solar", "circularity", "carbon-fibre"],
+        highlight: ["circularity", "carbon-fibre"],
       },
       {
         copy: "Small things add up. Scrapping disposable cups took {f:e25-cups-removed} out of the bin, which the team likens to {f:e25-cups-laps} of Silverstone in a petrol road car, its own comparison. Then came the bees: hives, a beekeeper and {f:e25-wild-meadow} of meadow.",

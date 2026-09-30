@@ -18,8 +18,8 @@ export type StepMeta = {
 
 export type StageLayer = { kind: "photo" | "graphic"; node: ReactNode };
 
-/** "wide" steps sit under a landscape photo box on phones, "tall" ones under a square box or a graphic. */
-export type StageStep = { node: ReactNode; box: "wide" | "tall" };
+/** On phones a card rests under its layer's box: a landscape photo ("wide"), a square crop ("tall") or a graphic. */
+export type StageStep = { node: ReactNode; box: "wide" | "tall" | "graphic" };
 
 const HighlightContext = createContext<string[] | null>(null);
 

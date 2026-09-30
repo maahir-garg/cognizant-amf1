@@ -157,7 +157,8 @@ export function FootprintGraphic({ highlight }: { highlight?: string[] }) {
           className="kicker absolute right-[52%] -translate-y-1/2 text-right whitespace-nowrap text-ink-3"
           style={{ top: `${insetTop + insetH / 2}px` }}
         >
-          End of the bar, enlarged
+          <span className="sm:hidden">Enlarged</span>
+          <span className="hidden sm:inline">End of the bar, enlarged</span>
         </span>
         <div aria-hidden className="absolute left-1/2 flex w-1/2 gap-[2px]" style={{ top: `${insetTop}px`, height: `${insetH}px` }}>
           {tail.map((t) => (
@@ -426,7 +427,7 @@ export function TilesGraphic({ title, tiles, highlight }: { title: string; tiles
 
 export function QuoteStage({ quote }: { quote: Quote }) {
   return (
-    <figure className="flex max-w-[26ch] flex-col gap-5">
+    <figure className="flex max-w-[640px] flex-col gap-5">
       <blockquote className="font-serif text-[clamp(1.75rem,1.1rem+2.6vw,3.5rem)] leading-[1.12] font-medium text-ink italic">
         <p>
           <span aria-hidden className="text-highlight">
