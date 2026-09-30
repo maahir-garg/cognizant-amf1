@@ -80,7 +80,8 @@
       "environment"
     ],
     "extractedAt": "2026-09-24",
-    "phrase": "The restated baseline the team now measures itself against is {v}."
+    "phrase": "The restated baseline the team now measures itself against is {v}.",
+    "fanLabel": "The baseline-year footprint the team measures its targets against"
   },
   {
     "id": "m23-ghg-total-original",
@@ -676,7 +677,7 @@
       "hero"
     ],
     "extractedAt": "2026-09-24",
-    "phrase": "Sustainable Aviation Fuel cut the emissions tied to the team's air freight by {v}."
+    "phrase": "Sustainable Aviation Fuel certificates supported a {v} cut in the team's air-freight emissions."
   },
   {
     "id": "e25-saf-laps",

@@ -2,17 +2,17 @@
  * The share card's curated fact list. Only verified, unflagged figures that
  * read well out of context: no per-round estimates, no disputed totals, and
  * never the pay gap or workforce split (they need the report's explanation
- * next to them). The labels are the short card wording, kept to two lines
+ * next to them), and no progress figure that needs its companion scope
+ * beside it to read fairly. The labels are the short card wording, kept to two lines
  * at card size; the figure itself always comes from the fact base.
  */
 import { factCitation, getFact, getSource, sourceShortName } from "@/lib/data/load";
 import { factParts } from "@/lib/format";
 
 export const SHARE_FACTS: { id: string; label: string }[] = [
-  { id: "e25-saf-airfreight-cut", label: "cut in air-freight emissions, from cleaner fuel" },
+  { id: "e25-saf-airfreight-cut", label: "cut in air-freight emissions, via Sustainable Aviation Fuel certificates" },
   { id: "c25-stem-racing-students", label: "students met at the STEM Racing World Finals" },
   { id: "e25-supply-chain-share", label: "of the team's footprint is its supply chain" },
-  { id: "e25-progress-scope12", label: "direct emissions against the baseline year" },
   { id: "e24-solar-panels", label: "solar panels on the factory roof" },
   { id: "e25-circularity", label: "material circularity of the AMR25 car" },
 ];

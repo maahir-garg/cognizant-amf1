@@ -9,7 +9,6 @@
  * flag notes) to /partners and /sources.
  */
 import { ArrowUpRight, ChevronLeft } from "lucide-react";
-import Link from "next/link";
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { factPhrase } from "@/lib/ai/templates";
@@ -152,16 +151,6 @@ function FactDetail({ fact, canGoBack, onBack, onOpen }: { fact: Fact; canGoBack
               </>
             )}
           </Section>
-        )}
-
-        {fan && fact.flags.length > 0 && (
-          <p className="text-sm">
-            The team&apos;s reports print this figure in more than one way.{" "}
-            <Link href="/sources" className="link">
-              Sources
-            </Link>{" "}
-            explains which one is used here.
-          </p>
         )}
 
         {!fan && fact.flags.length > 0 && (

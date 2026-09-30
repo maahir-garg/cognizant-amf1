@@ -43,7 +43,7 @@ export default function DataQualityPage() {
       <DeskHeader
         kicker="Impact desk · Data quality"
         title="Where the reports disagree with themselves"
-        dek="Every figure the fact base flags, and why. These stay on the desk and on the sources page; fan pages never show a disputed figure. Check this list before quoting any of them."
+        dek="Every figure the fact base flags, and why. These notes stay on the desk and on the sources page. The story on fan pages uses two of them, the footprint total and the restated baseline, as the report's own target-chart values, without the notes. Check this list before quoting any of them."
         aside={
           <p className="text-[0.875em] text-ink-3">
             {flagged.length} flagged figures · <Link href="/sources" className="link">Browse every fact</Link>

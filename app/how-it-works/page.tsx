@@ -35,7 +35,7 @@ const NOW_AND_PILOT = [
   ["Trackside energy by source", "European races in the 2025 report; a gap for Singapore", "One to two weeks after each race"],
   ["Freight by mode", "Annual total", "Monthly"],
   ["Charity totals", "Annual, as published", "Per event, once the charity confirms"],
-  ["Assured footprint", "Annual", "Annual"],
+  ["Carbon inventory (limited assurance)", "Annual", "Annual"],
 ] as const;
 
 const RETURNS: { name: string; measure: string; baseline: string | { id: string; note?: string } }[] = [
@@ -70,7 +70,7 @@ const RETURNS: { name: string; measure: string; baseline: string | { id: string;
 
 const PHASES = [
   ["Q4 2026", "Data-sharing agreement, approval workflow, a baseline week of manual timings."],
-  ["Pre-season to race 6", "In use by fans and partners, with published facts only."],
+  ["Pre-season to race 6", "Launch with published facts."],
   ["Mid-season", "Add one approved per-race feed, trackside energy or freight, with a named owner."],
   ["Season end", "Evaluate against the baseline and decide on the sponsor tier."],
 ] as const;
@@ -105,10 +105,11 @@ export default async function HowItWorksPage() {
         </nav>
       </header>
 
-      <ExplainerSection id="problem" kicker="The problem" title="A thorough report that very few fans will read">
+      <ExplainerSection id="problem" kicker="The problem" title="A detailed report that very few fans will read">
         <div className="prose-body">
           <p>
-            The team publishes a thorough, assured ESG report every year, written for auditors and analysts. Very little of it
+            The team publishes a detailed ESG report every year, with limited external assurance of its carbon inventory, written for
+            auditors and analysts. Very little of it
             reaches fans in a form they would read.
           </p>
           <p>The appetite is already there.</p>
@@ -227,7 +228,7 @@ export default async function HowItWorksPage() {
         id="rules"
         kicker="Guardrails"
         title="How we handle what the report says"
-        dek="These rules came from our review with the team and partners."
+        dek="The rules this prototype sets itself, following the team's own reporting."
       >
         <ul className="flex flex-col border-t border-line text-[length:clamp(1.0625rem,1rem+0.25vw,1.1875rem)] leading-relaxed">
           <Rule>The team&apos;s own pillar names: Environment, Belong, Community, and Governance for reporting.</Rule>
