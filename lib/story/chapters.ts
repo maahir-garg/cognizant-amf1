@@ -4,20 +4,21 @@
  * parts, life at the circuit, then the people and places beyond the track,
  * and finally the targets.
  *
- * Copy rules (enforced by tests/unit/story-chapters.test.ts):
+ * Every step changes something on the stage: a different layer (photo,
+ * crop, graphic or quote), a highlight, or a purposeful push-in on what the
+ * copy names. Copy rules (enforced by tests/unit/story-chapters.test.ts):
  * - no digits in any copy string: every figure is a fact, written as a
  *   `{f:fact-id}` token (rendered as <InlineFact>) or listed in `facts`
  *   (rendered as <FactValue>);
  * - every fact id exists in data/facts.json;
- * - no fact with a source conflict, pay gap or per-round estimate outside
- *   the places the brief allows them.
+ * - no disputed figure, pay gap or per-round estimate outside the places the
+ *   brief allows them.
  */
 import type { ChapterId } from "@/lib/ai/requests";
 
-
 type Tone = "paper" | "green";
 
-/** A focal point as percentages of the image box (object-position / transform-origin). */
+/** A focal point as percentages of the image box (object-position / zoom centre). */
 type Focal = { x: number; y: number };
 
 export type ImageKey = "launch-quarter" | "launch-rear" | "render-rear" | "active-aero" | "launch-front";
@@ -39,8 +40,9 @@ export const STORY_IMAGES: Record<ImageKey, StoryImage> = {
     width: 2800,
     height: 1600,
     alt: "The AMR26 in green team livery, seen from the front left in a studio",
-    desktop: { x: 45, y: 55 },
-    mobile: { x: 36, y: 62 },
+    // Lower than centre so the car, not the studio backdrop, fills the box.
+    desktop: { x: 45, y: 68 },
+    mobile: { x: 40, y: 64 },
     shape: "landscape",
   },
   "launch-rear": {
@@ -48,8 +50,9 @@ export const STORY_IMAGES: Record<ImageKey, StoryImage> = {
     width: 2800,
     height: 1600,
     alt: "The AMR26 from behind, showing the rear wing and rear tyres",
-    desktop: { x: 45, y: 60 },
-    mobile: { x: 64, y: 60 },
+    // Far enough left that the front tyre clears the card column, the rear wing stays in frame.
+    desktop: { x: 38, y: 66 },
+    mobile: { x: 42, y: 64 },
     shape: "landscape",
   },
   "render-rear": {
@@ -65,9 +68,10 @@ export const STORY_IMAGES: Record<ImageKey, StoryImage> = {
     src: "/brand/amr26-active-aero.png",
     width: 1024,
     height: 1024,
-    alt: "Close-up render of the AMR26 nose and front wing",
-    desktop: { x: 50, y: 45 },
-    mobile: { x: 70, y: 50 },
+    alt: "Close-up render of the AMR26 nose and front suspension",
+    // Framed on the nose and suspension rather than the front-wing endplate.
+    desktop: { x: 70, y: 30 },
+    mobile: { x: 78, y: 32 },
     shape: "square",
   },
   "launch-front": {
@@ -75,17 +79,17 @@ export const STORY_IMAGES: Record<ImageKey, StoryImage> = {
     width: 2800,
     height: 1600,
     alt: "The AMR26 seen head-on from above, front wing towards the camera",
-    desktop: { x: 50, y: 50 },
-    mobile: { x: 50, y: 50 },
+    desktop: { x: 50, y: 40 },
+    mobile: { x: 50, y: 40 },
     shape: "landscape",
   },
 };
 
-export type GraphicKey = "footprint" | "trackside" | "targets";
+export type GraphicKey = "footprint" | "trackside" | "targets" | "tiles";
 
-type StepFact = { id: string; caption: string };
+export type Tile = { key: string; factId: string; label: string };
 
-type Quote = {
+export type Quote = {
   text: string;
   speaker: string;
   role: string;
@@ -93,16 +97,28 @@ type Quote = {
   page: number;
 };
 
+/** What the sticky stage can show. A chapter lists its layers; each step picks one. */
+export type Layer =
+  | { kind: "photo"; image: ImageKey }
+  | { kind: "graphic"; graphic: Exclude<GraphicKey, "tiles"> }
+  | { kind: "tiles"; title: string; tiles: Tile[] }
+  | { kind: "quote"; quote: Quote };
+
+type StepFact = { id: string; caption: string };
+
+type Zoom = { scale: number; origin: Focal; mobileOrigin?: Focal };
+
 export type Step = {
   /** One short serif paragraph. `{f:fact-id}` renders the fact inline with its status. */
   copy: string;
-  /** Big figures shown under the paragraph. */
+  /** Big figures shown under the paragraph. Only where the stage does not already show them. */
   facts?: StepFact[];
-  quote?: Quote;
-  /** Shows the chapter's graphic instead of the photo, with these parts highlighted. */
-  graphic?: { key: GraphicKey; highlight: string[] };
-  /** Slow push-in on the photo for this step. Scale stays between 1 and 1.2. */
-  zoom?: { scale: number; origin: Focal; mobileOrigin?: Focal };
+  /** Index into the chapter's layers. */
+  layer: number;
+  /** Parts of a graphic or tiles layer to highlight. */
+  highlight?: string[];
+  /** Push-in on a photo layer while this step is active (scale 1 to 2). */
+  zoom?: Zoom;
 };
 
 export type DetailSection = {
@@ -117,22 +133,19 @@ export type DetailSection = {
 export type Chapter = {
   id: ChapterId;
   number: number;
-  /** Chapter label above the heading. */
-  kicker: string;
-  /** Short label for the chapter tracker. */
-  short: string;
+  /** The chapter's one name: label above the heading and in the tracker. */
+  name: string;
   title: string;
   dek: string;
   tone: Tone;
-  image: ImageKey;
-  graphic?: GraphicKey;
+  layers: Layer[];
   steps: Step[];
   detail: DetailSection[];
 };
 
 export const STORY_TITLE = "Before the lights go out at Marina Bay";
 export const STORY_DEK =
-  "Where the AMR26 is built, how it travels, what powers the garage, who the team reaches and how far it still has to go.";
+  "The carbon and the community work behind the team's race car, from the factory to Marina Bay, and how you can join in at the Singapore Grand Prix.";
 
 /** The four reasons a fan reads on, one line each (brief: "Why a fan uses it"). */
 export const WHAT_YOU_GET: { label: string; line: string }[] = [
@@ -142,42 +155,51 @@ export const WHAT_YOU_GET: { label: string; line: string }[] = [
   { label: "Worth posting", line: "A race-week card with your quiz badge and one sourced team fact." },
 ];
 
+const HAWKINS: Quote = {
+  text: "You do deserve a place at that table.",
+  speaker: "Jessica Hawkins",
+  role: "Head of F1 Academy",
+  sourceId: "esg-2025",
+  page: 39,
+};
+
 export const CHAPTERS: Chapter[] = [
   {
     id: "campus",
     number: 1,
-    kicker: "The campus",
-    short: "The campus",
+    name: "The campus",
     title: "A car factory with its own bees",
-    dek: "The AMR26 is designed, built and tested at the AMR Technology Campus in Silverstone. Here is what the team changed there.",
+    dek: "The AMR26, this season's car, is designed, built and tested at the team's campus in Silverstone. Here is what changed there.",
     tone: "paper",
-    image: "launch-quarter",
+    layers: [
+      { kind: "photo", image: "launch-front" },
+      {
+        kind: "tiles",
+        title: "The campus in figures",
+        tiles: [
+          { key: "solar", factId: "e24-solar-panels", label: "on the campus roof" },
+          { key: "circularity", factId: "e25-circularity", label: "circularity score of last season's car" },
+          { key: "carbon-fibre", factId: "e25-carbon-fibre-recycled", label: "of carbon fibre recycled" },
+          { key: "cups", factId: "e25-cups-removed", label: "taken out of the bin" },
+          { key: "meadow", factId: "e25-wild-meadow", label: "of new wild meadow" },
+          { key: "nature", factId: "e25-biodiversity-net-gain", label: "biodiversity net gain on site" },
+        ],
+      },
+    ],
     steps: [
       {
-        copy: "Before a car reaches the grid, it is drawn, machined, painted and tested at the team's campus in Silverstone. Everything the team buys, powers and throws away there counts towards its footprint.",
-        zoom: { scale: 1, origin: { x: 50, y: 55 } },
+        copy: "Everything the team buys, powers and throws away at the campus counts towards its footprint. Start with the roof: it carries {f:e24-solar-panels}, and the rest of the electricity comes from a renewable energy-backed supply.",
+        layer: 0,
       },
       {
-        copy: "Start with the roof. It is covered in solar panels, which supply part of the electricity the campus runs on. The rest comes from a renewable energy-backed supply.",
-        facts: [{ id: "e24-solar-panels", caption: "solar panels on the campus roof, counted in the team's previous report" }],
-        zoom: { scale: 1.02, origin: { x: 50, y: 52 } },
+        copy: "The car is measured too. On the sport's new circularity scale, where a perfectly circular car would score full marks, last season's car scored {f:e25-circularity}. Offcuts of carbon fibre, {f:e25-carbon-fibre-recycled} of them, were recycled.",
+        layer: 1,
+        highlight: ["circularity", "carbon-fibre"],
       },
       {
-        copy: "The car is measured as well. On the sport's new circularity scale, where a perfectly circular car would score full marks, last season's car scored {f:e25-circularity}. Offcuts of carbon fibre, {f:e25-carbon-fibre-recycled} of them, were recycled.",
-        zoom: { scale: 1.04, origin: { x: 52, y: 54 } },
-      },
-      {
-        copy: "Small things add up. Scrapping disposable coffee cups took {f:e25-cups-removed} out of the bin. The team compares the carbon saved to {f:e25-cups-laps} of Silverstone in a petrol road car, its own comparison.",
-        zoom: { scale: 1.06, origin: { x: 48, y: 58 } },
-      },
-      {
-        copy: "And there are bees. Hives now sit on site, looked after by an in-house beekeeper, beside {f:e25-wild-meadow} of new wild meadow.",
-        facts: [{ id: "e25-biodiversity-net-gain", caption: "biodiversity net gain across the campus grounds" }],
-        zoom: { scale: 1.08, origin: { x: 48, y: 56 } },
-      },
-      {
-        copy: "The campus is where the car comes to life, but running it accounted for only {f:e25-hq-energy}. Most of the team's carbon starts somewhere else entirely.",
-        zoom: { scale: 1.1, origin: { x: 50, y: 55 } },
+        copy: "Small things add up. Scrapping disposable cups took {f:e25-cups-removed} out of the bin, which the team likens to {f:e25-cups-laps} of Silverstone in a petrol road car, its own comparison. Then came the bees: hives, a beekeeper and {f:e25-wild-meadow} of meadow.",
+        layer: 1,
+        highlight: ["cups", "meadow", "nature"],
       },
     ],
     detail: [
@@ -189,7 +211,7 @@ export const CHAPTERS: Chapter[] = [
       },
       {
         heading: "Method",
-        text: "Circularity follows the FIA Circularity Handbook and applies to last season's car. The team describes its grid electricity as a renewable energy-backed supply.",
+        text: "Circularity follows the FIA Circularity Handbook and applies to last season's car. The team describes its grid electricity as a renewable energy-backed supply. The solar panel count comes from the team's previous report.",
         facts: ["e25-circularity"],
       },
     ],
@@ -197,34 +219,36 @@ export const CHAPTERS: Chapter[] = [
   {
     id: "supply-chain",
     number: 2,
-    kicker: "The supply chain",
-    short: "Supply chain",
+    name: "The supply chain",
     title: "Most of the footprint is things the team buys",
     dek: "Carbon fibre, electronics, catering and software: the biggest source of the team's emissions arrives through the factory gates.",
     tone: "green",
-    image: "active-aero",
-    graphic: "footprint",
+    layers: [
+      // The campus photo again, moved in close on the front wing and suspension: the parts the team buys.
+      { kind: "photo", image: "launch-front" },
+      { kind: "graphic", graphic: "footprint" },
+    ],
     steps: [
       {
         copy: "Behind every lap is a long list of suppliers. The materials, parts and services the team buys carry their own emissions long before they reach Silverstone.",
         facts: [{ id: "e25-supply-chain-share", caption: "of the team's footprint sits in its supply chain, not on the track" }],
-        zoom: { scale: 1, origin: { x: 50, y: 45 } },
+        layer: 0,
+        zoom: { scale: 1.8, origin: { x: 50, y: 88 } },
       },
       {
         copy: "This bar is the team's whole footprint for the year, {f:e25-ghg-total-sbti}. The highlighted block is the supply chain: {f:e25-supply-chain}.",
-        graphic: { key: "footprint", highlight: ["supply-chain"] },
+        layer: 1,
+        highlight: ["supply-chain"],
       },
       {
-        copy: "Next is freight: moving cars, parts and garage kit round the world came to {f:e25-freight-logistics}. The next chapter follows it.",
-        graphic: { key: "footprint", highlight: ["freight"] },
+        copy: "The next three blocks are freight and people on the move: moving cars and kit {f:e25-freight-logistics}, colleagues' commutes {f:e25-commuting} and trips to races and events {f:e25-business-travel}.",
+        layer: 1,
+        highlight: ["freight", "commuting", "business-travel"],
       },
       {
-        copy: "Two blocks are people on the move. Getting colleagues to work added {f:e25-commuting}; flying people to races and events added {f:e25-business-travel}.",
-        graphic: { key: "footprint", highlight: ["commuting", "business-travel"] },
-      },
-      {
-        copy: "The campus you just toured is the thin sliver at the end, {f:e25-hq-energy}. That is why the team is working with suppliers on better data: it shows where cuts are possible.",
-        graphic: { key: "footprint", highlight: ["hq-energy", "other"] },
+        copy: "The campus is the thin sliver at the end, {f:e25-hq-energy}. That is why the team is working with its suppliers on better data: it shows where cuts are possible.",
+        layer: 1,
+        highlight: ["hq-energy", "other"],
       },
     ],
     detail: [
@@ -250,37 +274,44 @@ export const CHAPTERS: Chapter[] = [
   {
     id: "moving",
     number: 3,
-    kicker: "Freight and travel",
-    short: "Moving the team",
+    name: "Moving the team",
     title: "Moving a Formula One team round the world",
     dek: "Cars, spares and whole garages travel by air, sea and road. A lower-carbon jet fuel is starting to change the numbers.",
     tone: "paper",
-    image: "launch-rear",
+    layers: [
+      { kind: "photo", image: "launch-rear" },
+      {
+        kind: "tiles",
+        title: "Freight and travel in figures",
+        tiles: [
+          { key: "sea", factId: "e24-sea-freight-shift", label: "saved by moving freight from air to sea" },
+          { key: "saf", factId: "e25-saf-avoided", label: "of air-freight emissions avoided with cleaner fuel" },
+          { key: "saf-cut", factId: "e25-saf-airfreight-cut", label: "cut in the emissions tied to air freight" },
+          { key: "travel-cut", factId: "e25-travel-logistics-cut", label: "fall in travel and logistics emissions on the year before" },
+        ],
+      },
+    ],
     steps: [
       {
-        copy: "A race weekend starts days earlier, in crates. Cars, tools, spare parts and garage structures travel by air, sea, rail and road, and a packed calendar leaves little slack.",
-        zoom: { scale: 1, origin: { x: 50, y: 58 } },
+        copy: "A race weekend starts days earlier, in crates. Cars, spares and garage structures travel by air, sea and road. Where time allows, heavy kit goes by ship: that saved {f:e24-sea-freight-shift} in a single year, the previous report found.",
+        layer: 0,
+        zoom: { scale: 1, origin: { x: 55, y: 60 } },
       },
       {
-        copy: "Where time allows, heavy kit goes by ship rather than plane. Moving freight from air to sea saved {f:e24-sea-freight-shift} in a single year, the team's previous report found.",
-        zoom: { scale: 1.02, origin: { x: 50, y: 58 } },
+        copy: "Much still has to fly. So the team bought Sustainable Aviation Fuel certificates: the fuel, made from waste and renewable materials, goes into the wider aviation network and the saving, {f:e25-saf-avoided}, is credited to the team.",
+        layer: 0,
+        // In on the rear wing: the part that flies between races in the team's own crates.
+        zoom: { scale: 1.3, origin: { x: 68, y: 44 }, mobileOrigin: { x: 70, y: 46 } },
       },
       {
-        copy: "Much still has to fly. So the team bought Sustainable Aviation Fuel certificates: the fuel, made from waste and renewable materials, goes into the wider aviation network and the saving is credited to the team.",
-        facts: [{ id: "e25-saf-avoided", caption: "of air-freight emissions avoided by the team's first Sustainable Aviation Fuel purchase" }],
-        zoom: { scale: 1.04, origin: { x: 52, y: 57 } },
-      },
-      {
-        copy: "That cut the emissions tied to its air freight by {f:e25-saf-airfreight-cut}. The team compares the saving to {f:e25-saf-laps} of Silverstone in a petrol road car, its own comparison.",
-        zoom: { scale: 1.06, origin: { x: 54, y: 57 } },
-      },
-      {
-        copy: "Add tighter planning and the team's travel and logistics emissions fell {f:e25-travel-logistics-cut} on the year before, using the report's own comparison.",
-        zoom: { scale: 1.08, origin: { x: 50, y: 58 } },
+        copy: "That cut its air-freight emissions by {f:e25-saf-airfreight-cut}; the team likens the saving to {f:e25-saf-laps} of Silverstone in a petrol road car, its own comparison. With tighter planning, travel and logistics emissions fell {f:e25-travel-logistics-cut} on the year before.",
+        layer: 1,
+        highlight: ["saf", "saf-cut", "travel-cut"],
       },
       {
         copy: "What about your own trip to a race? Fans' travel is not part of the team's footprint: the report counts the team's own operations and its suppliers. The race-week section at the end compares ways of getting to Marina Bay.",
-        zoom: { scale: 1.1, origin: { x: 48, y: 58 } },
+        layer: 0,
+        zoom: { scale: 1, origin: { x: 55, y: 60 } },
       },
     ],
     detail: [
@@ -303,34 +334,34 @@ export const CHAPTERS: Chapter[] = [
   {
     id: "circuit",
     number: 4,
-    kicker: "At the circuit",
-    short: "At the circuit",
+    name: "At the circuit",
     title: "What runs the garage on race day",
     dek: "The garage needs power from Friday practice to Sunday night. At European races it now comes from a shared, lower-carbon system.",
     tone: "green",
-    image: "render-rear",
-    graphic: "trackside",
+    layers: [
+      { kind: "photo", image: "render-rear" },
+      { kind: "graphic", graphic: "trackside" },
+    ],
     steps: [
       {
-        copy: "Once the freight lands, the garage is rebuilt around the car. Every screen, tool and computer in it needs power from the first practice session to the chequered flag.",
-        zoom: { scale: 1, origin: { x: 52, y: 50 } },
-      },
-      {
-        copy: "At European races, Formula One runs a shared power system in the paddock, drawing on solar, biofuels, batteries and renewable grid supply instead of each team's own generators.",
-        facts: [{ id: "e25-event-energy-cut", caption: "cut in event energy emissions in paddock areas at European races, against previous setups" }],
-        zoom: { scale: 1.04, origin: { x: 52, y: 50 } },
+        copy: "Once the freight lands, the garage is rebuilt around the car. At European races, Formula One runs a shared power system in the paddock, drawing on solar, biofuels, batteries and renewable grid supply instead of each team's own generators.",
+        facts: [{ id: "e25-event-energy-cut", caption: "cut in paddock event energy emissions at European races" }],
+        layer: 0,
       },
       {
         copy: "The team published what its own garage used at each European round. Most of it came from generators running on HVO, a renewable diesel.",
-        graphic: { key: "trackside", highlight: ["hvo"] },
+        layer: 1,
+        highlight: ["hvo"],
       },
       {
         copy: "Renewable grid supply and solar made up the rest, where the circuit could offer them. Some rounds had no solar at all.",
-        graphic: { key: "trackside", highlight: ["grid", "solar"] },
+        layer: 1,
+        highlight: ["grid", "solar"],
       },
       {
         copy: "Singapore is a night race, run under floodlights. The team has not published trackside energy for Marina Bay, so the chart shows a gap rather than a guess.",
-        graphic: { key: "trackside", highlight: ["singapore"] },
+        layer: 1,
+        highlight: ["singapore"],
       },
     ],
     detail: [
@@ -347,49 +378,47 @@ export const CHAPTERS: Chapter[] = [
   {
     id: "beyond",
     number: 5,
-    kicker: "Belong and Community",
-    short: "Beyond the track",
+    name: "Beyond the track",
     title: "Off the track: schools, mentors and woodland in Ethiopia",
-    dek: "The team's work reaches students in Singapore, mentees in Britain and families in the Ethiopian highlands.",
+    dek: "Belong and Community, in the team's words: work that reaches students in Singapore, mentees in Britain and families in the Ethiopian highlands.",
     tone: "paper",
-    image: "active-aero",
+    layers: [
+      { kind: "photo", image: "launch-rear" },
+      { kind: "quote", quote: HAWKINS },
+      {
+        kind: "tiles",
+        title: "Beyond the track in figures",
+        tiles: [
+          { key: "stem", factId: "c25-stem-racing-students", label: "met at the STEM Racing World Finals" },
+          { key: "maaden", factId: "c25-maaden-target", label: "the Unearth Your Greatness target" },
+          { key: "charity", factId: "c25-charity-2025", label: "raised for charities over the year" },
+          { key: "schools", factId: "e25-ethiopia-children", label: "at schools built with the Ethiopia woodland project" },
+          { key: "removals", factId: "e25-removals", label: "of carbon removed by projects in Ethiopia, Kenya and the USA" },
+          { key: "mentoring", factId: "b25-accelerate-pairs", label: "of mentors and mentees in Accelerate Women" },
+        ],
+      },
+    ],
     steps: [
       {
-        copy: "Last year the STEM Racing World Finals came to Singapore, where school teams design and race miniature cars. The team met students there from {f:c25-stem-racing-countries}.",
-        facts: [{ id: "c25-stem-racing-students", caption: "students reached at the World Finals launch of Unearth Your Greatness" }],
-        zoom: { scale: 1, origin: { x: 50, y: 45 } },
+        copy: "Last year the STEM Racing World Finals came to Singapore, where school teams design and race miniature cars. The team met students from {f:c25-stem-racing-countries} there, and launched Unearth Your Greatness with Maaden, whose name is on the car: a free STEM programme that aims to reach {f:c25-maaden-target}.",
+        facts: [{ id: "c25-stem-racing-students", caption: "students reached at the World Finals launch" }],
+        layer: 0,
+        // In on the Maaden name on the engine cover, well away from the other sponsors.
+        zoom: { scale: 1.9, origin: { x: 46, y: 45 }, mobileOrigin: { x: 44, y: 45 } },
       },
       {
-        copy: "That launch was with Maaden, whose name is on the car. Unearth Your Greatness is a free STEM learning programme that aims to reach {f:c25-maaden-target}.",
-        zoom: { scale: 1.12, origin: { x: 22, y: 22 } },
-      },
-      {
-        copy: "Inside the sport, the team mentors people who rarely get a seat at the table. Accelerate Women, run with Arm, matched mentors and mentees in {f:b25-accelerate-pairs}.",
-        zoom: { scale: 1.14, origin: { x: 30, y: 30 } },
-      },
-      {
-        copy: "Students from under-represented backgrounds joined the Aleto Foundation's leadership programme; {f:b25-aleto-network} said it grew their professional network. The AFBE-UK Transition Event hosted {f:b25-afbe-students} from under-represented ethnic backgrounds.",
-        zoom: { scale: 1.16, origin: { x: 40, y: 38 } },
-      },
-      {
-        copy: "Jessica Hawkins, head of F1 Academy, had a message for anyone wondering whether motorsport is for them.",
-        quote: {
-          text: "You do deserve a place at that table.",
-          speaker: "Jessica Hawkins",
-          role: "Head of F1 Academy",
-          sourceId: "esg-2025",
-          page: 39,
-        },
-        zoom: { scale: 1.17, origin: { x: 52, y: 48 } },
+        copy: "Inside the sport, the team mentors people who rarely get a seat at the table. Accelerate Women, with Arm, matched mentors and mentees in {f:b25-accelerate-pairs}; {f:b25-aleto-network} of Aleto Foundation mentees said it grew their network; AFBE-UK's event hosted {f:b25-afbe-students}.",
+        layer: 1,
       },
       {
         copy: "Colleagues raise money too, through hikes, football matches and marathons, with the team matching their efforts. Over the year they raised {f:c25-charity-2025} for charities close to the team.",
-        zoom: { scale: 1.18, origin: { x: 60, y: 55 } },
+        layer: 2,
+        highlight: ["charity"],
       },
       {
-        copy: "Further away, the team pays for projects that take carbon out of the air. One restores woodland in the Ethiopian highlands and has helped build primary schools for {f:e25-ethiopia-children}. Removals deal with emissions the team cannot eliminate yet.",
-        facts: [{ id: "e25-removals", caption: "of carbon removed by projects in Ethiopia, Kenya and the USA" }],
-        zoom: { scale: 1.2, origin: { x: 64, y: 60 } },
+        copy: "Further away, the team pays for projects that take carbon out of the air, {f:e25-removals} last year. One restores woodland in the Ethiopian highlands and has helped build schools for {f:e25-ethiopia-children}. Removals deal with emissions the team cannot eliminate yet.",
+        layer: 2,
+        highlight: ["schools", "removals"],
       },
     ],
     detail: [
@@ -412,43 +441,39 @@ export const CHAPTERS: Chapter[] = [
   {
     id: "finish",
     number: 6,
-    kicker: "The finish line",
-    short: "The finish line",
+    name: "The finish line",
     title: "The targets, and how far there is to go",
     dek: "The team has science-based targets for the end of the decade and for net zero. Here is where it stands, in its own chart.",
     tone: "green",
-    image: "launch-front",
-    graphic: "targets",
+    layers: [
+      { kind: "graphic", graphic: "targets" },
+      { kind: "photo", image: "launch-quarter" },
+    ],
     steps: [
       {
-        copy: "The team has committed to net zero across its whole value chain by {f:e25-target-netzero-year}, with nearer targets for the end of this decade. The Science Based Targets initiative has validated both.",
-        zoom: { scale: 1, origin: { x: 50, y: 50 } },
-      },
-      {
-        copy: "The chart starts from the restated baseline, {f:e23-ghg-baseline}. When the method changed, the team restated its earlier figures, so older totals are not directly comparable.",
-        graphic: { key: "targets", highlight: ["baseline"] },
-      },
-      {
-        copy: "Last year's footprint was {f:e25-ghg-total-sbti}. The end-of-decade target is {f:e25-target-2030-tco2e}.",
-        graphic: { key: "targets", highlight: ["current", "target-2030"] },
+        copy: "The chart starts from the restated baseline, {f:e23-ghg-baseline}. Last year's footprint was {f:e25-ghg-total-sbti}, and the end-of-decade target is {f:e25-target-2030-tco2e}.",
+        layer: 0,
+        highlight: ["baseline", "current", "target-2030"],
       },
       {
         copy: "Split it up and progress is uneven. Emissions from the fuel and electricity the team uses directly are already past the end-of-decade target of a {f:e25-target-scope12} cut.",
-        facts: [{ id: "e25-progress-scope12", caption: "change in the team's direct and electricity emissions since the baseline year" }],
-        graphic: { key: "targets", highlight: ["scope12"] },
+        layer: 0,
+        highlight: ["scope12"],
       },
       {
         copy: "The supply chain is harder. Emissions across the rest of the value chain have moved much less, against a target of a {f:e25-target-scope3} cut by the end of the decade.",
-        facts: [{ id: "e25-progress-scope3", caption: "change in emissions across the rest of the value chain since the baseline year" }],
-        graphic: { key: "targets", highlight: ["scope3"] },
+        layer: 0,
+        highlight: ["scope3"],
       },
       {
-        copy: "Net zero means cutting absolute emissions by {f:e25-target-netzero-cut}, leaving no more than {f:e25-target-2050-tco2e} for carbon removals to deal with.",
-        graphic: { key: "targets", highlight: ["target-2050"] },
+        copy: "Net zero by {f:e25-target-netzero-year} means cutting absolute emissions by {f:e25-target-netzero-cut}, leaving no more than {f:e25-target-2050-tco2e} for carbon removals. The Science Based Targets initiative has validated these targets.",
+        layer: 0,
+        highlight: ["target-2050"],
       },
       {
         copy: "How do you know any of this is true? Independent assurers checked the carbon inventory, CDP rated the team's climate disclosure {f:g25-cdp}, and every figure here opens the report page it came from.",
-        zoom: { scale: 1.04, origin: { x: 50, y: 52 } },
+        layer: 1,
+        zoom: { scale: 1, origin: { x: 50, y: 60 } },
       },
     ],
     detail: [
@@ -488,7 +513,7 @@ export function parseCopy(copy: string): CopyPart[] {
   return out;
 }
 
-/** Every fact id a chapter shows: tokens, big figures and detail facts. */
+/** Every fact id a chapter shows: tokens, big figures, tiles and detail facts. */
 export function chapterFactIds(c: Chapter): string[] {
   const ids = new Set<string>();
   const fromCopy = (s?: string) => s && parseCopy(s).forEach((p) => p.kind === "fact" && ids.add(p.id));
@@ -496,6 +521,7 @@ export function chapterFactIds(c: Chapter): string[] {
     fromCopy(s.copy);
     s.facts?.forEach((f) => ids.add(f.id));
   }
+  for (const l of c.layers) if (l.kind === "tiles") l.tiles.forEach((t) => ids.add(t.factId));
   for (const d of c.detail) {
     fromCopy(d.text);
     d.facts?.forEach((id) => ids.add(id));
@@ -507,11 +533,12 @@ export function chapterFactIds(c: Chapter): string[] {
 export function allCopyStrings(): string[] {
   const out: string[] = [STORY_TITLE, STORY_DEK, ...WHAT_YOU_GET.flatMap((w) => [w.label, w.line])];
   for (const c of CHAPTERS) {
-    out.push(c.kicker, c.short, c.title, c.dek);
-    for (const s of c.steps) {
-      out.push(s.copy, ...(s.facts ?? []).map((f) => f.caption));
-      if (s.quote) out.push(s.quote.text, s.quote.speaker, s.quote.role);
+    out.push(c.name, c.title, c.dek);
+    for (const l of c.layers) {
+      if (l.kind === "tiles") out.push(l.title, ...l.tiles.map((t) => t.label));
+      if (l.kind === "quote") out.push(l.quote.text, l.quote.speaker, l.quote.role);
     }
+    for (const s of c.steps) out.push(s.copy, ...(s.facts ?? []).map((f) => f.caption));
     for (const d of c.detail) out.push(...[d.heading, d.text].filter((x): x is string => Boolean(x)));
   }
   return out;

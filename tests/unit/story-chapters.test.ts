@@ -37,6 +37,33 @@ describe("story chapters", () => {
     }
   });
 
+  it("change something on the stage at every step", () => {
+    for (const c of CHAPTERS) {
+      c.steps.forEach((s, i) => {
+        if (i === 0) return;
+        const prev = c.steps[i - 1];
+        const changed =
+          s.layer !== prev.layer ||
+          JSON.stringify(s.highlight ?? null) !== JSON.stringify(prev.highlight ?? null) ||
+          JSON.stringify(s.zoom ?? null) !== JSON.stringify(prev.zoom ?? null);
+        expect(changed, `${c.id} step ${i + 1} repeats step ${i}`).toBe(true);
+      });
+    }
+  });
+
+  it("stay short: about two dozen steps across the story", () => {
+    expect(CHAPTERS.reduce((n, c) => n + c.steps.length, 0)).toBeLessThanOrEqual(26);
+  });
+
+  it("point every step at a layer the chapter has", () => {
+    for (const c of CHAPTERS) for (const s of c.steps) expect(c.layers[s.layer], c.id).toBeDefined();
+  });
+
+  it("keep the front-wing close-up (with its drinks sponsor) away from the chapter about young people", () => {
+    const beyond = CHAPTERS.find((c) => c.id === "beyond")!;
+    expect(beyond.layers.some((l) => l.kind === "photo" && l.image === "active-aero")).toBe(false);
+  });
+
   it("parses fact tokens", () => {
     expect(parseCopy("a {f:e25-removals} b")).toEqual([
       { kind: "text", text: "a " },

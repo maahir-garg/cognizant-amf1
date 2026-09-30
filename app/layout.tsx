@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/shared/site-header";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { APP_NAME, isDemoMode } from "@/lib/config";
+import { archivo, newsreader } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -20,7 +21,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-GB">
+    <html lang="en-GB" className={`${newsreader.variable} ${archivo.variable}`}>
       <body className="flex min-h-dvh flex-col">
         <TooltipProvider delayDuration={150}>
           <ProvenanceProvider>

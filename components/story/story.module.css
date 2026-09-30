@@ -8,6 +8,12 @@
   /* Header (56px) + chapter tracker (40px): where the sticky stage starts. */
   --story-top: 96px;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  /* Slow settle for push-ins: fast start, long soft landing. */
+  --settle: cubic-bezier(0.22, 0.61, 0.36, 1);
+  /* Phone stage boxes: landscape photos keep the whole car; graphics and square crops get more height. */
+  --box-wide: min(58svh, 78vw);
+  --box-tall: min(58svh, 100vw);
+  --box-graphic: min(66svh, 118vw);
 }
 
 .chapter {
@@ -26,20 +32,25 @@
   background: var(--bg);
 }
 
+/*
+ * Dip to ground: the outgoing layer fades out fast, the incoming one waits
+ * for it and fades in, so two layers never double-expose (a chart over a
+ * photo). The stage's ground shows in between.
+ */
 .layer {
   position: absolute;
   inset: 0;
   opacity: 0;
   visibility: hidden;
   transition:
-    opacity 600ms var(--ease),
-    visibility 0s linear 600ms;
+    opacity 240ms cubic-bezier(0.4, 0, 1, 1),
+    visibility 0s linear 240ms;
 }
 .layer[data-active] {
   opacity: 1;
   visibility: visible;
   transition:
-    opacity 600ms var(--ease),
+    opacity 360ms cubic-bezier(0, 0, 0.2, 1) 180ms,
     visibility 0s;
 }
 
@@ -49,25 +60,44 @@
   top: 0;
   left: 0;
   right: 0;
-  height: min(60svh, 78vw);
+  height: var(--box-wide);
   overflow: hidden;
-  background: var(--surface-2);
   --pos: var(--mpos);
 }
 .imageBox[data-shape="square"] {
-  height: min(60svh, 100vw);
+  height: var(--box-tall);
+}
+/* The hero band waits in the photo's own ground colour, not grey. */
+.heroBand {
+  --hero-ground: #5d7173;
+}
+/* Each box is painted in its photo's own ground (sampled from the image), so a slow load never shows a grey slab. */
+.imageBox[data-image="launch-quarter"] {
+  background: #5d7173;
+}
+.imageBox[data-image="launch-rear"] {
+  background: #3a4a4b;
+}
+.imageBox[data-image="render-rear"] {
+  background: #b5d3d7;
+}
+.imageBox[data-image="active-aero"] {
+  background: #b6d3d9;
+}
+.imageBox[data-image="launch-front"] {
+  background: #a5a5a6;
 }
 
+/* Push-in as translate + scale from the top-left corner: fully composited, no animated transform-origin. */
 .zoomer {
   position: absolute;
   inset: 0;
-  transform: scale(var(--s, 1));
-  transform-origin: var(--mox, 50%) var(--moy, 50%);
-  transition:
-    transform 900ms var(--ease),
-    transform-origin 900ms var(--ease);
+  transform-origin: 0 0;
+  transform: translate(var(--mtx, 0%), var(--mty, 0%)) scale(var(--s, 1));
+  transition: transform 1500ms var(--settle);
 }
-.layer[data-active] .zoomer {
+/* Promote only the visible photo, and only while its chapter is on screen. */
+.stage[data-near] .layer[data-active] .zoomer {
   will-change: transform;
 }
 
@@ -79,28 +109,32 @@
 .credit {
   position: absolute;
   left: 16px;
-  top: calc(min(60svh, 78vw) + 8px);
+  top: calc(var(--box-wide) + 8px);
 }
 .imageBox[data-shape="square"] + .credit {
-  top: calc(min(60svh, 100vw) + 8px);
+  top: calc(var(--box-tall) + 8px);
 }
 
-/* Graphic layers sit on the chapter ground, never over the photo. */
+/* Graphic, tiles and quote layers sit on the chapter ground, never over the photo. */
 .graphicBox {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 76%;
+  height: var(--box-graphic);
   display: flex;
-  /* Phones: pin the graphic to the top of the stage; the card rests below it. */
   align-items: flex-start;
   justify-content: center;
-  padding: 16px 16px 8px;
+  padding: 12px 16px 8px;
+  background: var(--bg);
 }
 .graphicInner {
   width: 100%;
   max-width: 840px;
+}
+/* A quote is short: centre it in its box on phones too. */
+.graphicBox[data-kind="quote"] {
+  align-items: center;
 }
 
 .steps {
@@ -113,12 +147,23 @@
   pointer-events: none;
 }
 
+/* Phones: the card rests just under the stage box, so the picture or chart it talks about stays in view. */
 .step {
+  padding: 0 16px;
+}
+.stepInner {
   display: flex;
   min-height: 100svh;
-  align-items: flex-end;
-  padding: 0 16px 5svh;
+  align-items: flex-start;
+  padding-top: calc(var(--box-wide) - 24px);
 }
+.step[data-box="tall"] .stepInner {
+  padding-top: calc(var(--box-tall) - 24px);
+}
+.step[data-box="graphic"] .stepInner {
+  padding-top: calc(var(--box-graphic) - 16px);
+}
+/* The last card rests in the first screen of its step; the extra half screen lets it scroll clear before the stage lets go. */
 .step:last-child {
   padding-bottom: 50svh;
 }
@@ -147,7 +192,7 @@
     --pos: var(--dpos);
   }
   .zoomer {
-    transform-origin: var(--ox, 50%) var(--oy, 50%);
+    transform: translate(var(--tx, 0%), var(--ty, 0%)) scale(var(--s, 1));
   }
   .credit,
   .imageBox[data-shape="square"] + .credit {
@@ -159,15 +204,17 @@
     left: var(--img-left);
     height: 100%;
     align-items: center;
-    /* Clear the card column where it overlaps the picture box. */
-    padding: 32px min(5vw, 80px) 32px max(48px, calc(var(--col) + var(--card-w) - var(--img-left) + 56px));
+    /* Clear the card column where it overlaps the picture box, and stop at the page frame on the right. */
+    padding: 32px var(--col) 32px max(48px, calc(var(--col) + var(--card-w) - var(--img-left) + 56px));
   }
   .step {
-    align-items: center;
     padding: 0 0 0 var(--col);
   }
-  .step:last-child {
-    padding-bottom: 50svh;
+  .stepInner,
+  .step[data-box="tall"] .stepInner,
+  .step[data-box="graphic"] .stepInner {
+    align-items: center;
+    padding-top: 0;
   }
   .card {
     width: var(--card-w);
@@ -187,6 +234,60 @@
   }
   .zoomer {
     transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* ------------------------------------------------------------ tracker */
+
+/* One lime indicator slides between chapters instead of each segment lighting up. */
+.trackerIndicator {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 0;
+  background: var(--lime);
+  outline: 1px solid var(--ink);
+  transition:
+    transform 400ms var(--ease),
+    width 400ms var(--ease),
+    opacity 200ms linear;
+}
+
+/* A hairline under the tracker fills as the reader moves through the story (scroll-driven, no script). */
+.trackerProgress {
+  display: none;
+}
+@supports (animation-timeline: view()) {
+  .storyTimeline {
+    view-timeline-name: --story;
+    view-timeline-axis: block;
+  }
+  .trackerProgress {
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: var(--line-strong);
+    transform-origin: 0 50%;
+    animation: story-progress linear both;
+    animation-timeline: --story;
+    animation-range: contain 0% contain 100%;
+  }
+}
+@keyframes story-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .trackerIndicator {
     transition: none !important;
   }
 }

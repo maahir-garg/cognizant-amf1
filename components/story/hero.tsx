@@ -2,7 +2,9 @@ import Image from "next/image";
 import { APP_NAME } from "@/lib/config";
 import { getSource } from "@/lib/data/load";
 import { STORY_DEK, STORY_IMAGES, STORY_TITLE, WHAT_YOU_GET } from "@/lib/story/chapters";
+import { cn } from "@/lib/utils";
 import { DepthToggle } from "./chapter-depth";
+import styles from "./story.module.css";
 
 /** "2025" from "Make A Mark ESG Report 2025", so the byline follows the source record. */
 function reportYear(): string {
@@ -25,15 +27,15 @@ export function StoryHero() {
         <h1 id="story-title" className="h1-feature mx-auto">
           {STORY_TITLE}
         </h1>
-        <p className="dek mx-auto max-w-[44ch]">{STORY_DEK}</p>
+        <p className="dek mx-auto max-w-[44ch] lg:max-w-[56ch]">{STORY_DEK}</p>
         <DepthToggle className="mt-2" />
         <a href="#what-you-get" className="mt-1 flex flex-col items-center gap-2 text-ink-3 hover:text-ink">
           <span className="kicker text-current">Scroll to follow the car</span>
           <span aria-hidden className="block h-6 w-px bg-current" />
         </a>
       </div>
-      <figure className="relative w-full">
-        <div className="relative h-[min(45svh,66vw)] w-full overflow-hidden bg-surface-2 lg:h-[max(45svh,28vw)] [@media(min-width:1024px)_and_(max-height:820px)]:h-[max(42svh,26vw)]">
+      <figure className={cn("relative w-full", styles.heroBand)}>
+        <div className="relative h-[min(45svh,66vw)] w-full overflow-hidden bg-[var(--hero-ground)] lg:h-[max(45svh,28vw)] [@media(min-width:1024px)_and_(max-height:820px)]:h-[max(42svh,26vw)]">
           <Image
             src={img.src}
             alt={img.alt}

@@ -65,7 +65,8 @@ test.describe("offline demo", () => {
     const loaded = await page.evaluate(() =>
       [...document.fonts].filter((f) => f.status === "loaded").map((f) => f.family.replace(/["']/g, "")),
     );
-    for (const family of ["Newsreader Variable", "Archivo Variable"]) expect(loaded).toContain(family);
+    // Latin faces load through next/font/local (hashed family names), other scripts through @fontsource.
+    for (const family of [/newsreader/i, /archivo/i]) expect(loaded.some((f) => family.test(f)), `${family} loaded: ${loaded.join(", ")}`).toBe(true);
 
     // No stylesheet or preconnect points at a font CDN.
     const remote = await page.evaluate(() =>

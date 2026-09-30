@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { getRace, getSource, sourceShortName } from "@/lib/data/load";
 import { formatDate } from "@/lib/format";
 import { formatDateRange } from "@/lib/story/dates";
+import { QuickCheckTitle } from "./quick-check-title";
 
 const EXITS = [
   {
@@ -15,14 +16,14 @@ const EXITS = [
   {
     label: "Getting there",
     title: "Your trip to Marina Bay",
-    line: "Pick your home city and compare the MRT, a taxi and driving for the trip to the circuit.",
+    line: "The last few kilometres to the circuit: see how the MRT, a bus or walking compare with a taxi.",
     href: "#getting-there",
     cta: "Plan your trip",
   },
   {
     label: "Quick check",
-    title: "How much stuck?",
-    line: "A few questions on what you have just read, with a badge for your race-week card.",
+    title: null,
+    line: "Questions on what you have just read, with a badge for your race-week card. No score, no ranking.",
     href: "/quiz",
     cta: "Take the quick check",
   },
@@ -52,7 +53,7 @@ export function RaceWeekend({ raceId }: { raceId: string }) {
             return (
               <li key={x.label} className="flex flex-col gap-2 border-t-2 border-ink pt-4">
                 <span className="kicker text-ink-3">{x.label}</span>
-                <h3 className="h3">{x.title}</h3>
+                <h3 className="h3">{x.title ?? <QuickCheckTitle />}</h3>
                 <p className="font-serif text-lg leading-snug text-ink-2">{x.line}</p>
                 <Link href={href} className="link mt-auto pt-2 font-sans text-base font-semibold">
                   {x.cta} →

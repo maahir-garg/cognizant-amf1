@@ -16,7 +16,8 @@ export type FootprintSegment = {
   factId: string;
   label: string;
   share: number;
-  /** Centre of the segment along the bar, 0-100, for leader lines. */
+  /** Start and centre of the segment along the bar, 0-100, for leader lines and the focus bracket. */
+  start: number;
   centre: number;
 };
 
@@ -35,8 +36,23 @@ export function footprintSegments(): FootprintSegment[] {
   const shares = FOOTPRINT_PARTS.map((p) => (getFact(p.factId).value ?? 0) / total);
   return FOOTPRINT_PARTS.map((p, i) => {
     const start = shares.slice(0, i).reduce((a, b) => a + b, 0);
-    return { ...p, share: shares[i], centre: (start + shares[i] / 2) * 100 };
+    return { ...p, share: shares[i], start: start * 100, centre: (start + shares[i] / 2) * 100 };
   });
+}
+
+/** Where the magnified inset starts (0-100 along the bar): the tail holds the two smallest categories. */
+export const FOOTPRINT_TAIL_FROM = 98;
+
+/** Segments that fall in the bar's tail, re-scaled to 0-100 across the inset. */
+export function footprintTail(from = FOOTPRINT_TAIL_FROM): (FootprintSegment & { tailStart: number; tailWidth: number; tailCentre: number })[] {
+  const span = 100 - from;
+  return footprintSegments()
+    .filter((s) => s.start + s.share * 100 > from)
+    .map((s) => {
+      const a = Math.max(s.start, from);
+      const b = s.start + s.share * 100;
+      return { ...s, tailStart: ((a - from) / span) * 100, tailWidth: ((b - a) / span) * 100, tailCentre: (((a + b) / 2 - from) / span) * 100 };
+    });
 }
 
 /* ---------------------------------------------------------- targets */
