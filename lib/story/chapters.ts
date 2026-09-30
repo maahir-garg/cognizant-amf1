@@ -50,8 +50,9 @@ export const STORY_IMAGES: Record<ImageKey, StoryImage> = {
     width: 2800,
     height: 1600,
     alt: "The AMR26 from behind, showing the rear wing and rear tyres",
-    desktop: { x: 60, y: 66 },
-    mobile: { x: 58, y: 64 },
+    // Far enough left that the front tyre clears the card column, the rear wing stays in frame.
+    desktop: { x: 38, y: 66 },
+    mobile: { x: 42, y: 64 },
     shape: "landscape",
   },
   "render-rear": {
@@ -223,7 +224,8 @@ export const CHAPTERS: Chapter[] = [
     dek: "Carbon fibre, electronics, catering and software: the biggest source of the team's emissions arrives through the factory gates.",
     tone: "green",
     layers: [
-      { kind: "photo", image: "active-aero" },
+      // The campus photo again, moved in close on the front wing and suspension: the parts the team buys.
+      { kind: "photo", image: "launch-front" },
       { kind: "graphic", graphic: "footprint" },
     ],
     steps: [
@@ -231,6 +233,7 @@ export const CHAPTERS: Chapter[] = [
         copy: "Behind every lap is a long list of suppliers. The materials, parts and services the team buys carry their own emissions long before they reach Silverstone.",
         facts: [{ id: "e25-supply-chain-share", caption: "of the team's footprint sits in its supply chain, not on the track" }],
         layer: 0,
+        zoom: { scale: 1.8, origin: { x: 50, y: 88 } },
       },
       {
         copy: "This bar is the team's whole footprint for the year, {f:e25-ghg-total-sbti}. The highlighted block is the supply chain: {f:e25-supply-chain}.",
