@@ -1,4 +1,4 @@
-# Impact Lap: value, ROI and the 2027 pilot
+# Off Camera: value, ROI and the 2027 pilot
 
 The organisers asked for a return broader than sales: fan engagement, awareness, partner relationships and brand perception, and value for partners such as Cognizant and the charities in Make A Mark. This document maps the product to the judging scorecard, sets out how each kind of return would be measured, and describes the business model and the pilot that would test it.
 
@@ -35,13 +35,13 @@ None of these are measured yet. The prototype records no analytics. The pilot wo
 
 | Return                        | Measure                                                                           | Instrumentation (pilot)                                                    | Baseline or comparison                                                 |
 | ----------------------------- | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| Partner amplification         | Impressions from partner posts that used Impact Lap content, across all partners  | UTM-tagged links and partner-reported impressions per post                 | `c24-esg-impressions-partners`                                         |
+| Partner amplification         | Impressions from partner posts that used Off Camera content, across all partners  | UTM-tagged links and partner-reported impressions per post                 | `c24-esg-impressions-partners`                                         |
 | Comms efficiency              | Time from brief to approved post                                                  | Timestamps on draft created, checked and approved in the desk              | A baseline week of manual timings in Q4 2026                           |
 | Accuracy and trust            | First-pass guardrail rate; corrections needed after publication                   | Guardrail results logged per draft; a corrections log kept by the approver | None published; both logged from the first pilot race                  |
 | Fan engagement                | Story completion; chapters opened; return at the next race                        | Scroll-chapter and "The detail" open events; anonymous next-race return    | Set in the first two pilot races                                       |
 | Reach via sharing             | Cards created and shared; impressions of shared cards                             | Export and Web Share events; UTM on the card link                          | `c24-esg-posts-multiplier` as the team's own benchmark for ESG content |
 | Awareness of Cognizant's role | Consented recall of Cognizant's role after the story or at a race-week activation | A short opt-in question, asked once                                        | None published; measured from the first pilot race                     |
-| Brand perception              | Sentiment on posts using Impact Lap content                                       | Social listening, as the team already does                                 | `b25-accelerate-sentiment` as a comparable figure the team reports     |
+| Brand perception              | Sentiment on posts using Off Camera content                                       | Social listening, as the team already does                                 | `b25-accelerate-sentiment` as a comparable figure the team reports     |
 
 **Assumption:** targets for each measure are agreed with the team and Cognizant after the baseline, not before.
 

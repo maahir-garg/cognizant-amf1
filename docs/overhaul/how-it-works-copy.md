@@ -10,7 +10,7 @@ Headings are sentence case. One primary button at most (at the end).
 
 **Kicker:** For judges and partners
 
-**H1:** How Impact Lap works
+**H1:** How Off Camera works
 
 **Dek:** One checked fact base, built from the team's own reports, feeds a story for fans and a desk for partners. The AI selects, explains, drafts and checks. It never adds a number of its own.
 
@@ -98,7 +98,7 @@ These rules came from our review with the team and partners.
 
 ## What is real now, and what is the pilot
 
-Nothing in Impact Lap is live today, and nothing claims to be. Every figure says "Updated when the team publishes", with the report date.
+Nothing in Off Camera is live today, and nothing claims to be. Every figure says "Updated when the team publishes", with the report date.
 
 | Data                       | Now                                                    | In the pilot, with an approved feed and a named owner |
 | -------------------------- | ------------------------------------------------------ | ----------------------------------------------------- |
@@ -118,13 +118,13 @@ Return here is broader than sales. None of these are measured yet; each has a pu
 
 | Return                        | Measure                                                    | Baseline                                                           |
 | ----------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------ |
-| Partner amplification         | Impressions from partner posts using Impact Lap content    | {c24-esg-impressions-partners}                                     |
+| Partner amplification         | Impressions from partner posts using Off Camera content    | {c24-esg-impressions-partners}                                     |
 | Comms efficiency              | Time from brief to approved post                           | A baseline week of manual timings                                  |
 | Accuracy and trust            | First-pass check rate; corrections after publication       | From the first pilot race                                          |
 | Fan engagement                | Story completion, chapters opened, return at the next race | From the first pilot races                                         |
 | Reach via sharing             | Cards created and shared                                   | {c24-esg-posts-multiplier} as the team's benchmark for ESG content |
 | Awareness of Cognizant's role | Consented recall                                           | From the first pilot race                                          |
-| Brand perception              | Sentiment on posts using Impact Lap content                | {b25-accelerate-sentiment}, a comparable figure the team reports   |
+| Brand perception              | Sentiment on posts using Off Camera content                | {b25-accelerate-sentiment}, a comparable figure the team reports   |
 
 **Figures:** `c24-esg-impressions-partners`, `c24-esg-posts-multiplier`, `b25-accelerate-sentiment`, each with its status badge.
 

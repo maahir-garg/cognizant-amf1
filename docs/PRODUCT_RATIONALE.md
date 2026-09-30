@@ -1,6 +1,6 @@
 # Product rationale
 
-Impact Lap is the story of the AMR26 off camera: where it is built, how it is moved round the world, what powers the garage, who the team reaches and how far it has to go. Every figure opens to the page of the team's own report it came from. Fans get the side of the team they never see on the broadcast and a way to take part at their next race. Cognizant and the team's community partners get a desk that turns the same checked facts into content they can publish.
+Off Camera is the side of Aston Martin Aramco you never see on the broadcast: the story of the AMR26 away from the track, where it is built, how it is moved round the world, what powers the garage, who the team reaches and how far it has to go. Every figure opens to the page of the team's own report it came from. Fans get that story and a way to take part at their next race. Cognizant and the team's community partners get a desk that turns the same checked facts into content they can publish.
 
 Figures in this document are referred to by their id in `data/facts.json`. Where a value is quoted, it is the value stored against that id.
 
@@ -116,6 +116,6 @@ A link opens on a phone without an app, an account or a download, and it can be 
 
 [AWorld](https://www.aworld.org/platform/) runs a broad engagement platform with learning, challenges and action tracking, including its [ActNow](https://actnow.aworld.org/) work and a [MotoGP case study](https://www.aworld.org/case-studies/motogp/). It has personalisation, reporting and motorsport content, and we should not suggest otherwise.
 
-Impact Lap's contribution is narrower. It starts from one team's own report evidence, organises it around the car's operations using the team's own footprint map, shows the status and source of every figure, and reuses the same checked facts for partner content with a numeric check and an approval trail. The two could sit side by side: a platform for behaviour and action, and a governed fact base for what the team itself can say.
+Off Camera's contribution is narrower. It starts from one team's own report evidence, organises it around the car's operations using the team's own footprint map, shows the status and source of every figure, and reuses the same checked facts for partner content with a numeric check and an approval trail. The two could sit side by side: a platform for behaviour and action, and a governed fact base for what the team itself can say.
 
 The main interaction reference is the [Straits Times playground feature](https://www.straitstimes.com/multimedia/graphics/2024/10/sg-playground-culture/index.html): one idea per screen, captions over a sticky visual, evidence close to each claim. It supplies no data or assets. The car images are the team's own, stored locally with their source record in [`public/brand/README.md`](../public/brand/README.md).
