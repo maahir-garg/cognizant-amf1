@@ -8,6 +8,8 @@ import { AiText } from "@/components/shared/ai-text";
 import { StatusMark } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 import { useAiText } from "@/lib/ai/client";
+import { stripCitations } from "@/lib/ai/guardrail";
+import { SITE_URL } from "@/lib/config";
 import { DEFAULT_SHARE_FACT_IDS, shareCaptionRequest } from "@/lib/ai/requests";
 import { getFact, getRace, travelModes } from "@/lib/data/load";
 import { formatFact } from "@/lib/format";
@@ -24,6 +26,7 @@ const CHIP =
   "group flex min-h-12 cursor-pointer items-center gap-3 rounded-md border border-line-strong px-3 py-2 font-sans text-base font-medium text-ink transition-colors hover:bg-paper-2 has-[:checked]:border-2 has-[:checked]:border-ink has-[:checked]:bg-lime-tint has-[:checked]:px-[11px] has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus";
 
 const NO_PLAN = "none";
+const THUMB_WIDTH = 44;
 
 /** Waits for web fonts and the car image so the export never catches a fallback face or an empty band. */
 async function ready(node: HTMLElement) {
@@ -133,13 +136,26 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
     }
   }
 
+  async function copyCaption() {
+    if (!caption) return;
+    // Plain text for any app: citation markers out, the link back in.
+    const text = `${stripCitations(caption.text)} ${SITE_URL}`;
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success("Caption copied");
+    } catch {
+      toast.error("Couldn't copy. Select the caption and copy it instead.");
+    }
+  }
+
   async function handleShare() {
     setBusy(true);
     try {
       const blob = await exportPng();
       if (!blob) return;
       const file = new File([blob], filename, { type: "image/png" });
-      await navigator.share({ files: [file], title: `${raceShortName(race)} race week` });
+      const text = caption ? `${stripCitations(caption.text)} ${SITE_URL}` : SITE_URL;
+      await navigator.share({ files: [file], title: `${raceShortName(race)} race week`, text });
     } catch {
       // Cancelled by the fan, or the share sheet isn't available: nothing to report.
     } finally {
@@ -148,7 +164,7 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
   }
 
   return (
-    <div className="wrap grid gap-10 py-10 sm:py-14 lg:grid-cols-12 lg:gap-6 lg:py-16">
+    <div className="wrap grid gap-10 pt-10 pb-36 sm:pt-14 lg:grid-cols-12 lg:gap-6 lg:py-16">
       <div className="flex flex-col gap-4 lg:col-span-12">
         <Link href={`/weekend/${raceId}`} className="kicker w-fit text-ink-3 underline decoration-1 underline-offset-[3px] hover:text-ink">
           ← {raceShortName(race)} race page
@@ -176,6 +192,43 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
           <div className="mx-auto mt-6 flex w-full max-w-[400px] flex-col gap-3">
             <p className="kicker">Suggested caption</p>
             {caption ? <AiText response={caption} className="text-lg" /> : <p className="font-serif text-lg text-ink-3">Writing a caption from your figures…</p>}
+            <Button variant="outline" size="lg" className="w-fit" onClick={copyCaption} disabled={!caption}>
+              Copy caption
+            </Button>
+          </div>
+
+          {/*
+            One action bar: pinned to the bottom of the screen on phones (with a thumbnail that jumps
+            back to the preview), and in the sticky preview column from 1024 px.
+          */}
+          <div
+            data-tone="paper"
+            className="fixed inset-x-0 bottom-0 z-30 flex items-center gap-3 border-t border-line-strong bg-bg px-4 py-3 lg:static lg:z-auto lg:mx-auto lg:mt-6 lg:w-full lg:max-w-[400px] lg:flex-col lg:items-start lg:border-t-0 lg:bg-transparent lg:p-0"
+          >
+            <button
+              type="button"
+              onClick={() => wrapperRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}
+              className="shrink-0 overflow-hidden rounded-sm border border-line-strong lg:hidden"
+              style={{ width: THUMB_WIDTH, height: SHARE_CARD_HEIGHT * (THUMB_WIDTH / SHARE_CARD_WIDTH) }}
+              aria-label="Back to the card preview"
+            >
+              <div aria-hidden style={{ width: SHARE_CARD_WIDTH, height: SHARE_CARD_HEIGHT, transform: `scale(${THUMB_WIDTH / SHARE_CARD_WIDTH})`, transformOrigin: "top left" }}>
+                <ShareCard raceShortName={raceShortName(race)} factIds={factIds} planLine={line} badge={hasBadge} />
+              </div>
+            </button>
+            <div className="flex flex-1 flex-wrap gap-2 lg:flex-none">
+              <Button size="lg" onClick={handleDownload} disabled={busy} className="flex-1 lg:flex-none">
+                {busy ? "Making the image…" : "Save the card"}
+              </Button>
+              {canShare && (
+                <Button size="lg" variant="outline" onClick={handleShare} disabled={busy} className="flex-1 lg:flex-none">
+                  Share
+                </Button>
+              )}
+            </div>
+            <p className="hidden font-sans text-sm text-ink-3 lg:block">
+              A {SHARE_CARD_WIDTH} × {SHARE_CARD_HEIGHT} PNG, made on your device. Nothing is uploaded.
+            </p>
           </div>
         </div>
       </div>
@@ -185,9 +238,14 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
           <legend className="mb-1 flex flex-col gap-1">
             <span className="h3">Team figures</span>
             <span className="font-sans text-[0.9375rem] text-ink-2">
-              Pick up to {SHARE_MAX_FACTS}. Every one is printed in the team&apos;s report; the card names the pages.
+              Every one is printed in the team&apos;s report, and the card names the pages.
             </span>
           </legend>
+          <p aria-live="polite" className="font-sans text-[0.9375rem] text-ink-2">
+            {factIds.length >= SHARE_MAX_FACTS
+              ? "That's three, the most the card fits at a size you can read on a phone. Untick one to swap it for another."
+              : `Pick up to three: the card has room for three figures at a size you can read on a phone. ${factIds.length} chosen.`}
+          </p>
           <div className="grid gap-2">
             {SHARE_FACTS.map((f) => {
               const fact = getFact(f.id);
@@ -261,17 +319,9 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
           )}
         </div>
 
-        <div className="flex flex-col gap-3 border-t border-line pt-6 sm:flex-row">
-          <Button size="lg" onClick={handleDownload} disabled={busy}>
-            {busy ? "Making the image…" : "Save the card"}
-          </Button>
-          {canShare && (
-            <Button size="lg" variant="outline" onClick={handleShare} disabled={busy}>
-              Share
-            </Button>
-          )}
-        </div>
-        <p className="-mt-6 font-sans text-sm text-ink-3">A {SHARE_CARD_WIDTH} × {SHARE_CARD_HEIGHT} PNG, made on your device. Nothing is uploaded.</p>
+        <p className="font-sans text-sm text-ink-3 lg:hidden">
+          A {SHARE_CARD_WIDTH} × {SHARE_CARD_HEIGHT} PNG, made on your device. Nothing is uploaded.
+        </p>
       </div>
     </div>
   );

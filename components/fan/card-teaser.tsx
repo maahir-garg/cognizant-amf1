@@ -11,8 +11,8 @@ import { SHARE_CARD_HEIGHT, SHARE_CARD_WIDTH, ShareCard } from "./share-card";
 
 const PREVIEW_WIDTH = 240;
 const SCALE = PREVIEW_WIDTH / SHARE_CARD_WIDTH;
-// The teaser stops below the source line: the bottom clear zone is empty by design and reads as a gap at this size.
-const VISIBLE_HEIGHT = 1600;
+// The teaser stops below the link back: the rest of the bottom well is empty by design and reads as a gap at this size.
+const VISIBLE_HEIGHT = 1760;
 
 /**
  * The race page's hand-off to /share, with a small preview of the default
