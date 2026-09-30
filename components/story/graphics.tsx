@@ -113,7 +113,7 @@ export function FootprintGraphic({ highlight }: { highlight?: string[] }) {
 
   return (
     <figure role="figure" aria-label={`The team's footprint by category. Whole footprint ${formatFact(total)}.`} className="font-sans">
-      <GraphicHead title={`The team's footprint, ${total.period}`} citeId={FOOTPRINT_TOTAL_ID} />
+      <GraphicHead title="The team's footprint by category" citeId={FOOTPRINT_TOTAL_ID} />
       <div className="mb-3 flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
         <div className={cn("flex flex-col gap-1 transition-colors", EASE, on(main.key) ? "text-ink" : "text-ink-3")}>
           <Figure id={main.factId} className="text-[clamp(1.5rem,1.1rem+1.4vw,2.25rem)] leading-none font-bold [font-stretch:75%]" />

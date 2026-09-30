@@ -116,11 +116,14 @@ export function InlineFact({
   id,
   className,
   hideUnit = false,
+  absolute = false,
 }: {
   id: string;
   className?: string;
   /** Drop a word unit the sentence already says, e.g. "Round 17" rather than "Round 17 round". */
   hideUnit?: boolean;
+  /** Show a change without its sign when the sentence already says the direction ("down 74%"). */
+  absolute?: boolean;
 }) {
   const fact = getFact(id);
   const { openFact } = useProvenance();
@@ -137,7 +140,9 @@ export function InlineFact({
     );
   }
   const unit = hideUnit && p.unit !== "%" ? "" : p.unit;
-  const value = `${p.prefix}${p.value}${unit && unit !== "%" ? ` ${unit}` : unit}${p.suffix}`;
+  const digits = absolute ? p.value.replace(/^[-−–]/, "") : p.value;
+  // "1,000+ children", but "90%+": an at-least mark follows the number, and a percent sign stays attached to it.
+  const value = unit === "%" ? `${p.prefix}${digits}%${p.suffix}` : `${p.prefix}${digits}${p.suffix}${unit ? ` ${unit}` : ""}`;
   return (
     <button
       type="button"

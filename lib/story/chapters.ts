@@ -401,7 +401,7 @@ export const CHAPTERS: Chapter[] = [
     steps: [
       {
         copy: "Last year the STEM Racing World Finals came to Singapore, where school teams design and race miniature cars. The team met students from {f:c25-stem-racing-countries} there, and launched Unearth Your Greatness with Maaden, whose name is on the car: a free STEM programme that aims to reach {f:c25-maaden-target}.",
-        facts: [{ id: "c25-stem-racing-students", caption: "students reached at the World Finals launch" }],
+        facts: [{ id: "c25-stem-racing-students", caption: "reached at the World Finals launch" }],
         layer: 0,
         // In on the Maaden name on the engine cover, well away from the other sponsors.
         zoom: { scale: 1.9, origin: { x: 46, y: 45 }, mobileOrigin: { x: 44, y: 45 } },

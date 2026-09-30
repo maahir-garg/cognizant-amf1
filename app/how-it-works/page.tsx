@@ -241,7 +241,8 @@ export default async function HowItWorksPage() {
           </Rule>
           <Rule>
             Earlier years were restated, so we never compare 2024 and 2025 totals. Progress uses the report&apos;s own figures: Scope 1
-            and 2 <InlineFact id="e25-progress-scope12" />, Scope 3 <InlineFact id="e25-progress-scope3" />.
+            and 2 emissions are down <InlineFact id="e25-progress-scope12" absolute />, Scope 3 down{" "}
+            <InlineFact id="e25-progress-scope3" absolute />.
           </Rule>
           <Rule>The paddock energy cut applies to European races. Singapore trackside energy is not published.</Rule>
           <Rule>Fan travel is not in the team&apos;s inventory. The travel tip compares modes using government factors, labelled Estimated.</Rule>
