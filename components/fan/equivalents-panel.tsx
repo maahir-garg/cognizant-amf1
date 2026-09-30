@@ -43,7 +43,7 @@ export function EquivalentsPanel({ tCO2e, factLabel }: { tCO2e: number; factLabe
             href={sourceLink(active.factor.sourceId, active.factor.page)}
             target="_blank"
             rel="noreferrer"
-            className="label inline-flex items-center gap-1 text-ink-2 hover:text-lime"
+            className="label inline-flex items-center gap-1 text-ink-2 hover:text-link"
           >
             {source.publisher} <ArrowUpRight className="size-3" />
           </a>

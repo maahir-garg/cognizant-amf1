@@ -100,7 +100,7 @@ function ShareBuilder({ profile }: { profile: FanProfile }) {
     <div className="mx-auto flex w-full max-w-xl flex-col gap-8 px-4 py-10 sm:px-6 sm:py-14">
       <div className="flex flex-col gap-2">
         <p className="label">Your weekend in impact</p>
-        <h1 className="display text-[clamp(2.5rem,9vw,4rem)]">Make your card</h1>
+        <h1 className="font-serif font-medium leading-[1.05] tracking-tight text-[clamp(2.5rem,9vw,4rem)]">Make your card</h1>
         <p className="text-ink-2">A 9:16 card sized for stories: {race.name}, your headline figures and a personalised caption.</p>
       </div>
 

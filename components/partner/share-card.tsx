@@ -12,11 +12,11 @@ import { formatFact } from "@/lib/format";
 export const ShareCard = forwardRef<HTMLDivElement, { initiativeName: string; facts: Fact[]; sourceTitle?: string }>(
   function ShareCard({ initiativeName, facts, sourceTitle }, ref) {
     return (
-      <div ref={ref} className="flex h-full w-full flex-col justify-between bg-racing p-16">
+      <div ref={ref} data-tone="green" className="flex h-full w-full flex-col justify-between bg-racing p-16">
         <p className="label text-lime">Impact Lap · Cognizant × Aston Martin Aramco</p>
 
         <div className="flex flex-col gap-10">
-          <h2 className="display text-6xl leading-[1.05] text-ink">{initiativeName}</h2>
+          <h2 className="font-serif font-medium leading-[1.05] tracking-tight text-6xl leading-[1.05] text-ink">{initiativeName}</h2>
 
           {facts.length > 0 ? (
             <div className="flex flex-col gap-8">

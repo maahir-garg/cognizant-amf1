@@ -73,12 +73,13 @@ export const ShareCard = forwardRef<HTMLDivElement, {
   return (
     <div
       ref={ref}
+      data-tone="green"
       className={cn("relative flex flex-col justify-between overflow-hidden bg-racing px-20 py-24 text-ink", className)}
       style={{ width: SHARE_CARD_WIDTH, height: SHARE_CARD_HEIGHT }}
     >
       <div className="flex flex-col gap-6">
         <p className="label text-[30px] tracking-[0.12em] text-lime">Impact Lap</p>
-        <h1 className="display text-[104px] leading-[0.9]">
+        <h1 className="font-serif font-medium leading-[1.05] tracking-tight text-[104px] leading-[0.9]">
           Your weekend
           <br />
           in impact

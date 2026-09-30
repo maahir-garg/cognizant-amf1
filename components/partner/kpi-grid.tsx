@@ -15,7 +15,7 @@ export function KpiGrid() {
     <section className="flex flex-col gap-12">
       <div className="max-w-3xl">
         <p className="label">The whole ESG picture</p>
-        <h2 className="display mt-3 text-4xl sm:text-6xl">Evidence across every impact area.</h2>
+        <h2 className="font-serif font-medium leading-[1.05] tracking-tight mt-3 text-4xl sm:text-6xl">Evidence across every impact area.</h2>
         <p className="mt-5 max-w-2xl text-ink-2">Open any figure to inspect its status, report source and original wording.</p>
       </div>
       {PILLARS.map((pillar) => (

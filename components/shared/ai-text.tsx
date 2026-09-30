@@ -31,9 +31,9 @@ export function AiText({
 
   if (!response.guardrail.passed) {
     return (
-      <div className={cn("rounded-md border border-conflict/50 bg-conflict/5 p-4 text-sm", className)} role="alert">
-        <p className="flex items-center gap-2 font-semibold text-conflict">
-          <ShieldAlert className="size-4" /> Held back by the numeric guardrail
+      <div className={cn("rounded-md border border-dashed border-line-strong p-4 text-sm", className)} role="alert">
+        <p className="kicker flex items-center gap-2 text-conflict">
+          <ShieldAlert className="size-4" /> Held back: a figure did not match its source
         </p>
         <ul className="mt-2 list-disc pl-5 text-ink-2">
           {response.guardrail.reasons.map((r) => (
@@ -58,7 +58,7 @@ export function AiText({
             key={`${pi}-${index}`}
             type="button"
             onClick={() => openFact(id)}
-            className="num relative -top-1.5 ml-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-sm border border-line-strong px-1 text-[0.625rem] leading-none text-ink-2 hover:border-lime hover:text-lime"
+            className="num relative -top-2 ml-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-sm border border-line-strong px-1 font-sans text-[0.6875rem] leading-none font-semibold text-ink-2 hover:border-link hover:text-link"
             aria-label={`Source ${n}: ${findFact(id)?.metric}`}
           >
             {n}
@@ -71,7 +71,7 @@ export function AiText({
             <TooltipTrigger asChild>
               <span
                 tabIndex={0}
-                className="num relative -top-1.5 ml-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-sm border border-dashed border-estimated/70 px-1 text-[0.625rem] leading-none text-estimated"
+                className="num relative -top-2 ml-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-sm border border-dashed border-estimated px-1 font-sans text-[0.6875rem] leading-none font-semibold text-estimated"
               >
                 {n}
               </span>
@@ -90,7 +90,7 @@ export function AiText({
 
   return (
     <div className={cn("flex flex-col gap-3", className)}>
-      <div className="flex flex-col gap-3 leading-relaxed text-ink">
+      <div className="flex flex-col gap-[0.9em] font-serif leading-[1.45] text-ink">
         {paragraphs.map((para, pi) => (
           <p key={pi} className="whitespace-pre-line">
             {renderInline(para, pi).map((node, i) => (
@@ -112,8 +112,8 @@ export function AiMeta({ response, className }: { response: AiResponse; classNam
     <div className={cn("flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-line pt-2", className)}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <span tabIndex={0} className="label inline-flex items-center gap-1 text-verified">
-            <Check className="size-3" strokeWidth={3} /> Verified
+          <span tabIndex={0} className="kicker inline-flex items-center gap-1 text-ink-2">
+            <Check className="size-3" strokeWidth={3} aria-hidden /> Figures checked
           </span>
         </TooltipTrigger>
         <TooltipContent className="max-w-xs">
@@ -122,8 +122,8 @@ export function AiMeta({ response, className }: { response: AiResponse; classNam
             : `${n} figure${n === 1 ? "" : "s"} checked: each matches a cited fact or documented calculation.`}
         </TooltipContent>
       </Tooltip>
-      <span className="label">{drafter}</span>
-      {response.cached && <span className="label">Offline cache</span>}
+      <span className="kicker text-ink-3">{drafter}</span>
+      {response.cached && <span className="kicker text-ink-3">Offline cache</span>}
     </div>
   );
 }
