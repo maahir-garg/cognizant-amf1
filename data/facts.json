@@ -3339,6 +3339,25 @@
     "phrase": "When the method changed, the team restated its earlier carbon figures, so older numbers aren't directly comparable."
   },
   {
+    "id": "g25-scope3-boundary",
+    "pillar": "governance",
+    "topic": "methodology",
+    "metric": "Scope 3 categories counted in the GHG inventory",
+    "value": null,
+    "valueText": "Purchased goods and services, capital goods, fuel and energy, upstream transport, waste, business travel and employee commuting; all other categories excluded",
+    "unit": "text",
+    "period": "2025",
+    "status": "verified",
+    "sourceId": "esg-2025",
+    "page": 85,
+    "quote": "Category 6 (Business travel), and Category 7 (Employee commuting). All other Scope 3 categories are excluded as they are not relevant to our business activities",
+    "tags": [
+      "environment"
+    ],
+    "extractedAt": "2026-09-30",
+    "phrase": "The team's carbon inventory counts its own suppliers, freight, waste, business travel and staff commuting, not fans' trips to races."
+  },
+  {
     "id": "g25-hs-fatalities",
     "pillar": "governance",
     "topic": "health-safety",

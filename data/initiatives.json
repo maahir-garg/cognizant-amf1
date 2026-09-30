@@ -71,7 +71,7 @@
     "id": "stem-racing-world-finals",
     "name": "STEM Racing World Finals, Singapore",
     "pillar": "community",
-    "summary": "At the STEM Racing World Finals in Singapore the team hosted the Canadian team with Bombardier and launched 'Unearth Your Greatness' with Maaden, reaching students from 35 countries.",
+    "summary": "At the STEM Racing World Finals in Singapore the team hosted the Canadian team with Bombardier and launched 'Unearth Your Greatness' with Maaden, reaching students from around the world.",
     "partners": [
       "Maaden",
       "Bombardier"
@@ -98,7 +98,7 @@
     "id": "unearth-your-greatness",
     "name": "Unearth Your Greatness (with Maaden)",
     "pillar": "community",
-    "summary": "A multi-year youth programme with Maaden that supports STEM Racing through a free online learning platform, aiming to reach 100,000 students over three years.",
+    "summary": "A multi-year youth programme with Maaden that supports STEM Racing through a free online learning platform, with a reach target for its first three years.",
     "partners": [
       "Maaden"
     ],
@@ -119,7 +119,7 @@
   },
   {
     "id": "genai-ideathon",
-    "name": "Cognizant x AMF1 Gen-AI Ideathon",
+    "name": "Cognizant × Aston Martin Aramco Gen-AI Ideathon",
     "pillar": "community",
     "summary": "Cognizant ran a global generative-AI Ideathon with the team for a second year running. University students tackle real team problems; the 2025 winners came from McGill University.",
     "partners": [
