@@ -8,14 +8,24 @@
  * that fact: the unit after the number, or words it shares with the fact's
  * metric, phrase, topic, partner tags or initiative. A bare value that
  * happens to exist somewhere in the fact base is not enough. Everything else
- * is held back with a reason. Years and ordinals are read as context, not
- * as claims.
+ * is held back with a reason, including a number whose counted noun is not
+ * the fact's unit ("257 schools" for a figure about students). Years and
+ * ordinals are read as context, not as claims.
+ *
+ * A matched number can still "need wording" when the figure is right but the
+ * sentence frames it in a way the report does not support: the wrong scope
+ * ("total emissions" for a Scope 1 and 2 figure), the wrong place (a
+ * European-races figure at Singapore), a target stated as a result, a
+ * comparison of restated yearly totals, or a sensitive figure without the
+ * context the report gives it. Those block review until reworded or
+ * acknowledged.
  */
 import { extractNumbers, numbersMatch, type FoundNumber } from "@/lib/data/numbers";
-import { factCitation, facts as allFacts, findFact, initiatives } from "@/lib/data/load";
+import { factCitation, facts as allFacts, findFact, getFact, initiatives } from "@/lib/data/load";
 import type { Fact } from "@/lib/data/schemas";
+import { unitLabel } from "@/lib/format";
 
-export type FindingStatus = "matched" | "held" | "context";
+export type FindingStatus = "matched" | "wording" | "held" | "context";
 
 export type DraftFinding = {
   /** The number as written, e.g. "257", "£140,000", "93%". */
@@ -35,6 +45,8 @@ export type DraftFinding = {
   reason: string;
   /** Things to watch even when matched: estimates, disputed figures, framing rules. */
   cautions: string[];
+  /** For "wording": what the sentence must say or stop saying before the figure can go. */
+  needs: string[];
 };
 
 export type WordingNote = { phrase: string; start: number; end: number; reason: string };
@@ -45,10 +57,12 @@ export type DraftCheck = {
   findings: DraftFinding[];
   wording: WordingNote[];
   matched: number;
+  /** Numbers that match but need rewording. */
+  needsWording: number;
   held: number;
-  /** True when there is at least one number and none is held back. */
+  /** True when there is at least one number, none is held back and none needs wording. */
   ok: boolean;
-  /** Matched fact ids in order of first use. */
+  /** Matched fact ids (including those needing wording) in order of first use. */
   factIds: string[];
 };
 
@@ -104,6 +118,16 @@ const UNIT_WORDS: Record<string, string[]> = {
 function unitWordsFor(f: Fact): string[] {
   return UNIT_WORDS[f.unit] ?? [...tokens(f.unit)];
 }
+
+/**
+ * Nouns that name what a number counts. When one follows a number it has to
+ * be the fact's own unit: "257 schools" is not the figure for 257 students.
+ * Built from every unit in the fact base plus common counted nouns.
+ */
+const COUNTED_NOUNS = new Set<string>([
+  ...allFacts.flatMap((f) => (f.value === null ? [] : unitWordsFor(f))).filter((w) => !["t", "x", "time", "carbon"].includes(w)),
+  ..."school company team volunteer hour tree car race staff employee colleague partner mentor mentee city pupil class charity day week month kid".split(" "),
+]);
 
 /** The one or two words straight after a number, e.g. "students", "tCO2e removed". */
 function followingWords(text: string, end: number): string[] {
@@ -206,10 +230,19 @@ function currencyOf(raw: string): "GBP" | "USD" | "EUR" | null {
 
 type Candidate = { fact: Fact; score: number; overlap: number; contextual: boolean };
 
-function scoreCandidates(n: FoundNumber, text: string, end: number, sentence: Set<string>, pool: Fact[]): Candidate[] {
+/** Candidates for a number, plus facts whose value matched but whose unit the counted noun contradicts. */
+function scoreCandidates(
+  n: FoundNumber,
+  text: string,
+  end: number,
+  sentence: Set<string>,
+  pool: Fact[],
+): Candidate[] & { mismatched?: Fact[] } {
   const after = followingWords(text, end);
+  const noun = after[0] && COUNTED_NOUNS.has(after[0]) ? after[0] : null;
   const currency = currencyOf(n.raw);
-  const out: Candidate[] = [];
+  const out: Candidate[] & { mismatched?: Fact[] } = [];
+  out.mismatched = [];
   for (const f of pool) {
     if (f.value === null || f.status === "simulated") continue;
     const isPercent = f.unit === "%";
@@ -218,10 +251,14 @@ function scoreCandidates(n: FoundNumber, text: string, end: number, sentence: Se
     if (currency && currency !== f.unit) continue;
     if (!numbersMatch(n, Math.abs(f.value))) continue;
 
+    const unitWords = unitWordsFor(f);
+    if (noun && !isPercent && !isMoney && !unitWords.includes(noun)) {
+      out.mismatched.push(f);
+      continue;
+    }
     const bag = factBag(f);
     let overlap = 0;
     for (const t of sentence) if (bag.has(t)) overlap++;
-    const unitWords = unitWordsFor(f);
     const unitMatch = (currency !== null && isMoney) || after.some((w) => unitWords.includes(w));
     const exact = Math.abs(f.value) === n.value;
     // A percentage or a sum of money alone says little: most facts share
@@ -230,7 +267,8 @@ function scoreCandidates(n: FoundNumber, text: string, end: number, sentence: Se
     const score = overlap + (unitMatch ? 3 : 0) + (exact ? 1 : 0) + (f.status === "verified" ? 0.5 : 0);
     out.push({ fact: f, score, overlap, contextual });
   }
-  return out.sort((a, b) => b.score - a.score || a.fact.id.localeCompare(b.fact.id));
+  out.sort((a, b) => b.score - a.score || a.fact.id.localeCompare(b.fact.id));
+  return out;
 }
 
 const digitsOf = (v: number) => String(Math.abs(v)).replace(/\D/g, "").split("").sort().join("");
@@ -285,7 +323,16 @@ export function checkDraft(input: string, pool: Fact[] = allFacts): DraftCheck {
     const end = start + n.raw.length;
     const sentenceText = sentenceAround(text, start);
     const sentence = tokens(sentenceText);
-    const base = { raw: n.raw, value: n.value, start, end, alternatives: [] as string[], nearest: null, cautions: [] as string[] };
+    const base = {
+      raw: n.raw,
+      value: n.value,
+      start,
+      end,
+      alternatives: [] as string[],
+      nearest: null,
+      cautions: [] as string[],
+      needs: [] as string[],
+    };
 
     if (isOrdinal(text, end)) {
       findings.push({ ...base, status: "context", factId: null, reason: "Read as an ordinal, not a quantity." });
@@ -318,6 +365,20 @@ export function checkDraft(input: string, pool: Fact[] = allFacts): DraftCheck {
       continue;
     }
 
+    const mismatched = candidates.mismatched ?? [];
+    if (candidates.length === 0 && mismatched.length > 0) {
+      const f = mismatched.find((m) => [...tokens(sentenceText)].some((t) => factBag(m).has(t))) ?? mismatched[0];
+      const noun = /^[\s-]*([A-Za-z]+)/.exec(text.slice(end))?.[1] ?? "that";
+      findings.push({
+        ...base,
+        status: "held",
+        factId: null,
+        nearest: f.id,
+        reason: `${n.raw} is published as a count of ${unitLabel(f.unit)}, not ${noun}. Check what the figure counts.`,
+      });
+      continue;
+    }
+
     if (candidates.length > 0) {
       findings.push({
         ...base,
@@ -344,17 +405,123 @@ export function checkDraft(input: string, pool: Fact[] = allFacts): DraftCheck {
     });
   }
 
-  const matched = findings.filter((f) => f.status === "matched");
+  applyFraming(text, findings);
+
+  const cited = findings.filter((f) => f.status === "matched" || f.status === "wording");
   const held = findings.filter((f) => f.status === "held").length;
+  const needsWording = findings.filter((f) => f.status === "wording").length;
   return {
     text,
     findings,
     wording: wordingNotes(text),
-    matched: matched.length,
+    matched: cited.length - needsWording,
+    needsWording,
     held,
-    ok: findings.length > 0 && held === 0,
-    factIds: [...new Set(matched.map((f) => f.factId!))],
+    ok: findings.length > 0 && held === 0 && needsWording === 0,
+    factIds: [...new Set(cited.map((f) => f.factId!))],
   };
+}
+
+/* ------------------------------------------------------------ framing */
+
+const SCOPE_RULES: { test: RegExp; says: RegExp; label: string }[] = [
+  {
+    test: /Scope 1 and 2/,
+    says: /scope\s*1\s*(and|&)\s*2|scopes?\s*1\s*(and|&|,)\s*2|fuel and electricity|direct(ly)? (and|&) (purchased )?electricity/i,
+    label: "Scope 1 and 2 (the fuel and electricity the team uses directly)",
+  },
+  { test: /Scope 3/, says: /scope\s*3|value chain|supply chain|indirect/i, label: "Scope 3 (the value chain)" },
+  { test: /^Scope 1 emissions/, says: /scope\s*1|direct/i, label: "Scope 1 (direct)" },
+  { test: /^Scope 2 emissions/, says: /scope\s*2|electricity/i, label: "Scope 2 (purchased electricity)" },
+];
+
+const TOTAL_WORDS = /\btotal\b|\boverall\b|\bwhole footprint\b|\ball (?:of )?(?:its|the team's) emissions\b|\bentire footprint\b/i;
+const TARGET_WORDS = /target|\baims?\b|aiming|commit|goal|\bplans?\b|pledge|by 20\d\d|net zero|over the next/i;
+const COMPARE_WORDS = /\bfrom\b.*\bto\b|\bfell\b|\brose\b|\bdown\b|\bup\b|\bcompared\b|\bversus\b|\bvs\.?\b|\bthan\b|\bcut\b|\bdropped\b|\bincreased\b/i;
+
+const isSuperseded = (f: Fact) => /as originally reported|before restatement/i.test(f.metric) || f.flags.some((fl) => fl.kind === "not-comparable");
+const isYearTotal = (f: Fact) => f.unit === "tCO2e" && f.topic === "emissions" && /^\d{4}$/.test(f.period);
+
+/** Required context for figures the report only gives with an explanation. */
+const SENSITIVE: { ids: string[]; ok: (draft: string, sentence: string) => boolean; need: string }[] = [
+  {
+    ids: ["b25-pay-gap-median", "b25-pay-gap-mean"],
+    ok: (d) => /representation|not (?:the same as )?unequal pay|equal pay/i.test(d),
+    need: "Give the report's explanation beside it: a pay gap is not unequal pay, it reflects representation. Lead with what the team is doing.",
+  },
+  {
+    ids: ["b25-women-share"],
+    ok: (d) => /representation|accelerate women|aleto|afbe/i.test(d),
+    need: "Pair the women's share with the report's explanation of representation and what the team is doing about it.",
+  },
+  {
+    ids: ["est-freight-per-round", "est-travel-per-round", "est-saf-per-round"],
+    ok: (d, s) => /divided evenly|spread evenly|season total|on average|an average/i.test(d) && !/singapore|marina bay/i.test(s),
+    need: "Say it is the season total divided evenly across the rounds, and don't present it as a Singapore figure.",
+  },
+  {
+    ids: ["est-rego-share"],
+    ok: () => false,
+    need: "Say \"renewable energy-backed supply\" rather than quoting a renewable share.",
+  },
+  {
+    ids: ["e25-removals", "e25-removals-vs-scope12"],
+    ok: (d) => !/neutral|negative|offset|for good|cancel(?:s|led)? out|permanent/i.test(d),
+    need: "Removals deal with emissions the team cannot eliminate yet. Don't call them neutral, negative, permanent or an offset.",
+  },
+];
+
+/** Turns matched findings into "needs wording" where the sentence frames the figure in a way the report does not. */
+function applyFraming(text: string, findings: DraftFinding[]): void {
+  const matched = findings.filter((f) => f.status === "matched" && f.factId);
+  for (const finding of matched) {
+    const f = getFact(finding.factId!);
+    const sentence = sentenceAround(text, finding.start);
+    const needs: string[] = [];
+
+    for (const rule of SCOPE_RULES) {
+      if (!rule.test.test(f.metric)) continue;
+      if (TOTAL_WORDS.test(sentence) || !rule.says.test(sentence)) {
+        needs.push(`This is the ${rule.label} figure, not the total footprint. Name the scope in the sentence.`);
+      }
+      break;
+    }
+
+    if (/European races/i.test(f.metric) && (!/europ/i.test(sentence) || /singapore|marina bay|asia|night race|every race|all races/i.test(sentence))) {
+      needs.push("This cut applies to European races only. Say so, and don't attach it to Singapore: its trackside energy is not published.");
+    }
+
+    if (f.qualifier === "target" && !TARGET_WORDS.test(sentence)) {
+      needs.push("This is a target, not a result. Say it is what the team aims for.");
+    }
+
+    if (/as originally reported/i.test(f.metric)) {
+      needs.push("This figure was replaced when the report restated earlier years. Use the restated figure or the report's own progress figures.");
+    }
+
+    if (isYearTotal(f)) {
+      const others = matched
+        .filter((o) => o !== finding && sentenceAround(text, o.start) === sentence)
+        .map((o) => getFact(o.factId!))
+        .filter((o) => (isYearTotal(o) || isSuperseded(o)) && o.period !== f.period);
+      const risky = others.some((o) => isSuperseded(o) || isSuperseded(f) || o.period === "2024" || f.period === "2024");
+      if (others.length > 0 && risky && COMPARE_WORDS.test(sentence)) {
+        needs.push("Don't compare yearly totals: earlier years were restated and are not directly comparable. Use the report's own progress figures.");
+      }
+    } else if (isSuperseded(f) && COMPARE_WORDS.test(sentence)) {
+      needs.push("Not directly comparable with the same figure in other years. Quote each year on its own terms.");
+    }
+
+    for (const rule of SENSITIVE) {
+      if (rule.ids.includes(f.id) && !rule.ok(text, sentence)) needs.push(rule.need);
+    }
+
+    if (needs.length) {
+      finding.status = "wording";
+      finding.needs = needs;
+      finding.reason = `The figure is published (${factCitation(f).label}), but the sentence needs rewording before it can go.`;
+    }
+  }
 }
 
 /**
@@ -366,7 +533,7 @@ export function draftWithCitations(check: DraftCheck): { text: string; citations
   let out = "";
   let last = 0;
   for (const f of check.findings) {
-    if (f.status !== "matched" || !f.factId) continue;
+    if ((f.status !== "matched" && f.status !== "wording") || !f.factId) continue;
     out += `${check.text.slice(last, f.end)} [F:${f.factId}]`;
     last = f.end;
   }

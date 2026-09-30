@@ -80,6 +80,11 @@ function Sentence({ check, className }: { check: SentenceCheck; className?: stri
           <span className="sr-only">Held back: </span>
           {raw}
         </span>
+      ) : n.status === "wording" ? (
+        <span key={i} className="num rounded-sm border border-ink px-1 font-semibold">
+          <span className="sr-only">Needs wording: </span>
+          {raw}
+        </span>
       ) : n.status === "matched" ? (
         <span key={i} className="num font-semibold underline decoration-highlight decoration-2 underline-offset-4">
           {raw}
@@ -101,6 +106,7 @@ function Sentence({ check, className }: { check: SentenceCheck; className?: stri
 function Outcome({ check }: { check: SentenceCheck }) {
   const { openFact } = useProvenance();
   const held = check.numbers.filter((n) => n.status === "held");
+  const wording = check.numbers.filter((n) => n.status === "wording");
   const matched = check.numbers.filter((n) => n.status === "matched");
 
   if (check.numbers.length === 0) {
@@ -111,18 +117,23 @@ function Outcome({ check }: { check: SentenceCheck }) {
     return (
       <div className="flex flex-col gap-1.5">
         <p className="kicker inline-flex items-center gap-2 self-start rounded-sm border border-dashed border-ink px-2 py-1 text-ink">
-          Held back
+          {held.length ? "Held back" : "Needs wording"}
         </p>
         <ul className="flex flex-col gap-1 text-[0.9375rem] text-ink">
           {held.map((n) => (
             <li key={n.start}>
-              <span className="num font-semibold">{n.raw}</span> is not in the fact base.
+              {n.reason}
               {n.factId && (
                 <>
                   {" "}
                   Closest published figure in this sentence&apos;s terms: <InlineFact id={n.factId} />
                 </>
               )}
+            </li>
+          ))}
+          {wording.map((n) => (
+            <li key={n.start}>
+              <span className="num font-semibold">{n.raw}</span> is published, but: {n.needs.join(" ")}
             </li>
           ))}
           {check.guardrail?.reasons.map((r) => (

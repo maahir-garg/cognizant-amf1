@@ -28,6 +28,13 @@ describe("explainer number check", () => {
     expect(r.passed).toBe(true);
   });
 
+  it("uses the desk's checker, so wrong nouns and wrong framing never pass", () => {
+    expect(checkSentence("Cognizant brought 257 schools to Make A Mark Day.").numbers[0].status).toBe("held");
+    const scope = checkSentence("The team cut its total emissions 74%.");
+    expect(scope.numbers[0].status).toBe("wording");
+    expect(scope.passed).toBe(false);
+  });
+
   it("the example's wrong input is not a fact", () => {
     expect(transposed(students.value!)).not.toBe(String(students.value));
   });

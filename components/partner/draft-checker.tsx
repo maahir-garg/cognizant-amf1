@@ -15,11 +15,20 @@ import { ApprovalPanel } from "./approval-panel";
 export const EXAMPLE_DRAFT =
   "This week in Singapore: Make A Mark Day reached 275 students, and 68% of them started the day unsure what skills a career in AI needs. Our real-time impact data shows the team's STEM programme has reached more than 1,000 young people in the UK and at race locations.";
 
+/** Right numbers, wrong framing: each one is caught for a different reason. */
+export const FRAMING_EXAMPLE =
+  "Cognizant brought 257 schools to Make A Mark Day. The team cut its total emissions 74%, and paddock energy emissions fell 90% at the Singapore Grand Prix. The footprint fell from 88,183 (2024) to 87,162 (2025), and the pay gap is 20.6%.";
+
 const RESULT_LABEL: Record<DraftFinding["status"], string> = {
   matched: "Matched",
+  wording: "Needs wording",
   held: "Held back",
   context: "Context",
 };
+
+const RESULT_MARK: Record<DraftFinding["status"], string> = { matched: "✓", wording: "!", held: "✕", context: "·" };
+
+const ackKey = (f: DraftFinding) => `${f.factId}:${f.raw}:${f.needs.join("|")}`;
 
 function citationNumbers(check: DraftCheck): Map<string, number> {
   return new Map(check.factIds.map((id, i) => [id, i + 1]));
@@ -62,6 +71,22 @@ function MarkedDraft({ check }: { check: DraftCheck }) {
           </button>
         </span>,
       );
+    } else if (f.status === "wording" && f.factId) {
+      const n = numbers.get(f.factId);
+      out.push(
+        <span key={m.start} className="whitespace-nowrap">
+          <span className="rounded-sm border border-estimated px-0.5 font-semibold text-estimated">{body}</span>
+          <button
+            type="button"
+            onClick={() => openFact(f.factId!)}
+            className="num relative -top-2 ml-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-sm border border-estimated px-1 font-sans text-[0.6875rem] leading-none font-semibold text-estimated"
+            aria-label={`Source ${n}, needs wording: ${getFact(f.factId).metric}`}
+          >
+            {n}
+          </button>
+          <span className="kicker relative -top-2 ml-1 text-[0.625rem] text-estimated">Reword</span>
+        </span>,
+      );
     } else if (f.status === "held") {
       out.push(
         <span key={m.start} className="whitespace-nowrap">
@@ -101,7 +126,50 @@ function replacementFor(f: DraftFinding): string | null {
   return f.raw.replace(/\d[\d,]*(?:\.\d+)?/, formatted);
 }
 
-function FindingDetail({ f, n, onFix }: { f: DraftFinding; n?: number; onFix?: (f: DraftFinding) => void }) {
+function FindingDetail({
+  f,
+  n,
+  onFix,
+  acknowledged,
+  onAcknowledge,
+}: {
+  f: DraftFinding;
+  n?: number;
+  onFix?: (f: DraftFinding) => void;
+  acknowledged?: boolean;
+  onAcknowledge?: (f: DraftFinding, value: boolean) => void;
+}) {
+  if (f.status === "wording" && f.factId) {
+    const fact = getFact(f.factId);
+    return (
+      <div className="flex flex-col gap-1.5">
+        <span className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+          {n && <span className="num text-[0.8125rem] font-semibold text-ink-3">[{n}]</span>}
+          <InlineFact id={f.factId} />
+          <span className="text-[0.8125rem] text-ink-3">{factCitation(fact).label}</span>
+        </span>
+        <span className="text-[0.875em] leading-snug text-ink-2">{fact.metric}</span>
+        <ul className="flex flex-col gap-1">
+          {f.needs.map((need) => (
+            <li key={need} className="border-l-2 border-estimated pl-2 leading-snug text-ink">
+              {need}
+            </li>
+          ))}
+        </ul>
+        {onAcknowledge && (
+          <label className="mt-1 flex cursor-pointer items-start gap-2 text-[0.875em] text-ink-2">
+            <input
+              type="checkbox"
+              checked={Boolean(acknowledged)}
+              onChange={(e) => onAcknowledge(f, e.target.checked)}
+              className="mt-0.5 size-4 accent-[var(--racing)]"
+            />
+            I&apos;ve added the context elsewhere in the post; the reviewer will check it.
+          </label>
+        )}
+      </div>
+    );
+  }
   if (f.status === "matched" && f.factId) {
     const fact = getFact(f.factId);
     return (
@@ -167,13 +235,24 @@ export function DraftChecker() {
       }
     : undefined;
   const hasText = check.text.trim().length > 0;
+  const [acknowledged, setAcknowledged] = useState<Set<string>>(new Set());
+  const acknowledge = (f: DraftFinding, value: boolean) =>
+    setAcknowledged((prev) => {
+      const next = new Set(prev);
+      if (value) next.add(ackKey(f));
+      else next.delete(ackKey(f));
+      return next;
+    });
+  const unresolved = check.findings.filter((f) => f.status === "wording" && !acknowledged.has(ackKey(f))).length;
 
   const blocked =
     check.held > 0
       ? `${check.held === 1 ? "One number is" : "Some numbers are"} held back. Fix or remove ${check.held === 1 ? "it" : "them"} before this goes for review.`
-      : check.findings.length === 0
-        ? "There are no figures to check yet."
-        : undefined;
+      : unresolved > 0
+        ? `${unresolved === 1 ? "One figure needs" : `${unresolved} figures need`} rewording. Reword the sentence, or tick that you've added the context.`
+        : check.findings.length === 0
+          ? "There are no figures to check yet."
+          : undefined;
 
   return (
     <div className="grid gap-x-10 gap-y-10 pt-8 lg:grid-cols-12">
@@ -196,13 +275,17 @@ export function DraftChecker() {
           <Button variant="outline" onClick={() => setText(EXAMPLE_DRAFT)}>
             Load the example
           </Button>
+          <Button variant="outline" onClick={() => setText(FRAMING_EXAMPLE)}>
+            Try right numbers, wrong framing
+          </Button>
           <Button variant="ghost" onClick={() => setText("")}>
             Clear
           </Button>
         </div>
         <p className="text-[0.875em] text-ink-3">
           Nothing you paste leaves the browser. Every number is compared with the fact base: the value must match a published figure and
-          the sentence must say what it counts. Years and ordinals are read as context.
+          the sentence must say what it counts. A right number can still need rewording: the wrong scope or place, a target stated as a
+          result, a comparison of restated years, or a sensitive figure without its context. Years and ordinals are read as context.
         </p>
       </div>
 
@@ -212,6 +295,8 @@ export function DraftChecker() {
           {hasText && (
             <p className="text-[0.875em] text-ink-2" aria-live="polite">
               <span className="font-semibold text-ink">✓ {check.matched} matched</span>
+              {" · "}
+              <span className={cn(check.needsWording > 0 && "font-semibold text-estimated")}>{check.needsWording} need wording</span>
               {" · "}
               <span className={cn(check.held > 0 && "font-semibold text-conflict")}>{check.held} held back</span>
               {check.wording.length > 0 && ` · ${check.wording.length} wording note${check.wording.length === 1 ? "" : "s"}`}
@@ -250,16 +335,23 @@ export function DraftChecker() {
                             className={cn(
                               "kicker inline-flex items-center gap-1.5",
                               f.status === "matched" && "text-verified",
+                              f.status === "wording" && "text-estimated",
                               f.status === "held" && "text-conflict",
                               f.status === "context" && "text-ink-3",
                             )}
                           >
-                            <span aria-hidden>{f.status === "matched" ? "✓" : f.status === "held" ? "✕" : "·"}</span>
+                            <span aria-hidden>{RESULT_MARK[f.status]}</span>
                             {RESULT_LABEL[f.status]}
                           </span>
                         </td>
                         <td className="py-3 max-md:col-span-2 max-md:pt-2 max-md:pb-0">
-                          <FindingDetail f={f} n={f.factId ? numbers.get(f.factId) : undefined} onFix={fix} />
+                          <FindingDetail
+                            f={f}
+                            n={f.factId ? numbers.get(f.factId) : undefined}
+                            onFix={fix}
+                            acknowledged={acknowledged.has(ackKey(f))}
+                            onAcknowledge={acknowledge}
+                          />
                         </td>
                       </tr>
                     ))}

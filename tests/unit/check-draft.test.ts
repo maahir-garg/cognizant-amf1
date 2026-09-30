@@ -126,3 +126,64 @@ describe("draftWithCitations", () => {
     expect(footnotedPlainText(cited)).toMatch(/\[1\].*\n\[2\]/);
   });
 });
+
+describe("checkDraft: the stakeholder audit cases never pass green", () => {
+  const figures = (text: string) => checkDraft(text).findings.filter((f) => f.status !== "context");
+
+  it("holds back a right number attached to the wrong noun", () => {
+    const [f] = figures("Cognizant brought 257 schools to Make A Mark Day.");
+    expect(f.status).toBe("held");
+    expect(f.nearest).toBe("c25-mam-day-students");
+    expect(f.reason).toMatch(/count of students, not schools/);
+  });
+
+  it("needs wording when a Scope 1 and 2 figure is called total emissions", () => {
+    const [f] = figures("The team cut its total emissions 74%.");
+    expect(f.status).toBe("wording");
+    expect(f.factId).toBe("e25-progress-scope12");
+    expect(f.needs.join(" ")).toMatch(/Scope 1 and 2/);
+  });
+
+  it("needs wording when the European paddock cut is placed at Singapore", () => {
+    for (const t of ["Paddock energy emissions fell 90% at the Singapore Grand Prix.", "The team cut emissions 90% at the Singapore Grand Prix."]) {
+      const [f] = figures(t);
+      expect(f.status, t).toBe("wording");
+      expect(f.needs.join(" ")).toMatch(/European races only/);
+    }
+  });
+
+  it("needs wording for a comparison of restated yearly totals", () => {
+    const check = checkDraft("The footprint fell from 88,183 (2024) to 87,162 (2025).");
+    const found = check.findings.filter((f) => f.status !== "context");
+    expect(found.map((f) => f.status)).toEqual(["wording", "wording"]);
+    expect(found[1].needs.join(" ")).toMatch(/Don't compare yearly totals/);
+    expect(check.ok).toBe(false);
+  });
+
+  it("needs wording for a pay gap without the report's explanation", () => {
+    const [f] = figures("The team's pay gap is 20.6%.");
+    expect(f.status).toBe("wording");
+    expect(f.needs.join(" ")).toMatch(/not unequal pay/);
+  });
+
+  it("passes the same figures once the sentence frames them as the report does", () => {
+    for (const t of [
+      "Scope 1 and 2 emissions are down 74% on the baseline year.",
+      "At European races, low-carbon paddock energy cut event energy emissions by 90%.",
+      "The team's median pay gap is 20.6%, which the report says reflects representation, not unequal pay.",
+      "The team's footprint was 87,162 tCO2e in 2025.",
+    ]) {
+      expect(checkDraft(t).ok, t).toBe(true);
+    }
+  });
+
+  it("needs wording for a target stated as a result, and for removals called an offset", () => {
+    expect(figures("Emissions were cut by 42% across Scope 1 and 2.")[0].status).toBe("wording");
+    expect(figures("The team offset its footprint by removing 2,124 tCO2e.")[0].status).toBe("wording");
+  });
+
+  it("counts figures that need wording separately and keeps them out of ok", () => {
+    const check = checkDraft("Make A Mark Day reached 257 students. The team's pay gap is 20.6%.");
+    expect(check).toMatchObject({ matched: 1, needsWording: 1, held: 0, ok: false });
+  });
+});
