@@ -4,7 +4,7 @@
 
 Off Camera turns the team's published Make A Mark reports into the story of the AMR26 away from the track: where it is built, how it is moved round the world, what powers the garage, who the team reaches and how far it has to go. Every figure opens to the page of the team's own report it came from.
 
-**Live demo:** https://cognizant-amf1.vercel.app (offline demo mode, no sign-in). Backup video: `docs/demo-video/impact-lap-demo.mp4`.
+**Live demo:** https://cognizant-amf1.vercel.app (offline demo mode, no sign-in). Backup video: `docs/demo-video/impact-lap-demo.mp4` shows the previous build; it is re-recorded on the final build as `docs/demo-video/off-camera-demo.mp4` before the pitch.
 
 ## Who it is for
 
@@ -22,7 +22,7 @@ npm install
 npm run dev        # http://localhost:3000, no API key or network needed
 ```
 
-Optional live AI: copy `.env.example` to `.env.local`, set `GEMINI_API_KEY` and `DEMO_MODE=false`. Without them the app runs in offline demo mode, serving AI text from `data/ai-cache/` or grounded templates.
+Optional live AI: copy `.env.example` to `.env.local`, set `GEMINI_API_KEY` and `DEMO_MODE=false`. Without them the app runs in offline demo mode, serving AI text from grounded templates (and from `data/ai-cache/`, which stays empty until `npm run warm-cache` fills it).
 
 For the pitch laptop: `npm run build`, then `npm start`.
 
@@ -50,7 +50,7 @@ Other scripts: `npm run warm-cache` (fills `data/ai-cache/` when `GEMINI_API_KEY
 | `/sources`                | Every fact, its source page, quality flags and method                                                        |
 | `/api/partner/metrics`    | Read-only JSON, or CSV with `?format=csv`, for partner BI tools                                              |
 
-Old links to `/start`, `/lap` and `/act` redirect to `/`. Some desk tabs and `/how-it-works` are still being built; see `docs/architecture.md`.
+Old links to `/start`, `/lap` and `/act` redirect to `/`.
 
 ## How trust works
 
@@ -58,7 +58,7 @@ Old links to `/start`, `/lap` and `/act` redirect to `/`. Some desk tabs and `/h
 - **Every number opens its source.** Tap a figure to see the quote, the report page and any caveat.
 - **The AI only uses what it is given.** Each request names the facts it may use; the model must cite each one.
 - **A guardrail checks every figure.** Generated text is held back unless each number matches a fact it cites. A failed draft is retried once, then replaced by a grounded template. The same check runs on copy a partner pastes into Check my draft.
-- **The drafter is labelled.** Every generated block says "Figures checked" and whether a model or a template wrote it.
+- **The drafter is labelled.** On the Impact desk and `/how-it-works`, every generated block says "Figures checked" and whether a model or a template wrote it. Fan pages keep one plain line: "Every number checked against the report".
 - **Nothing is simulated.** The product shows no demo data, and nothing is called live. Figures say "Updated when the team publishes".
 - **The report's own inconsistencies are shown.** Quality flags live on `/sources` and the Impact desk, and are kept off fan pages.
 

@@ -43,7 +43,7 @@ The desk is built around the jobs a partner comms lead does every week:
 - **Approvals and audit trail.** Drafts move from draft to approved with a named reviewer and a timestamp.
 - **What changed.** When the team publishes new figures or restates old ones, the desk shows it, so a partner does not reuse a superseded number.
 
-Around those sit narratives (post, brief, leadership update, funder paragraph), a scenario view for joint programmes, a story kit for charities, the data-quality flags, an ROI panel and CSV or JSON export.
+Around those sit narratives (LinkedIn post, quarterly brief, leadership update), a scenario view for joint programmes, a story kit for charities (a social post and a funder report paragraph), the data-quality flags, an ROI panel and CSV or JSON export.
 
 ## How AI transforms the data
 
@@ -56,7 +56,7 @@ The AI does four things, always in this order and always on the facts it is hand
 | Draft   | The same method produces partner formats: a LinkedIn post, a race-week brief, a leadership update, a funder report paragraph.                                                                                                                     | Narratives and story kit on the desk                                              |
 | Check   | A guardrail extracts every number from the text and rejects it unless it matches a fact the text cites. A rejected draft is retried once with the reasons, then replaced by a grounded template. The same check runs on copy a partner pastes in. | The "Figures checked" label on every generated block; Check my draft              |
 
-The model does not measure anything and never sees the whole dataset. In the offline demo the text comes from a warmed cache or the grounded templates; with a model key configured it comes from Gemini. Either way it passes the same check, and the label says which one drafted it.
+The model does not measure anything and never sees the whole dataset. In the offline demo the text comes from the grounded templates (the cache in `data/ai-cache/` stays empty until `npm run warm-cache` runs with a key); with a model key configured it comes from Gemini. Either way it passes the same check. On the desk the label says which one drafted it; fan pages show one plain line, "Every number checked against the report".
 
 ## The story follows the team's own map
 
@@ -66,18 +66,18 @@ The 2025 report maps its footprint across the team's operations on pp17-18: behi
 | -------------------------------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Title page                                                     | 01 Behind the speed                          | Byline: from the team's 2025 Make A Mark report, every figure sourced                                                                                                                                                                                                                             |
 | 1. Campus: where the car comes to life                         | 02 AMR Technology Campus                     | `e24-solar-panels`, `e25-circularity`, `e25-carbon-fibre-recycled`, `e25-cups-removed` with `e25-cups-laps`, `e25-biodiversity-net-gain`, `e25-wild-meadow`                                                                                                                                       |
-| 2. Supply chain: most of the footprint is things the team buys | 03 Supply chain                              | `e25-supply-chain-share`; a footprint bar from `e25-ghg-total-sbti` split into `e25-supply-chain`, `e25-freight-logistics`, `e25-commuting`, `e25-business-travel`, `e25-hq-energy`                                                                                                               |
+| 2. Supply chain: most of the footprint is things the team buys | 03 Supply chain                              | `e25-supply-chain-share`; a footprint bar from `e25-ghg-total-sbti` split into `e25-supply-chain`, `e25-freight-logistics`, `e25-commuting`, `e25-business-travel`, `e25-hq-energy`, `e25-other-emissions`                                                                                        |
 | 3. Moving the team: planes, ships and a cleaner fuel           | 04 Moving our people, 05 Moving our parts    | `e25-freight-logistics`, `e25-saf-avoided` with `e25-saf-laps`, `e25-saf-airfreight-cut`, `e24-sea-freight-shift`, `e25-travel-logistics-cut`                                                                                                                                                     |
 | 4. At the circuit: what runs the garage                        | 06 Life at the circuit, 07 Inside the garage | `e25-event-energy-cut` (European races only), trackside energy by source for the European races (`e25-trackside-*`), and a data gap for the Singapore night race                                                                                                                                  |
 | 5. Beyond the track: Belong and Community                      | Belong and Community pillars                 | `c25-stem-racing-students`, `c25-stem-racing-countries`, `c25-stem-racing-singapore`, `c25-maaden-target`, `b25-accelerate-*`, `b25-aleto-network`, `c25-charity-2025`, `e25-ethiopia-children` with `e25-removals`; pay gap and women share in the detail layer only, with the p55 explanation   |
 | 6. The finish line: how far there is to go                     | Targets and Governance                       | The p15 target chart (`e23-ghg-baseline`, `e25-ghg-total-sbti`, `e25-target-2030-tco2e`, `e25-target-2050-tco2e`), `e25-progress-scope12`, `e25-progress-scope3`, `e25-target-scope12`, `e25-target-scope3`, `e25-target-netzero-year`, `g25-sbti`, `g25-assurance`, `g25-cdp`, `g25-restatement` |
-| 7. Your race weekend: Singapore                                | The fan's own part                           | Real programmes tied to Singapore and STEM, getting to Marina Bay (a ratio against taxi or driving, from `data/travel-modes.json`), a three-question check, and the card at `/share`                                                                                                              |
+| 7. Your race weekend: Singapore                                | The fan's own part                           | Real programmes tied to Singapore and STEM, getting to Marina Bay (a share of a taxi's or a solo drive's emissions, from `data/travel-modes.json`), a three-question check, and the card at `/share`                                                                                              |
 
 Each chapter shows one plain beat. A "The detail" disclosure holds the numbers, caveats and formula notes, and is open by default for "Watched for years".
 
 ## Guardrails from the team and partners
 
-These came from our review panel and are rules, not preferences.
+These follow the team's own reporting and are rules, not preferences.
 
 - **The team's pillar names.** Environment, Belong, Community, plus Governance for reporting.
 - **Pride and invitation, never guilt.** No "save the planet", no green superlatives, no scoring fans, and never "help the team hit net zero". Fan travel is not in the team's inventory: the report counts Scope 3 categories 1 to 7 (p85), and we say so.
@@ -88,7 +88,7 @@ These came from our review panel and are rules, not preferences.
 - **Renewable wording.** Fans see "renewable energy-backed supply", not the derived share `est-rego-share`.
 - **Scope of the paddock figure.** `e25-event-energy-cut` applies to European races. Singapore trackside energy is not published, so the product shows a data gap rather than a number.
 - **Even splits stay in the detail.** `est-freight-per-round`, `est-travel-per-round` and `est-saf-per-round` are the season total divided evenly across 24 rounds. They are never a hero number and never labelled as Singapore's.
-- **Disputed figures stay off fan pages.** Facts with a `source-conflict` flag, and the flags themselves, live on `/sources` and the partner desk.
+- **Disputed figures stay off fan pages.** Facts with a `source-conflict` flag, and the flags themselves, live on `/sources` and the partner desk. The one exception is the story's footprint total, the report's own target-chart value, shown under a plain label without the flag note.
 - **Laps of Silverstone only where the report prints them.** `e25-saf-laps` and `e25-cups-laps`, worded as laps in a petrol road car, the team's own comparison. A fan's trip is never converted to laps.
 - **Honest timing.** Nothing is called live. Figures are labelled "Updated when the team publishes", with the report date.
 
@@ -97,11 +97,11 @@ These came from our review panel and are rules, not preferences.
 | Now, in the prototype                                                                                              | In the 2027 pilot, once an approved feed and owner exist                 |
 | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
 | Every figure from the 2025 and 2024 reports, the Manifesto and the Make A Mark page, each checked against its page | The same, plus figures the team approves for publication between reports |
-| Fan choices (depth, travel plan, quiz badge, card) stay on the device                                              | Fan pledges and card creation counted as they happen, with consent       |
+| Fan choices (depth, travel plan, quiz badge, card) stay on the device                                              | Quick checks and card creation counted as they happen, with consent      |
 | Trackside energy by source for the European races the report covers; a data gap for Singapore                      | Trackside energy by source, refreshed one to two weeks after each race   |
 | Freight emissions as the annual total                                                                              | Freight by mode, refreshed monthly                                       |
 | Charity totals as published annually                                                                               | Charity totals per event, once the charity partner confirms them         |
-| The assured annual footprint                                                                                       | Unchanged: the assured footprint stays annual                            |
+| The annual carbon inventory, with limited external assurance                                                       | Unchanged: the inventory and its assurance stay annual                   |
 | Drafts from the cache or templates offline, or Gemini with a key, all through the same check                       | The same check, with approvals stored centrally and an audit log         |
 
 Pilot cadences are written into the product as "Updated when the team publishes" plus the expected rhythm. None of them are shown as working UI today.
@@ -110,7 +110,7 @@ A personalised driver film, synthetic likeness or voice is out of scope. It woul
 
 ## Why the web
 
-A link opens on a phone without an app, an account or a download, and it can be shared by the team, by partners and by fans. It works offline in the demo and at 390 px wide. Fan choices stay on the device or in a shareable URL; the story asks for no personal data.
+A link opens on a phone without an app, an account or a download, and it can be shared by the team, by partners and by fans. It works offline in the demo and at 390 px wide. Fan choices stay on the device; the story asks for no personal data.
 
 ## Positioning
 

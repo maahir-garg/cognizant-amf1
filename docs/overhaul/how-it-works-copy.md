@@ -18,7 +18,7 @@ Headings are sentence case. One primary button at most (at the end).
 
 ## The problem
 
-The team publishes a thorough, assured ESG report every year, written for auditors and analysts. Very little of it reaches fans in a form they would read.
+The team publishes a detailed ESG report every year, with limited external assurance of its carbon inventory, written for auditors and analysts. Very little of it reaches fans in a form they would read.
 
 The appetite is already there. ESG posts draw {c24-esg-posts-multiplier} the impressions of a typical race weekend, and partners sharing those stories, Cognizant among them, added {c24-esg-impressions-partners}. That retelling is done by hand, from a report that restates earlier years and in places disagrees with itself.
 
@@ -81,7 +81,7 @@ Status is always shown as a mark and a word, never by colour alone.
 
 ## How we handle what the report says
 
-These rules came from our review with the team and partners.
+The rules this prototype sets itself, following the team's own reporting.
 
 - The team's own pillar names: Environment, Belong, Community, and Governance for reporting.
 - Most of the footprint is the supply chain: {e25-supply-chain-share}. We say so plainly.
@@ -102,7 +102,7 @@ Nothing in Off Camera is live today, and nothing claims to be. Every figure says
 
 | Data                       | Now                                                    | In the pilot, with an approved feed and a named owner |
 | -------------------------- | ------------------------------------------------------ | ----------------------------------------------------- |
-| Fan pledges and cards      | Kept on the fan's device                               | Counted as they happen, with consent                  |
+| Fan quick checks and cards | Kept on the fan's device                               | Counted as they happen, with consent                  |
 | Trackside energy by source | European races in the 2025 report; a gap for Singapore | One to two weeks after each race                      |
 | Freight by mode            | Annual total                                           | Monthly                                               |
 | Charity totals             | Annual, as published                                   | Per event, once the charity confirms                  |
@@ -143,7 +143,7 @@ Return here is broader than sales. None of these are measured yet; each has a pu
 **Phases.**
 
 1. Q4 2026: data-sharing agreement, approval workflow, a baseline week of manual timings.
-2. Pre-season to race 6: live with published facts.
+2. Pre-season to race 6: launch with published facts.
 3. Mid-season: add one approved per-race feed, trackside energy or freight, with a named owner.
 4. Season end: evaluate against the baseline and decide on the sponsor tier.
 
