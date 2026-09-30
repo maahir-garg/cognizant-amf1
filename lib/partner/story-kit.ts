@@ -37,22 +37,23 @@ export function cardFactIds(initiative: Initiative): string[] {
 
 /**
  * Written labels for the figures a card or the kit shows, in place of the
- * fact base's catalogue wording. Words only: the figure itself always comes
- * from the fact.
+ * fact base's catalogue wording. They read on from the figure and its unit
+ * ("16 students | from under-represented ethnic backgrounds took part"), so
+ * they never repeat the unit. Words only: the figure comes from the fact.
  */
 const CARD_LABELS: Record<string, string> = {
-  "c25-stem-racing-students": "students met the team at the STEM Racing World Finals in Singapore",
-  "c25-stem-racing-countries": "countries those students came from",
+  "c25-stem-racing-students": "met the team at the World Finals in Singapore",
+  "c25-stem-racing-countries": "represented among those students",
   "c25-stem-racing-singapore": "Where the World Finals were held",
   "b25-aleto-network": "of mentees said the programme grew their professional network",
   "b25-aleto-leadership": "said they grew in leadership, public speaking and confidence",
   "b25-aleto-stem-interest": "came away more interested in STEM careers",
   "b25-afbe-helpful": "of attendees found the Transition Event helpful",
-  "b25-afbe-students": "engineering and STEM students from under-represented ethnic backgrounds took part",
+  "b25-afbe-students": "from under-represented ethnic backgrounds took part",
   "b25-racing-pride-award": "The Formula Student Diversity and Inclusion Award, sponsored again with Racing Pride",
-  "b25-inclusion-participants": "people took part in inclusion events through the year",
-  "c25-gp-trust-students": "students at the Motorsport Industry Day",
-  "b25-paddle-seat": "prototypes of a bespoke para-canoe seat, built with Paddle UK",
+  "b25-inclusion-participants": "at inclusion events through the year",
+  "c25-gp-trust-students": "at the Motorsport Industry Day",
+  "b25-paddle-seat": "of a bespoke para-canoe seat, built with Paddle UK",
 };
 
 export function cardLabel(factId: string): string {

@@ -19,7 +19,7 @@ export default function RoiPage() {
       <DeskHeader
         kicker="Impact desk · Return on the partnership"
         title="What is published, and what a pilot would measure"
-        dek="On the left, what the team has already reported about how far its impact stories travel. On the right, the measures a pilot would add. None of those has been measured yet, so none shows a number."
+        dek="On the left, what the team has already reported about how far its impact stories travel. On the right, the measures a pilot would add. None of those has been measured yet, so none shows a number. The one cost range here is our own planning assumption, with its working shown."
       />
 
       <div className="grid gap-x-12 gap-y-12 pt-8 lg:grid-cols-12">

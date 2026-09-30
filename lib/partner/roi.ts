@@ -43,6 +43,13 @@ export const PILOT_METRICS: PilotMetric[] = [
     audience: "partner",
   },
   {
+    id: "card-shares",
+    name: "Card shares",
+    definition: "Story-kit and fan cards downloaded, and shares of the links they carry.",
+    method: "Download counts plus tagged links, no personal data.",
+    audience: "partner",
+  },
+  {
     id: "partner-amplification",
     name: "Partner amplification",
     definition: "Impressions on posts partners publish from the desk, against the partner impressions the team already reports.",
@@ -71,13 +78,6 @@ export const PILOT_METRICS: PilotMetric[] = [
     definition: "A single measure each charity chooses and publishes itself, such as mentees in work a year on, shown beside the team's figures.",
     method: "Supplied and sourced by the charity, then checked like any other fact before it appears.",
     audience: "charity",
-  },
-  {
-    id: "card-shares",
-    name: "Card shares",
-    definition: "Story-kit and fan cards downloaded, and shares of the links they carry.",
-    method: "Download counts plus tagged links, no personal data.",
-    audience: "partner",
   },
   {
     id: "story-completion",
