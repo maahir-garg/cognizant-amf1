@@ -65,8 +65,10 @@ function derivedValue(d: DerivedValue): string {
 const PROPER_FIRST = new Set(["Cognizant", "Arm", "Make", "Singapore", "Citi", "Northamptonshire", "Ultra-runner", "F1's", "AFBE-UK"]);
 
 function lowerFirst(s: string): string {
-  const first = s.split(/\s/)[0];
+  const [first, second = ""] = s.split(/\s/);
   if (PROPER_FIRST.has(first) || /^[A-Z]{2,}/.test(first) || /^\d/.test(first)) return s;
+  // "Racing Pride partnership", "Aleto Foundation ...": a capitalised second word marks a name.
+  if (!/^(The|A|An)$/.test(first) && /^[A-Z]/.test(second)) return s;
   return s.charAt(0).toLowerCase() + s.slice(1);
 }
 
@@ -171,22 +173,12 @@ function shareCaptionTemplate(req: AiRequest, facts: Fact[]): string {
 
 /* --------------------------------------------------------- linkedin-post */
 
-const TONE_INTROS: Record<string, string> = {
-  confident: "Impact stories are only as good as the data behind them. Here's what Cognizant and Aston Martin Aramco have to show.",
-  warm: "Some of our favourite work with Aston Martin Aramco happens well away from the track.",
-  formal: "An update on Cognizant's partnership with the Aston Martin Aramco Formula One Team.",
-};
+const POST_INTRO = "Impact stories are only as good as the data behind them. Here's what Cognizant and Aston Martin Aramco have to show.";
+const POST_CLOSING = "Every figure here links back to the team's published report. That's the standard we hold ourselves to.";
 
-const TONE_CLOSINGS: Record<string, string> = {
-  confident: "Every figure here links back to the team's published report. That's the standard we hold ourselves to.",
-  warm: "Thank you to every student, mentor and engineer who made these moments happen.",
-  formal: "All figures are drawn from the team's published ESG reporting, with sources cited.",
-};
-
-function linkedinPostTemplate(req: AiRequest, facts: Fact[]): string {
-  const tone = typeof req.params.tone === "string" && TONE_INTROS[req.params.tone] ? req.params.tone : "confident";
-  const parts: string[] = [TONE_INTROS[tone]];
-  const closing = TONE_CLOSINGS[tone];
+function linkedinPostTemplate(_req: AiRequest, facts: Fact[]): string {
+  const parts: string[] = [POST_INTRO];
+  const closing = POST_CLOSING;
 
   for (const f of facts) {
     parts.push(factSentence(f));
@@ -244,18 +236,23 @@ function quarterlyBriefTemplate(req: AiRequest, facts: Fact[]): string {
   return [title, summary, ...sections, notes].join("\n\n");
 }
 
-/* ---------------------------------------------------- investor summary */
+/* --------------------------------------------------- leadership update */
 
-function investorSummaryTemplate(req: AiRequest, facts: Fact[]): string {
+function leadershipUpdateTemplate(req: AiRequest, facts: Fact[]): string {
   const narrow = req.params.pillars === "community";
-  const title = narrow ? "Cognizant × Aston Martin Aramco: community impact" : "Cognizant × Aston Martin Aramco: partnership impact";
+  const title = narrow
+    ? "Leadership update: community impact with Aston Martin Aramco"
+    : "Leadership update: the Aston Martin Aramco partnership";
+  // Bullets stand alone, so skip phrases that lean on the one before ("They came from ...").
+  const standalone = facts.filter((f) => !/^(They|Those|These|It)\b/.test(f.phrase ?? ""));
+  const pool = standalone.length >= 4 ? standalone : facts;
   // One bullet per topic first, so four bullets don't all describe the same programme.
-  const firstOfTopic = facts.filter((f, i) => facts.findIndex((g) => g.topic === f.topic) === i);
-  const ordered = [...firstOfTopic, ...facts.filter((f) => !firstOfTopic.includes(f))];
+  const firstOfTopic = pool.filter((f, i) => pool.findIndex((g) => g.topic === f.topic) === i);
+  const ordered = [...firstOfTopic, ...pool.filter((f) => !firstOfTopic.includes(f))];
   const bullets = ordered.slice(0, 4).map((f) => `- ${factSentence(f)}`);
   const fillers = [
     "- Every figure is traceable to a page in the team's published reports.",
-    "- Estimates and simulations are labelled; gaps are shown as gaps.",
+    "- Estimates are labelled; gaps are shown as gaps.",
   ];
   while (bullets.length < 4) bullets.push(fillers[bullets.length % fillers.length]);
   const soWhat = narrow
@@ -271,32 +268,32 @@ function scenarioExplanationTemplate(req: AiRequest): string {
   const out: string[] = [];
   const ref = (id: string) => `[D:${id}]`;
 
-  const students = d.get("sc-students");
-  if (students) {
+  const total = d.get("sc-young-people");
+  if (total) {
     out.push(
-      students.value > 0
-        ? `More race-weekend STEM days would reach ${derivedValue(students)} ${ref(students.id)}, assuming each matches last year's Make A Mark Day and your turnout holds.`
-        : `With no extra STEM days set, reach stays where it is ${ref(students.id)}.`,
+      total.value > 0
+        ? `Together these plans would reach an estimated ${derivedValue(total)} beyond today's programmes ${ref(total.id)}, if no one is counted twice.`
+        : `With every lever at zero, reach stays at the published baselines ${ref(total.id)}.`,
     );
+  }
+  const students = d.get("sc-mam-students");
+  if (students && students.value > 0) {
+    out.push(
+      `Extra Make A Mark Day editions account for ${derivedValue(students)} ${ref(students.id)}, assuming each matches last year's day and your turnout holds.`,
+    );
+  }
+  const stem = d.get("sc-stem-extra");
+  if (stem && stem.value > 0) {
+    out.push(`Growing the STEM learning programme adds ${derivedValue(stem)} ${ref(stem.id)}, scaled from its published reach.`);
   }
   const mentees = d.get("sc-mentees");
-  const growth = d.get("sc-network-growth");
-  if (mentees && growth && mentees.value > 0) {
+  const network = d.get("sc-network-growth");
+  if (mentees && network && mentees.value > 0) {
     out.push(
-      `Extra mentoring cohorts add ${derivedValue(mentees)} a year ${ref(mentees.id)}; if they match this year's outcomes, ${derivedValue(growth)} would report a stronger professional network ${ref(growth.id)}.`,
+      `Extra mentoring cohorts add ${derivedValue(mentees)} a year ${ref(mentees.id)}; if they match this year's outcomes, ${derivedValue(network)} would report a stronger professional network ${ref(network.id)}.`,
     );
   }
-  const saf = d.get("sc-saf-avoided");
-  const extra = d.get("sc-saf-extra");
-  const laps = d.get("sc-saf-extra-laps");
-  if (saf && extra) {
-    out.push(
-      extra.value > 0
-        ? `Raising the fuel's reduction target would avoid ${derivedValue(saf)} of air-freight emissions ${ref(saf.id)}, ${derivedValue(extra)} more than last year ${ref(extra.id)}${laps ? `, or ${derivedValue(laps)} of Silverstone ${ref(laps.id)}` : ""}.`
-        : `At today's fuel level, air-freight savings hold at ${derivedValue(saf)} ${ref(saf.id)}; raise the target to see the extra.`,
-    );
-  }
-  out.push("It models carbon and reach only: fuel costs aren't published, so treat it as a planning aid rather than a forecast.");
+  out.push("Programme costs aren't published, so treat this as a planning aid rather than a forecast.");
   return out.join(" ");
 }
 
@@ -305,7 +302,10 @@ function scenarioExplanationTemplate(req: AiRequest): string {
 function storyKitTemplate(req: AiRequest, facts: Fact[]): string {
   const initiative = initiatives.find((i) => i.id === req.params.initiative);
   // "Para-canoe seat with Paddle UK" -> "Para-canoe seat": the partner is named separately.
-  const name = (initiative?.name ?? "this programme").replace(/\s*\((with [^)]*)\)$/, "").replace(/\s+with\s+[A-Z].*$/, "");
+  const name = (initiative?.name ?? "this programme")
+    .replace(/\s*\((with [^)]*)\)$/, "")
+    .replace(/\s+with\s+[A-Z].*$/, "")
+    .replace(/^The\s+/, "");
   const partner = initiative?.partners.find((p) => p !== "Cognizant") ?? "our organisation";
   const own = facts.filter((f) => initiative?.factIds.includes(f.id));
   const wider = facts.filter((f) => !initiative?.factIds.includes(f.id));
@@ -315,8 +315,17 @@ function storyKitTemplate(req: AiRequest, facts: Fact[]): string {
     ...(wider.length ? [`Across the team's wider ${PILLAR_TITLES[wider[0].pillar].toLowerCase()} work: ${lowerFirst(factSentence(wider[0]))}`] : []),
   ];
 
-  if (req.params.format === "summary") {
-    return [`${partner} and the Aston Martin Aramco Formula One Team work together on the ${lowerFirst(name)}.`, ...lines.slice(0, 2)].join(" ");
+  if (req.params.format === "funder") {
+    // One formal, third-person paragraph for a grant or funder report; the
+    // citations become numbered footnotes when it is copied.
+    const named = initiative?.partners.some((p) => p !== "Cognizant");
+    return [
+      named
+        ? `${partner} works with the Aston Martin Aramco Formula One Team on the ${lowerFirst(name)}.`
+        : `The Aston Martin Aramco Formula One Team runs the ${lowerFirst(name)}.`,
+      ...lines.slice(0, 3),
+      "The figures are taken from the team's published reporting and are referenced in the footnotes.",
+    ].join(" ");
   }
 
   const intro = `At ${partner}, we've been working with the Aston Martin Aramco Formula One Team on the ${lowerFirst(name)}.`;
@@ -349,8 +358,8 @@ export function renderTemplate(req: AiRequest, facts: Fact[]): string {
       return linkedinPostTemplate(req, facts);
     case "quarterly-brief":
       return quarterlyBriefTemplate(req, facts);
-    case "investor-summary":
-      return investorSummaryTemplate(req, facts);
+    case "leadership-update":
+      return leadershipUpdateTemplate(req, facts);
     case "scenario-explanation":
       return scenarioExplanationTemplate(req);
     case "story-kit":

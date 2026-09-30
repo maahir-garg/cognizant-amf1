@@ -6,7 +6,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import fanStory from "@/data/ai-cache/fan-story.json";
-import investorSummary from "@/data/ai-cache/investor-summary.json";
+import leadershipUpdate from "@/data/ai-cache/leadership-update.json";
 import linkedinPost from "@/data/ai-cache/linkedin-post.json";
 import quarterlyBrief from "@/data/ai-cache/quarterly-brief.json";
 import quizReveal from "@/data/ai-cache/quiz-reveal.json";
@@ -23,7 +23,7 @@ const CACHES: Record<AiTask, CacheFile> = {
   "share-caption": shareCaption as CacheFile,
   "linkedin-post": linkedinPost as CacheFile,
   "quarterly-brief": quarterlyBrief as CacheFile,
-  "investor-summary": investorSummary as CacheFile,
+  "leadership-update": leadershipUpdate as CacheFile,
   "scenario-explanation": scenarioExplanation as CacheFile,
   "story-kit": storyKit as CacheFile,
 };

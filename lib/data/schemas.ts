@@ -260,7 +260,7 @@ export const AI_TASKS = [
   "share-caption",
   "linkedin-post",
   "quarterly-brief",
-  "investor-summary",
+  "leadership-update",
   "scenario-explanation",
   "story-kit",
 ] as const;

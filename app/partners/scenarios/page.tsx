@@ -1,27 +1,20 @@
 import type { Metadata } from "next";
+import { DeskHeader } from "@/components/partner/desk-header";
 import { ScenarioStudio } from "@/components/partner/scenario-studio";
+import { StatusBadge } from "@/components/shared/status-badge";
 
-export const metadata: Metadata = { title: "Scenarios" };
+export const metadata: Metadata = { title: "Impact desk: scenarios" };
 
 export default function ScenariosPage() {
   return (
-    <div className="flex flex-col gap-12 py-10 sm:py-14 lg:gap-16 lg:py-20">
-      <header className="grid gap-8 border-b border-line pb-12 lg:grid-cols-[0.9fr_1.1fr] lg:pb-16">
-        <div>
-          <p className="label">Decision scenarios</p>
-          <h1 className="font-serif font-medium leading-[1.05] tracking-tight mt-4 max-w-3xl text-4xl sm:text-6xl lg:text-7xl">Change the inputs. Inspect the reasoning.</h1>
-        </div>
-        <div className="flex max-w-2xl flex-col justify-end gap-5">
-          <p className="text-lg leading-relaxed text-ink-2">
-            The projection uses visible arithmetic and published baselines. AI explains the result in plain language while the
-            figures, formula and assumptions stay open for inspection.
-          </p>
-          <p className="label border-l-2 border-l-estimated pl-3 text-ink-2">Scenario outputs are estimates, not forecasts</p>
-        </div>
-      </header>
-      <div>
-        <ScenarioStudio />
-      </div>
-    </div>
+    <>
+      <DeskHeader
+        kicker="Impact desk · Scenarios"
+        title="Plan the joint programmes"
+        dek="What more Make A Mark Day editions, a wider STEM programme or extra mentoring cohorts could reach, scaled from the team's published results. Every output is an estimate with its formula shown."
+        aside={<StatusBadge status="estimated" />}
+      />
+      <ScenarioStudio />
+    </>
   );
 }

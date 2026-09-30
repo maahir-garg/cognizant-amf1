@@ -1,27 +1,21 @@
 import type { Metadata } from "next";
+import { DeskHeader } from "@/components/partner/desk-header";
 import { StoryKitStudio } from "@/components/partner/story-kit-studio";
 
-export const metadata: Metadata = { title: "Story kit" };
+export const metadata: Metadata = { title: "Impact desk: story kit" };
 
-export default function StoryKitPage() {
+/** `?initiative=stem-racing-world-finals` opens the kit on that programme (linked from This race week). */
+export default async function StoryKitPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const params = await searchParams;
+  const initiative = Array.isArray(params.initiative) ? params.initiative[0] : params.initiative;
   return (
-    <div className="flex flex-col gap-12 py-10 sm:py-14 lg:gap-16 lg:py-20">
-      <header className="grid gap-8 border-b border-line pb-12 lg:grid-cols-[0.9fr_1.1fr] lg:pb-16">
-        <div>
-          <p className="label">Community story kit</p>
-          <h1 className="font-serif font-medium leading-[1.05] tracking-tight mt-4 max-w-3xl text-4xl sm:text-6xl lg:text-7xl">Give every contribution a sourced story.</h1>
-        </div>
-        <div className="flex max-w-2xl flex-col justify-end gap-5">
-          <p className="text-lg leading-relaxed text-ink-2">
-            Select a community or charity partner. AI adapts the same governed evidence into channel-ready copy, with the source
-            trail preserved and a visual asset ready to share.
-          </p>
-          <p className="label border-l-2 border-l-lime pl-3 text-ink-2">One evidence base, adapted for each audience</p>
-        </div>
-      </header>
-      <div>
-        <StoryKitStudio />
-      </div>
-    </div>
+    <>
+      <DeskHeader
+        kicker="Impact desk · Story kit for community and charity partners"
+        title="Your programme's story, sourced"
+        dek="For the charities and community partners the team works with: a social post, a funder report paragraph with footnotes, and a co-branded card in three sizes, all from the team's published figures."
+      />
+      <StoryKitStudio key={initiative ?? "default"} initialId={initiative} />
+    </>
   );
 }

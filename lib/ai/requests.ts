@@ -54,10 +54,8 @@ export const DEFAULT_SHARE_FACT_IDS = ["est-freight-per-round", "e25-saf-airfrei
 
 /* -------------------------------------------------------------- partner */
 
-export const NARRATIVE_FORMATS = ["linkedin-post", "quarterly-brief", "investor-summary"] as const;
+export const NARRATIVE_FORMATS = ["linkedin-post", "quarterly-brief", "leadership-update"] as const;
 export type NarrativeFormat = (typeof NARRATIVE_FORMATS)[number];
-export const NARRATIVE_TONES = ["confident", "warm", "formal"] as const;
-export type NarrativeTone = (typeof NARRATIVE_TONES)[number];
 
 /** Facts a partner narrative may draw on: partner-tagged first, then headline ESG facts. */
 export function partnerNarrativeFactIds(partnerId: string, pillars: Pillar[]): string[] {
@@ -73,12 +71,12 @@ export function partnerNarrativeFactIds(partnerId: string, pillars: Pillar[]): s
   return [...partnerFacts.slice(0, partnerBudget), ...hero].slice(0, 10);
 }
 
-export function narrativeRequest(format: NarrativeFormat, opts: { partnerId: string; pillars: Pillar[]; tone: NarrativeTone }): Built {
+export function narrativeRequest(format: NarrativeFormat, opts: { partnerId: string; pillars: Pillar[] }): Built {
   return {
     task: format,
     factIds: partnerNarrativeFactIds(opts.partnerId, opts.pillars),
     derived: [],
-    params: { partner: opts.partnerId, pillars: [...opts.pillars].sort().join(","), tone: opts.tone },
+    params: { partner: opts.partnerId, pillars: [...opts.pillars].sort().join(",") },
   };
 }
 
@@ -87,12 +85,32 @@ export function scenarioExplanationRequest(derived: DerivedValue[], factIds: str
   return { task: "scenario-explanation", factIds: [...new Set(factIds)].sort(), derived, params: {} };
 }
 
-/** Impact copy for a community / charity partner, grounded in its initiative's facts. */
-export function storyKitRequest(initiativeId: string, format: "post" | "summary"): Built {
+export const STORY_KIT_FORMATS = ["post", "funder"] as const;
+export type StoryKitFormat = (typeof STORY_KIT_FORMATS)[number];
+
+/**
+ * An initiative's own facts for charity copy: the charity's own outcomes
+ * (facts tagged `charity:*` that measure how participants felt) before its
+ * headcounts, then everything else, with figures the reports print
+ * inconsistently left out while an undisputed one remains.
+ */
+export function storyKitFactIds(initiativeId: string): string[] {
   const initiative = initiatives.find((i) => i.id === initiativeId);
   if (!initiative) throw new Error(`Unknown initiative "${initiativeId}"`);
-  const factIds = initiative.factIds.length ? initiative.factIds : byTagAndPillar(initiative.pillar, initiative.interests, 2);
-  return { task: "story-kit", factIds, derived: [], params: { initiative: initiativeId, format } };
+  const own = initiative.factIds.map(getFact);
+  const undisputed = own.filter((f) => !f.flags.some((flag) => flag.kind === "source-conflict"));
+  const pool = undisputed.length ? undisputed : own;
+  const rank = (f: (typeof own)[number]) => {
+    const charity = f.tags.some((t) => t.startsWith("charity:"));
+    return charity ? (f.unit === "%" ? 0 : 1) : 2;
+  };
+  const ids = [...pool].sort((a, b) => rank(a) - rank(b)).map((f) => f.id);
+  return ids.length ? ids : byTagAndPillar(initiative.pillar, initiative.interests, 2);
+}
+
+/** Impact copy for a community / charity partner, grounded in its initiative's facts. */
+export function storyKitRequest(initiativeId: string, format: StoryKitFormat): Built {
+  return { task: "story-kit", factIds: storyKitFactIds(initiativeId), derived: [], params: { initiative: initiativeId, format } };
 }
 
 /* ------------------------------------------------------- demo personas */

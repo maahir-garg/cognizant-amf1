@@ -1,21 +1,38 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Fragment, useEffect, useState } from "react";
 import { AiText } from "@/components/shared/ai-text";
 import { InlineFact } from "@/components/shared/fact-value";
+import { StatusBadge } from "@/components/shared/status-badge";
 import { Slider } from "@/components/ui/slider";
 import { useAiText } from "@/lib/ai/client";
 import { scenarioExplanationRequest } from "@/lib/ai/requests";
-import { getFact } from "@/lib/data/load";
-import { runScenario, scenarioDerivedValues, SCENARIO_DEFAULTS, SCENARIO_LIMITS, type ScenarioInput } from "@/lib/data/scenario";
+import {
+  runScenario,
+  SCENARIO_DEFAULTS,
+  SCENARIO_LIMITS,
+  scenarioDerivedValues,
+  type ScenarioGroup,
+  type ScenarioInput,
+  type ScenarioOutput,
+} from "@/lib/data/scenario";
+import { cn } from "@/lib/utils";
 
-const SLIDER_META: { key: keyof ScenarioInput; label: string; unit: string }[] = [
-  { key: "stemEditions", label: "Extra race-weekend STEM day editions", unit: "editions / year" },
-  { key: "turnoutPct", label: "Expected turnout vs the 2025 Make A Mark Day", unit: "%" },
-  { key: "mentoringCohorts", label: "Extra Aleto-style mentoring cohorts", unit: "cohorts / year" },
-  { key: "safReductionPct", label: "SAF-driven air-freight reduction target", unit: "%" },
+const LEVERS: { key: keyof ScenarioInput; label: string; unit: (v: number) => string; group: string }[] = [
+  { key: "mamEditions", label: "Extra Make A Mark Day editions", unit: (v) => `${v} a year`, group: "Make A Mark Day" },
+  { key: "turnoutPct", label: "Turnout at those editions, against the 2025 day", unit: (v) => `${v}%`, group: "Make A Mark Day" },
+  { key: "stemGrowthPct", label: "Growth in the STEM learning programme's reach", unit: (v) => `${v}%`, group: "STEM learning programme" },
+  { key: "mentoringCohorts", label: "Extra Aleto-style mentoring cohorts", unit: (v) => `${v} a year`, group: "Mentoring" },
 ];
+
+const GROUP_LABEL: Record<ScenarioGroup, string> = {
+  "make-a-mark": "Make A Mark Day",
+  stem: "STEM learning programme",
+  mentoring: "Mentoring",
+  total: "Across the programmes",
+};
+
+const nf = new Intl.NumberFormat("en-GB");
 
 function useDebounced<T>(value: T, ms: number): T {
   const [debounced, setDebounced] = useState(value);
@@ -26,128 +43,198 @@ function useDebounced<T>(value: T, ms: number): T {
   return debounced;
 }
 
+/** The formula as its factors: published facts open their source, planning inputs are plain text. */
+function Formula({ o, byId }: { o: ScenarioOutput; byId: Map<string, ScenarioOutput> }) {
+  return (
+    <span className="flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
+      {o.terms.map((t, i) => (
+        <Fragment key={i}>
+          {i > 0 && (
+            <span aria-hidden className="text-ink-3">
+              {o.operator}
+            </span>
+          )}
+          {t.kind === "fact" && <InlineFact id={t.id} />}
+          {t.kind === "input" && <span className="num text-ink-2">{t.text}</span>}
+          {t.kind === "output" && (
+            <span className="num text-ink-2">
+              {nf.format(byId.get(t.id)?.value ?? 0)} {byId.get(t.id)?.unit}
+            </span>
+          )}
+        </Fragment>
+      ))}
+    </span>
+  );
+}
+
+/** The total split by programme: one bar, estimated segments hatched, labels above. */
+function CompositionBar({ outputs }: { outputs: ScenarioOutput[] }) {
+  const parts = ["sc-mam-students", "sc-stem-extra", "sc-mentees"]
+    .map((id) => outputs.find((o) => o.id === id))
+    .filter((o): o is ScenarioOutput => Boolean(o));
+  const total = parts.reduce((s, o) => s + o.value, 0);
+  if (total === 0) return null;
+  const labels = ["Make A Mark Day", "STEM programme", "Mentoring"];
+  return (
+    <figure className="flex flex-col gap-2" aria-label="Extra young people reached, by programme">
+      <div className="flex gap-0.5">
+        {parts.map((o, i) =>
+          o.value > 0 ? (
+            <div key={o.id} className="flex min-w-0 flex-col gap-1.5" style={{ flexGrow: o.value, flexBasis: 0 }}>
+              <span className="num truncate text-[0.8125rem] text-ink-2">
+                <span className="font-semibold text-ink">{nf.format(o.value)}</span> {labels[i]}
+              </span>
+              <span
+                aria-hidden
+                className={cn(
+                  "block h-8 border",
+                  i === 0 ? "border-highlight text-highlight" : "border-ink-3 text-ink-3",
+                  "bg-[repeating-linear-gradient(45deg,currentColor_0_1.5px,transparent_1.5px_6px)]",
+                )}
+              />
+            </div>
+          ) : null,
+        )}
+      </div>
+      <figcaption className="flex flex-wrap items-center gap-2 text-[0.8125rem] text-ink-3">
+        <StatusBadge status="estimated" /> Hatched because every segment is a projection from published baselines.
+      </figcaption>
+    </figure>
+  );
+}
+
 export function ScenarioStudio() {
   const [input, setInput] = useState<ScenarioInput>(SCENARIO_DEFAULTS);
   const debouncedInput = useDebounced(input, 400);
 
-  const liveOutputs = runScenario(input);
-  const debouncedOutputs = runScenario(debouncedInput);
-  const factIds = [...new Set(debouncedOutputs.flatMap((o) => o.factIds))];
-  const request = scenarioExplanationRequest(scenarioDerivedValues(debouncedOutputs), factIds);
+  const outputs = runScenario(input);
+  const byId = new Map(outputs.map((o) => [o.id, o]));
+  const explained = runScenario(debouncedInput);
+  const request = scenarioExplanationRequest(scenarioDerivedValues(explained), explained.flatMap((o) => o.factIds));
   const { data, error, loading } = useAiText(request);
-
-  const safToday = getFact("e25-saf-avoided").value ?? 0;
-  const safOutput = liveOutputs.find((o) => o.id === "sc-saf-avoided");
-  const chartData = safOutput
-    ? [
-        { name: "2025 (today)", value: Math.round(safToday) },
-        { name: "Scenario", value: Math.round(safOutput.value) },
-      ]
-    : [];
+  const assumptions = [...new Set(outputs.flatMap((o) => o.assumptions))];
+  const total = byId.get("sc-young-people");
 
   return (
-    <div className="flex flex-col gap-10">
-      <div className="grid gap-6 sm:grid-cols-2">
-        {SLIDER_META.map((s) => {
-          const limits = SCENARIO_LIMITS[s.key];
+    <div className="grid gap-x-12 gap-y-10 pt-8 lg:grid-cols-12">
+      <div className="flex flex-col gap-6 lg:col-span-4">
+        <div className="border-t-2 border-ink pt-3">
+          <h2 className="text-[1.0625rem] font-semibold">Planning levers</h2>
+        </div>
+        {LEVERS.map((l) => {
+          const limits = SCENARIO_LIMITS[l.key];
           return (
-            <div key={s.key} className="flex flex-col gap-2">
-              <div className="flex items-baseline justify-between gap-2">
-                <label htmlFor={`scenario-${s.key}`} className="text-sm text-ink">
-                  {s.label}
+            <div key={l.key} className="flex flex-col gap-3">
+              <div className="flex items-baseline justify-between gap-3">
+                <label htmlFor={`lever-${l.key}`} className="leading-snug text-ink">
+                  <span className="kicker block text-ink-3">{l.group}</span>
+                  {l.label}
                 </label>
-                <span className="num text-sm text-ink-2">
-                  {input[s.key]} {s.unit}
-                </span>
+                <span className="num shrink-0 text-[1.0625rem] font-semibold text-ink">{l.unit(input[l.key])}</span>
               </div>
               <Slider
-                id={`scenario-${s.key}`}
+                id={`lever-${l.key}`}
                 min={limits.min}
                 max={limits.max}
                 step={limits.step}
-                value={[input[s.key]]}
-                onValueChange={([v]) => setInput((prev) => ({ ...prev, [s.key]: v }))}
-                aria-label={s.label}
+                value={[input[l.key]]}
+                onValueChange={([v]) => setInput((prev) => ({ ...prev, [l.key]: v }))}
+                aria-label={l.label}
               />
             </div>
           );
         })}
+        <p className="text-[0.875em] text-ink-3">
+          Levers are your planning assumptions. Every output multiplies them by a figure the team has published, and nothing else.
+        </p>
       </div>
 
-      <div className="flex flex-col gap-4">
-        <p className="label">Projected outcomes</p>
-        <div className="overflow-x-auto rounded-md border border-line">
-          <table className="w-full min-w-[720px] border-collapse text-sm">
-            <thead>
-              <tr className="border-b border-line text-left">
-                <th className="label p-3 font-normal">Outcome</th>
-                <th className="label p-3 text-right font-normal">Value</th>
-                <th className="label p-3 font-normal">Formula</th>
-                <th className="label p-3 font-normal">Input facts</th>
+      <div className="flex min-w-0 flex-col gap-8 lg:col-span-8">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-wrap items-baseline justify-between gap-4 border-t-2 border-ink pt-3">
+            <h2 className="text-[1.0625rem] font-semibold">Projected outcomes</h2>
+            <StatusBadge status="estimated" />
+          </div>
+          {total && (
+            <div className="flex flex-col gap-2">
+              <p className="flex flex-wrap items-end gap-x-4 gap-y-1">
+                <span className="big-num text-[length:clamp(3rem,2.25rem+1.25vw,4rem)] text-ink">{nf.format(total.value)}</span>
+                <span className="pb-1 font-serif text-[1.25rem] leading-snug text-ink">{total.label.toLowerCase().replace(/^extra/, "more")}</span>
+              </p>
+              <p className="flex flex-wrap items-center gap-x-2 text-[0.8125rem] text-ink-3">
+                <StatusBadge status="estimated" /> · Calculated: <Formula o={total} byId={byId} />
+              </p>
+            </div>
+          )}
+          <CompositionBar outputs={outputs} />
+        </div>
+
+        <div className="relative overflow-x-auto">
+          <table className="w-full min-w-[40rem] border-collapse text-left text-[0.875rem] min-[1800px]:text-[0.9375rem]">
+            <thead className="border-b border-line-strong">
+              <tr>
+                <th scope="col" className="kicker h-10 pr-4 font-semibold">
+                  Outcome
+                </th>
+                <th scope="col" className="kicker h-10 pr-4 text-right font-semibold">
+                  Estimate
+                </th>
+                <th scope="col" className="kicker h-10 font-semibold">
+                  Formula
+                </th>
               </tr>
             </thead>
             <tbody>
-              {liveOutputs.map((o) => (
-                <tr key={o.id} className="border-b border-line last:border-0">
-                  <td className="p-3 text-ink">{o.label}</td>
-                  <td className="num p-3 text-right text-ink">
-                    {o.value.toLocaleString("en-GB")} {o.unit}
-                  </td>
-                  <td className="p-3 text-xs text-ink-2">{o.formula}</td>
-                  <td className="p-3">
-                    <div className="flex flex-wrap gap-2">
-                      {o.factIds.map((id) => (
-                        <InlineFact key={id} id={id} />
-                      ))}
-                    </div>
-                  </td>
-                </tr>
+              {(["make-a-mark", "stem", "mentoring"] as ScenarioGroup[]).map((g) => (
+                <Fragment key={g}>
+                  <tr>
+                    <th scope="rowgroup" colSpan={3} className="kicker pt-4 pb-1 text-left text-ink-3">
+                      {GROUP_LABEL[g]}
+                    </th>
+                  </tr>
+                  {outputs
+                    .filter((o) => o.group === g)
+                    .map((o) => (
+                      <tr key={o.id} className="border-b border-line align-top">
+                        <td className="py-2.5 pr-4 text-ink">{o.label}</td>
+                        <td className="num py-2.5 pr-4 text-right whitespace-nowrap">
+                          <span className="text-[1.0625rem] font-semibold text-ink">{nf.format(o.value)}</span>{" "}
+                          <span className="text-ink-2">{o.unit}</span>
+                          <StatusBadge status="estimated" compact className="ml-2 align-middle" />
+                        </td>
+                        <td className="py-2.5">
+                          <Formula o={o} byId={byId} />
+                        </td>
+                      </tr>
+                    ))}
+                </Fragment>
               ))}
             </tbody>
           </table>
         </div>
-        {liveOutputs.some((o) => o.assumptions.length > 0) && (
-          <ul className="list-disc space-y-1 pl-4 text-xs text-ink-3">
-            {[...new Set(liveOutputs.flatMap((o) => o.assumptions))].map((a) => (
+
+        <details className="group">
+          <summary className="kicker cursor-pointer list-none text-ink-2">
+            <span className="inline-block transition-transform group-open:rotate-90">›</span> Assumptions behind these estimates
+          </summary>
+          <ul className="mt-3 flex list-disc flex-col gap-1.5 pl-5 text-ink-2">
+            {assumptions.map((a) => (
               <li key={a}>{a}</li>
             ))}
           </ul>
-        )}
-      </div>
+        </details>
 
-      {chartData.length > 0 && (
-        <div className="flex flex-col gap-3">
-          <p className="label">SAF-avoided emissions: today vs scenario</p>
-          <div className="h-48 rounded-md border border-line bg-surface p-4">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} layout="vertical" margin={{ left: 8, right: 24 }}>
-                <XAxis type="number" hide />
-                <YAxis
-                  type="category"
-                  dataKey="name"
-                  width={96}
-                  tick={{ fill: "#bcc8c2", fontSize: 12 }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <Tooltip
-                  formatter={(v) => [`${Number(v).toLocaleString("en-GB")} tCO2e`, "SAF avoided"]}
-                  contentStyle={{ background: "#163029", border: "1px solid #264a40", borderRadius: 6, color: "#f3f1ea" }}
-                  cursor={{ fill: "rgba(255,255,255,0.04)" }}
-                />
-                <Bar dataKey="value" radius={4} fill="#cedc00" maxBarSize={40} isAnimationActive={false} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      )}
-
-      <div className="flex flex-col gap-3 rounded-md border border-line bg-surface p-6">
-        <p className="label">What this means</p>
-        {loading && <p className="text-sm text-ink-3">Explaining…</p>}
-        {error && <p className="text-sm text-conflict">Could not generate an explanation: {error}</p>}
-        {data && <AiText response={data} derived={request.derived} />}
-        <p className="text-xs text-ink-3">This model covers carbon only. SAF cost is not published, so no financial figure is shown.</p>
+        <section aria-labelledby="explain-heading" className="flex flex-col gap-3 rounded-md border border-line bg-surface p-6">
+          <h2 id="explain-heading" className="kicker">
+            In plain words
+          </h2>
+          {loading && <p className="text-ink-3">Explaining…</p>}
+          {error && <p className="text-conflict">Could not explain this scenario: {error}</p>}
+          {data && <AiText response={data} derived={request.derived} className="measure text-[1.0625rem]" />}
+          <p className="text-[0.875em] text-ink-3">
+            People reached only. Programme costs are not published, so there is no financial figure and no return on spend.
+          </p>
+        </section>
       </div>
     </div>
   );

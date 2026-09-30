@@ -1,29 +1,22 @@
 "use client";
 
-import { Check, Copy } from "lucide-react";
 import { useState } from "react";
 import { AiText } from "@/components/shared/ai-text";
 import { InlineFact } from "@/components/shared/fact-value";
-import { Button } from "@/components/ui/button";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useAiText } from "@/lib/ai/client";
-import {
-  NARRATIVE_FORMATS,
-  NARRATIVE_TONES,
-  narrativeRequest,
-  partnerNarrativeFactIds,
-  type NarrativeFormat,
-  type NarrativeTone,
-} from "@/lib/ai/requests";
-import { PARTNER_ID } from "@/lib/config";
-import { getFact } from "@/lib/data/load";
+import { NARRATIVE_FORMATS, narrativeRequest, partnerNarrativeFactIds, type NarrativeFormat } from "@/lib/ai/requests";
+import { PARTNER_ID, PARTNER_NAME } from "@/lib/config";
+import { factCitation, getFact } from "@/lib/data/load";
 import { PILLARS, type Pillar } from "@/lib/data/schemas";
+import { draftKey } from "@/lib/partner/approvals";
 import { footnotedPlainText } from "@/lib/partner/citations";
+import { ApprovalPanel } from "./approval-panel";
+import { CheckChips, ChoiceChips } from "./choice-chips";
 
-const FORMAT_LABEL: Record<NarrativeFormat, string> = {
-  "linkedin-post": "LinkedIn post",
-  "quarterly-brief": "Quarterly impact brief",
-  "investor-summary": "Investor slide summary",
+export const FORMAT_META: Record<NarrativeFormat, { label: string; hint: string }> = {
+  "linkedin-post": { label: "LinkedIn post", hint: "80 to 140 words, co-branded" },
+  "quarterly-brief": { label: "Quarterly brief", hint: "Headline and short sections for a partner report" },
+  "leadership-update": { label: "Leadership update", hint: "Four points and a so-what line for leadership" },
 };
 
 const PILLAR_LABEL: Record<Pillar, string> = {
@@ -33,112 +26,88 @@ const PILLAR_LABEL: Record<Pillar, string> = {
   governance: "Governance",
 };
 
-export function NarrativeStudio() {
-  const [format, setFormat] = useState<NarrativeFormat>("linkedin-post");
-  const [pillars, setPillars] = useState<Pillar[]>(["community", "environment"]);
-  const [tone, setTone] = useState<NarrativeTone>("confident");
-  const [copied, setCopied] = useState(false);
+export function NarrativeStudio({ initialFormat, initialPillars }: { initialFormat: NarrativeFormat; initialPillars: Pillar[] }) {
+  const [format, setFormat] = useState<NarrativeFormat>(initialFormat);
+  const [pillars, setPillars] = useState<Pillar[]>(initialPillars);
 
   const activePillars = pillars.length ? pillars : [...PILLARS];
-  const request = narrativeRequest(format, { partnerId: PARTNER_ID, pillars: activePillars, tone });
+  const request = narrativeRequest(format, { partnerId: PARTNER_ID, pillars: activePillars });
   const { data, error, loading } = useAiText(request);
   const factIds = partnerNarrativeFactIds(PARTNER_ID, activePillars);
-
-  const copy = async () => {
-    if (!data) return;
-    await navigator.clipboard.writeText(footnotedPlainText(data, request.derived));
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  };
+  const cited = new Set(data?.citations ?? []);
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr]">
-      <div className="flex flex-col gap-6">
-        <div className="flex flex-col gap-4 border-b border-line pb-6">
-          <div className="flex flex-col gap-2">
-            <p className="label">Format</p>
-            <ToggleGroup
-              type="single"
-              variant="outline"
-              value={format}
-              onValueChange={(v) => v && setFormat(v as NarrativeFormat)}
-              className="flex-wrap"
-            >
-              {NARRATIVE_FORMATS.map((f) => (
-                <ToggleGroupItem key={f} value={f} className="text-xs">
-                  {FORMAT_LABEL[f]}
-                </ToggleGroupItem>
-              ))}
-            </ToggleGroup>
-          </div>
-          <div className="flex flex-col gap-2">
-            <p className="label">Pillar focus</p>
-            <ToggleGroup
-              type="multiple"
-              variant="outline"
-              value={pillars}
-              onValueChange={(v) => setPillars(v as Pillar[])}
-              className="flex-wrap"
-            >
-              {PILLARS.map((p) => (
-                <ToggleGroupItem key={p} value={p} className="text-xs">
-                  {PILLAR_LABEL[p]}
-                </ToggleGroupItem>
-              ))}
-            </ToggleGroup>
-          </div>
-          <div className="flex flex-col gap-2">
-            <p className="label">Tone</p>
-            <ToggleGroup type="single" variant="outline" value={tone} onValueChange={(v) => v && setTone(v as NarrativeTone)}>
-              {NARRATIVE_TONES.map((t) => (
-                <ToggleGroupItem key={t} value={t} className="text-xs capitalize">
-                  {t}
-                </ToggleGroupItem>
-              ))}
-            </ToggleGroup>
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-4 rounded-md border border-line bg-surface p-6">
-          <p className="label">{FORMAT_LABEL[format]} draft</p>
-          {loading && <p className="text-sm text-ink-3">Drafting…</p>}
-          {error && <p className="text-sm text-conflict">Could not draft this text: {error}</p>}
-          {data && <AiText response={data} />}
-          {data && (
-            <Button size="sm" variant="outline" className="self-start" onClick={copy}>
-              {copied ? (
-                <>
-                  <Check /> Copied with footnotes
-                </>
-              ) : (
-                <>
-                  <Copy /> Copy as plain text
-                </>
-              )}
-            </Button>
-          )}
-        </div>
+    <div className="grid gap-x-10 gap-y-8 pt-8 lg:grid-cols-12">
+      <div className="flex flex-col gap-8 lg:col-span-3">
+        <ChoiceChips
+          legend="Format"
+          layout="column"
+          value={format}
+          onChange={setFormat}
+          options={NARRATIVE_FORMATS.map((f) => ({ value: f, label: FORMAT_META[f].label, hint: FORMAT_META[f].hint }))}
+        />
+        <CheckChips
+          legend="Pillar focus"
+          values={pillars}
+          onChange={setPillars}
+          options={PILLARS.map((p) => ({ value: p, label: PILLAR_LABEL[p] }))}
+        />
+        <p className="text-[0.875em] text-ink-3">
+          None selected means all four. Joint {PARTNER_NAME} facts are always included.
+        </p>
       </div>
 
-      <aside className="flex flex-col gap-3">
-        <p className="label">Facts this draft may use</p>
-        <ul className="flex flex-col divide-y divide-line rounded-md border border-line">
-          {factIds.map((id) => {
-            const fact = getFact(id);
-            return (
-              <li key={id} className="flex flex-col gap-2 p-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
-                <span className="min-w-0 text-xs text-ink-2">{fact.metric}</span>
-                <span className="shrink-0 sm:max-w-[45%] sm:text-right">
-                  <InlineFact id={id} />
-                </span>
-              </li>
-            );
-          })}
-        </ul>
-        <p className="text-xs text-ink-3">
-          The model only ever receives these facts, plus any calculations shown, and must cite them inline. The numeric
-          guardrail rejects any figure that isn&apos;t cited.
-        </p>
+      <article aria-label={`${FORMAT_META[format].label} draft`} className="flex min-w-0 flex-col gap-4 lg:col-span-6">
+        <div className="flex items-baseline justify-between gap-4 border-t-2 border-ink pt-3">
+          <h2 className="text-[1.0625rem] font-semibold">{FORMAT_META[format].label}</h2>
+          <p className="text-[0.875em] text-ink-3">Draft · every figure cited</p>
+        </div>
+        <div className="rounded-md border border-line bg-surface px-6 py-6 sm:px-8">
+          {loading && <p className="text-ink-3">Drafting from the fact base…</p>}
+          {error && <p className="text-conflict">Could not draft this text: {error}</p>}
+          {data && <AiText response={data} className="measure text-[1.125rem] min-[1800px]:text-[1.1875rem]" />}
+        </div>
+        {data && data.guardrail.passed && (
+          <ApprovalPanel
+            draftKey={draftKey(format, data.text)}
+            title={FORMAT_META[format].label}
+            text={data.text}
+            factIds={data.citations}
+            copyText={() => footnotedPlainText(data, request.derived)}
+          />
+        )}
+      </article>
+
+      <aside className="flex min-w-0 flex-col gap-6 lg:col-span-3">
+        <section aria-labelledby="facts-heading" className="flex flex-col gap-2">
+          <h2 id="facts-heading" className="kicker">
+            Facts this draft may use
+          </h2>
+          <p className="text-[0.875em] text-ink-3">The draft can only use these. ✓ marks the ones it cites.</p>
+          <ul className="flex flex-col divide-y divide-line border-y border-line">
+            {factIds.map((id) => {
+              const fact = getFact(id);
+              const used = cited.has(id);
+              return (
+                <li key={id} className="flex gap-2 py-2.5">
+                  <span aria-hidden className="w-4 shrink-0 font-semibold text-ink">
+                    {used ? "✓" : ""}
+                  </span>
+                  <span className="flex min-w-0 flex-col gap-1">
+                    <span className="text-[0.875em] leading-snug text-ink-2">
+                      {used && <span className="sr-only">Cited: </span>}
+                      {fact.metric}
+                    </span>
+                    <span className="flex flex-wrap items-baseline gap-x-2">
+                      <InlineFact id={id} className="font-medium" />
+                      <span className="text-[0.8125rem] text-ink-3">{factCitation(fact).label}</span>
+                    </span>
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
       </aside>
     </div>
   );

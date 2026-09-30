@@ -46,8 +46,7 @@ describe("relevance", () => {
 describe("scenario", () => {
   it("scales verified baselines only", () => {
     const out = Object.fromEntries(runScenario(SCENARIO_DEFAULTS).map((o) => [o.id, o.value]));
-    expect(out["sc-students"]).toBe(Math.round(3 * 257 * 0.8));
-    expect(out["sc-saf-extra"]).toBe(0);
+    expect(out["sc-mam-students"]).toBe(Math.round(2 * 257 * 0.8));
     expect(out["sc-mentees"]).toBe(14);
   });
 });
