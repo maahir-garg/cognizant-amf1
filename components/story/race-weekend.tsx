@@ -16,7 +16,7 @@ const EXITS = [
   {
     label: "Getting there",
     title: "Your trip to Marina Bay",
-    line: "Pick your home city and compare the MRT, a taxi and driving for the trip to the circuit.",
+    line: "The last few kilometres to the circuit: see how the MRT, a bus or walking compare with a taxi.",
     href: "#getting-there",
     cta: "Plan your trip",
   },
