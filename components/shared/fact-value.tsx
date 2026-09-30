@@ -109,7 +109,16 @@ export function FactValue({
 }
 
 /** Inline, text-sized fact for use inside sentences. Opens the same drawer. */
-export function InlineFact({ id, className }: { id: string; className?: string }) {
+export function InlineFact({
+  id,
+  className,
+  hideUnit = false,
+}: {
+  id: string;
+  className?: string;
+  /** Drop a word unit the sentence already says, e.g. "Round 17" rather than "Round 17 round". */
+  hideUnit?: boolean;
+}) {
   const fact = getFact(id);
   const { openFact } = useProvenance();
   const p = factParts(fact);
@@ -124,7 +133,8 @@ export function InlineFact({ id, className }: { id: string; className?: string }
       </button>
     );
   }
-  const value = `${p.prefix}${p.value}${p.unit && p.unit !== "%" ? ` ${p.unit}` : p.unit}${p.suffix}`;
+  const unit = hideUnit && p.unit !== "%" ? "" : p.unit;
+  const value = `${p.prefix}${p.value}${unit && unit !== "%" ? ` ${unit}` : unit}${p.suffix}`;
   return (
     <button
       type="button"

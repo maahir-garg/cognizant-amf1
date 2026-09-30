@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
-import { ShareClient } from "@/components/fan/share-client";
-import { decodeProfile } from "@/lib/fan/profile-codec";
+import { ShareBuilder } from "@/components/fan/share-builder";
+import { heroRace } from "@/lib/data/load";
+import { isTravelMode } from "@/lib/fan/trip";
 
-export const metadata: Metadata = { title: "Make your card" };
+export const metadata: Metadata = {
+  title: "Make your card",
+  description: "A race-week card for stories: your plan, a sourced team figure and your quick-check badge.",
+};
 
-export default async function SharePage({ searchParams }: { searchParams: Promise<{ p?: string }> }) {
-  const { p } = await searchParams;
-  return <ShareClient paramProfile={decodeProfile(p)} />;
+export default async function SharePage({ searchParams }: { searchParams: Promise<{ mode?: string }> }) {
+  const { mode } = await searchParams;
+  return <ShareBuilder raceId={heroRace.id} initialMode={mode === "none" || isTravelMode(mode) ? (mode ?? null) : null} />;
 }

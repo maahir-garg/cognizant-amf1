@@ -1,113 +1,145 @@
-import { Check } from "lucide-react";
 import { forwardRef } from "react";
-import { StatusMark } from "@/components/shared/status-badge";
-import { getCity, getFact, getSource } from "@/lib/data/load";
-import type { FanProfile } from "@/lib/data/schemas";
-import { factParts } from "@/lib/format";
-import { FAN_LEVEL_COPY } from "@/lib/fan/profile-codec";
+import { APP_NAME } from "@/lib/config";
+import { getFact } from "@/lib/data/load";
+import { QUIZ_BADGE_LABEL } from "@/lib/fan/quiz";
+import { shareFactLabel, shareFactValue, shareSourceLine } from "@/lib/fan/share";
 import { cn } from "@/lib/utils";
 
 export const SHARE_CARD_WIDTH = 1080;
 export const SHARE_CARD_HEIGHT = 1920;
 
 /**
- * The exported card's numbers are pixel-tuned for a fixed 1080x1920 canvas,
- * so they don't use <FactValue>'s responsive (viewport-media-query) sizing —
- * an interactive, click-to-open-source button is also the wrong affordance
- * inside a static export. Every number still comes straight from the fact
- * base via factParts(getFact(id)), and every figure keeps its status mark
- * (see docs/DECISIONS.md).
+ * Canvas layout. The top 250 and bottom 340 px stay clear of everything but
+ * the wordmark (story apps draw their own controls there). Between them a
+ * column holds the title block, the car band and the figures; the band takes
+ * whatever height is left, so a longer title or a third figure shrinks the
+ * picture instead of colliding with it. The source line sits at y 1520.
  */
-function ShareFact({ id }: { id: string }) {
-  const fact = getFact(id);
-  const p = factParts(fact);
-  const inline = p.unit === "%" || p.unit === "×";
+const SAFE_TOP = 250;
+const SOURCE_TOP = 1520;
+const MARGIN = 72;
+
+/** A status badge at card scale: the same shapes as StatusMark, never colour alone. */
+function CardStatus({ status }: { status: "verified" | "estimated" }) {
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap items-baseline gap-x-3">
-        <span className="num text-[124px] leading-[0.95] font-semibold tracking-tight text-ink">
-          {p.prefix}
-          {p.value}
-          {inline ? p.unit : ""}
-          {p.suffix}
-        </span>
-        {!inline && p.unit && <span className="num text-[34px] text-ink-2">{p.unit}</span>}
-      </div>
-      <div className="flex items-center gap-3">
-        <StatusMark status={fact.status} className="size-4" />
-        <span className="text-[30px] leading-snug text-ink-2">{fact.metric}</span>
-      </div>
-    </div>
+    <span
+      className={cn(
+        "inline-flex items-center gap-3 font-sans font-semibold tracking-[0.06em] uppercase",
+        status === "verified" ? "text-verified" : "text-estimated",
+      )}
+      style={{ fontSize: 24, lineHeight: "28px", fontStretch: "100%" }}
+    >
+      <span
+        aria-hidden
+        className={cn(
+          "inline-block shrink-0 rounded-[2px]",
+          status === "verified" ? "bg-verified" : "border-2 border-estimated bg-[linear-gradient(135deg,var(--estimated)_50%,transparent_50%)]",
+        )}
+        style={{ width: 22, height: 22 }}
+      />
+      {status === "verified" ? "Verified" : "Estimated"}
+    </span>
   );
 }
 
 /**
- * Forwards its ref to the card's own root — deliberately, so an export can
- * target this node directly rather than an ancestor that carries the
- * on-screen preview's CSS `transform: scale(...)`. html-to-image reads each
- * node's own `transform`, so exporting the scaled ancestor would render the
- * card shrunk into a corner of the 1080x1920 canvas instead of filling it.
+ * The exported card's numbers are pixel-tuned for a fixed canvas, so they
+ * don't use <FactValue>'s responsive sizing, and a click-to-open button is
+ * the wrong affordance in a static image. Every number still comes straight
+ * from the fact base (shareFactValue) and keeps its status badge.
  */
-export const ShareCard = forwardRef<HTMLDivElement, {
-  profile: FanProfile;
-  factIds: string[];
-  /** Citation-stripped caption text, or null while it's still loading. */
-  caption: string | null;
-  raceLabel: string;
-  className?: string;
-}>(function ShareCard({ profile, factIds, caption, raceLabel, className }, ref) {
-  const city = getCity(profile.cityId);
-  const sourcesUsed = new Map<string, number[]>();
-  for (const id of factIds) {
-    const f = getFact(id);
-    if (f.sourceId && f.page) {
-      const pages = sourcesUsed.get(f.sourceId) ?? [];
-      if (!pages.includes(f.page)) pages.push(f.page);
-      sourcesUsed.set(f.sourceId, pages);
-    }
-  }
-  const sourceLine = [...sourcesUsed.entries()]
-    .map(([sid, pages]) => `${getSource(sid).title}, p.${pages.sort((a, b) => a - b).join(", ")}`)
-    .join(" · ");
+function CardFigure({ id, primary }: { id: string; primary: boolean }) {
+  const fact = getFact(id);
+  return (
+    <div className="flex items-start gap-8">
+      <span className={cn("big-num shrink-0", primary ? "text-lime" : "text-ink")} style={{ fontSize: 150, lineHeight: 0.9, width: 340 }}>
+        {shareFactValue(id)}
+      </span>
+      <span className="flex min-w-0 flex-col gap-3 pt-1">
+        <span className="font-serif text-ink" style={{ fontSize: 40, lineHeight: 1.15 }}>
+          {shareFactLabel(id)}
+        </span>
+        <CardStatus status={fact.status === "estimated" ? "estimated" : "verified"} />
+      </span>
+    </div>
+  );
+}
 
+export type ShareCardProps = {
+  /** "Singapore" */
+  raceShortName: string;
+  factIds: string[];
+  planLine: string | null;
+  badge: boolean;
+  className?: string;
+};
+
+/**
+ * Forwards its ref to the card's own root, so an export targets this node
+ * rather than the preview wrapper that carries a CSS scale transform
+ * (html-to-image would otherwise draw the card shrunk into a corner).
+ */
+export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
+  { raceShortName, factIds, planLine, badge, className },
+  ref,
+) {
   return (
     <div
       ref={ref}
       data-tone="green"
-      className={cn("relative flex flex-col justify-between overflow-hidden bg-racing px-20 py-24 text-ink", className)}
+      className={cn("relative overflow-hidden bg-bg text-ink", className)}
       style={{ width: SHARE_CARD_WIDTH, height: SHARE_CARD_HEIGHT }}
     >
-      <div className="flex flex-col gap-6">
-        <p className="label text-[30px] tracking-[0.12em] text-lime">Impact Lap</p>
-        <h1 className="font-serif font-medium leading-[1.05] tracking-tight text-[104px] leading-[0.9]">
-          Your weekend
-          <br />
-          in impact
-        </h1>
-        <p className="label text-[26px] text-ink-2">{raceLabel}</p>
+      <div className="absolute flex items-center gap-4" style={{ left: MARGIN, top: 76 }}>
+        <span aria-hidden className="inline-block bg-lime" style={{ width: 10, height: 36 }} />
+        <span className="font-serif font-semibold text-ink" style={{ fontSize: 40, lineHeight: "40px" }}>
+          {APP_NAME}
+        </span>
       </div>
 
-      <div className="flex flex-col gap-14">
-        {factIds.map((id) => (
-          <ShareFact key={id} id={id} />
-        ))}
+      <div className="absolute inset-x-0 flex flex-col" style={{ top: SAFE_TOP, height: SOURCE_TOP - SAFE_TOP - 40, gap: 40 }}>
+        <div className="flex flex-col" style={{ paddingInline: MARGIN, gap: 24 }}>
+          <h2 className="font-serif font-medium text-ink" style={{ fontSize: 112, lineHeight: 1, letterSpacing: "-0.01em" }}>
+            {raceShortName} race week, off camera
+          </h2>
+          {planLine && (
+            <p className="font-serif text-ink italic" style={{ fontSize: 44, lineHeight: 1.2 }}>
+              {planLine}
+            </p>
+          )}
+          {badge && (
+            <p
+              className="inline-flex w-fit items-center gap-3 rounded-[4px] border-2 border-lime font-sans font-semibold text-ink"
+              style={{ fontSize: 26, lineHeight: "32px", padding: "6px 18px 6px 14px", fontStretch: "100%" }}
+            >
+              <span className="text-lime">✓</span> {QUIZ_BADGE_LABEL}
+              <span className="font-medium text-ink-2">· quick check done</span>
+            </p>
+          )}
+        </div>
+
+        {/* A plain img: html-to-image inlines it as-is, with no optimiser URL in between. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/brand/amr26-launch-quarter.jpg"
+          alt=""
+          className="min-h-0 w-full flex-1 object-cover"
+          style={{ objectPosition: "50% 55%", maxHeight: 800 }}
+        />
+
+        <div className="flex flex-col" style={{ paddingInline: MARGIN, gap: 28 }}>
+          {factIds.slice(0, 3).map((id, i) => (
+            <CardFigure key={id} id={id} primary={i === 0} />
+          ))}
+        </div>
       </div>
 
-      <div className="flex flex-col gap-8 border-t border-ink/20 pt-10">
-        <div className="flex min-h-[120px] flex-col gap-4">
-          {caption && <p className="max-w-[820px] text-[32px] leading-snug text-ink">{caption}</p>}
-          <span className="label inline-flex items-center gap-2 text-verified">
-            <Check className="size-5" strokeWidth={3} /> Verified
-          </span>
-        </div>
-        {/* ink-3 doesn't meet contrast against the racing-green ground; ink-2 does (see docs/DECISIONS.md). */}
-        <div className="flex items-center justify-between text-[24px] text-ink-2">
-          <span>
-            {FAN_LEVEL_COPY[profile.level].label} · {city?.name ?? profile.cityId}
-          </span>
-          {sourceLine && <span className="text-right">{sourceLine}</span>}
-        </div>
-      </div>
+      <p
+        className="absolute font-sans text-ink-2"
+        style={{ left: MARGIN, right: MARGIN, top: SOURCE_TOP, fontSize: 26, lineHeight: 1.3, fontStretch: "100%" }}
+      >
+        Figures: {shareSourceLine(factIds)} · Image: Aston Martin Aramco
+      </p>
     </div>
   );
 });

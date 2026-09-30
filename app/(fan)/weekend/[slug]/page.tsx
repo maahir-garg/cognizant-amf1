@@ -1,25 +1,29 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CarbonLogistics, ChangeVsEarlier } from "@/components/fan/carbon-logistics";
-import { DataGapCard, OwnTracksideCard } from "@/components/fan/data-gap-card";
-import { MatchedInitiatives } from "@/components/fan/matched-initiatives";
-import { races } from "@/lib/data/load";
-import { decodeProfile } from "@/lib/fan/profile-codec";
-
-function eligibleRaces() {
-  return races.filter((r) => r.hero || r.factIds.length > 0);
-}
+import { CardTeaser } from "@/components/fan/card-teaser";
+import { GettingThere } from "@/components/fan/getting-there";
+import { OtherRaces } from "@/components/fan/other-races";
+import { ProgrammeList } from "@/components/fan/programme-list";
+import { QuickCheck } from "@/components/fan/quick-check";
+import { RaceHeader, type RaceSection } from "@/components/fan/race-header";
+import { RacePublished } from "@/components/fan/race-published";
+import { SeasonContext } from "@/components/fan/season-context";
+import { heroRace, races } from "@/lib/data/load";
+import { isUpcoming, raceTitle } from "@/lib/fan/race";
+import { parseTripParams } from "@/lib/fan/trip";
 
 export function generateStaticParams() {
-  return eligibleRaces().map((r) => ({ slug: r.id }));
+  return races.map((r) => ({ slug: r.id }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const race = races.find((r) => r.id === slug);
-  return { title: race ? race.name : "Race weekend" };
+  return {
+    title: race ? `${raceTitle(race)} ${race.season}` : "Race weekend",
+    description: race ? `What Aston Martin Aramco has published for the ${raceTitle(race)}, with every figure sourced.` : undefined,
+  };
 }
 
 export default async function WeekendPage({
@@ -27,54 +31,60 @@ export default async function WeekendPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ p?: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { slug } = await params;
-  const { p } = await searchParams;
-  const race = eligibleRaces().find((r) => r.id === slug);
+  const race = races.find((r) => r.id === slug);
   if (!race) notFound();
 
-  const paramProfile = decodeProfile(p);
-  const hasOwnTrackside = race.factIds.some((id) => id.startsWith("e25-trackside-"));
-  const raceName = race.name.replace(/\s20\d{2}$/, "");
+  const upcoming = isUpcoming(race);
+  const trip = parseTripParams(await searchParams);
+  const sections: RaceSection[] = [
+    { id: "published", label: "Published for this race" },
+    { id: "take-part", label: upcoming ? "Take part" : "Programmes" },
+    ...(upcoming
+      ? [
+          { id: "getting-there", label: "Getting there" },
+          { id: "quick-check", label: "Quick check" },
+        ]
+      : []),
+    { id: "season", label: "Season context" },
+  ];
 
   return (
-    <div className="overflow-x-clip">
-      <header className="relative flex min-h-[75vh] flex-col justify-end overflow-hidden border-b border-line bg-surface">
-        <Image
-          src="/brand/amr26-render-rear.jpg"
-          alt="Aston Martin Aramco race car seen from behind"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-center opacity-70"
-        />
-        <div className="absolute inset-0 bg-bg/45" aria-hidden />
-        <div className="relative mx-auto flex w-full max-w-[1440px] flex-col items-start gap-6 px-4 py-12 sm:px-6 sm:py-20">
-          <Link href="/" className="label text-ink underline underline-offset-4 hover:text-link">
-            ← Back to the car story
-          </Link>
-          <p className="label text-link">At the circuit</p>
-          <h1 className="font-serif font-medium leading-[1.05] tracking-tight max-w-5xl text-[clamp(3.3rem,9vw,8rem)]">{raceName}</h1>
-          {race.circuit && <p className="text-lg text-ink">{race.circuit}</p>}
-          <p className="max-w-2xl text-ink-2">
-            See what the team publishes about moving to a race, what can only be estimated, and where local evidence is missing.
-          </p>
-        </div>
-      </header>
+    <div className="flex flex-col">
+      <RaceHeader race={race} upcoming={upcoming} sections={sections} />
+      <RacePublished race={race} />
+      <ProgrammeList race={race} upcoming={upcoming} />
 
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-16 px-4 py-16 sm:px-6 sm:py-24">
-        <CarbonLogistics />
-        <ChangeVsEarlier />
-
-        {hasOwnTrackside ? <OwnTracksideCard raceId={race.id} raceName={raceName} /> : <DataGapCard raceName={raceName} />}
-
-        <section className="flex flex-col gap-6 border-t border-line pt-10">
-          <p className="label">Beyond the circuit</p>
-          <h2 className="font-serif font-medium leading-[1.05] tracking-tight text-[clamp(2.5rem,6vw,5rem)]">The people around the race</h2>
-          <MatchedInitiatives paramProfile={paramProfile} />
+      {upcoming ? (
+        <>
+          <GettingThere race={race} initial={trip} />
+          <section aria-label="Quick check" id="quick-check" className="scroll-mt-14">
+            <div className="wrap grid gap-10 py-[clamp(64px,10vw,128px)] lg:grid-cols-12 lg:gap-6">
+              <p className="kicker kicker-rule lg:col-span-3">Quick check</p>
+              <div className="lg:col-span-8 lg:col-start-5 xl:col-span-7 xl:col-start-5">
+                <QuickCheck />
+              </div>
+            </div>
+          </section>
+          <CardTeaser race={race} modeId={trip.modeId} />
+        </>
+      ) : (
+        <section aria-label="Next race" className="border-t border-line">
+          <div className="wrap flex flex-col items-start gap-3 py-12">
+            <p className="kicker">Next race weekend</p>
+            <Link href={`/weekend/${heroRace.id}`} className="link font-serif text-2xl">
+              {raceTitle(heroRace)} {heroRace.season} →
+            </Link>
+          </div>
         </section>
+      )}
+
+      <div className="pt-[clamp(48px,6vw,80px)]">
+        <SeasonContext />
       </div>
+      <OtherRaces current={race} />
     </div>
   );
 }

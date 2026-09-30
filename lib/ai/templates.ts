@@ -155,18 +155,23 @@ function shareCaptionTemplate(req: AiRequest, facts: Fact[]): string {
   const peopleFirst = interests.some((i) => i === "community" || i === "stem" || i === "inclusion");
 
   const saf = byId.get("e25-saf-airfreight-cut");
+  const stemRacing = byId.get("c25-stem-racing-students");
   const students = byId.get("c25-mam-day-students");
-  const freight = byId.get("est-freight-per-round");
 
+  // Captions never name the product: the card already carries the wordmark.
   const candidates: string[] = [];
-  const push = (f: Fact | undefined, text: (v: string) => string) => f && candidates.push(text(`${proseValue(f)} [F:${f.id}]`));
-  if (peopleFirst) push(students, (v) => `I did my Impact Lap: ${v} came to Make A Mark Day. I'm in.`);
-  push(saf, (v) => `I did my Impact Lap: cleaner fuel cut the team's air-freight emissions by ${v}.`);
-  push(freight, (v) => `I did my Impact Lap: one race weekend of freight is roughly ${v}.`);
-  push(students, (v) => `I did my Impact Lap: ${v} came to Make A Mark Day.`);
-  for (const f of facts) push(f, (v) => `I did my Impact Lap. My number: ${v}.`);
+  const push = (f: Fact | undefined, text: (v: string) => string, abs = false) =>
+    f && candidates.push(text(`${proseValue(f, abs)} [F:${f.id}]`));
+  if (peopleFirst) push(stemRacing, (v) => `I didn't know the team met ${v} at the STEM Racing World Finals.`);
+  if (peopleFirst) push(students, (v) => `I didn't know ${v} came to the factory for Make A Mark Day.`);
+  push(saf, (v) => `I learned cleaner fuel cut the team's air-freight emissions by ${v}.`);
+  push(stemRacing, (v) => `I learned the team met ${v} at the STEM Racing World Finals.`);
+  push(byId.get("e25-supply-chain-share"), (v) => `I learned ${v} of the team's footprint is its supply chain, not the track.`);
+  push(byId.get("e25-progress-scope12"), (v) => `I learned the team's direct emissions are down ${v} on its baseline year.`, true);
+  push(students, (v) => `I learned ${v} came to Make A Mark Day.`);
+  for (const f of facts) push(f, (v) => `I checked the team's own report. My pick: ${v}.`);
 
-  return candidates.find((c) => c.length <= 110) ?? `I did my Impact Lap [F:${facts[0].id}].`;
+  return candidates.find((c) => c.length <= 110) ?? `I checked the team's own report [F:${facts[0].id}].`;
 }
 
 /* --------------------------------------------------------- linkedin-post */
