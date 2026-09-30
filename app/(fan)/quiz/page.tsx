@@ -16,8 +16,8 @@ export default async function QuizPage({ searchParams }: { searchParams: Promise
   return (
     <div className="wrap grid gap-10 py-10 sm:py-14 lg:grid-cols-12 lg:gap-6 lg:py-20">
       <div className="flex flex-col gap-4 lg:col-span-3">
-        <Link href="/" className="kicker w-fit text-ink-3 underline decoration-1 underline-offset-[3px] hover:text-ink">
-          ← The story
+        <Link href={`/weekend/${heroRace.id}`} className="kicker w-fit text-ink-3 underline decoration-1 underline-offset-[3px] hover:text-ink">
+          ← {raceShortName(heroRace)} race page
         </Link>
         <p className="kicker kicker-rule mt-4">{raceShortName(heroRace)} race week</p>
       </div>

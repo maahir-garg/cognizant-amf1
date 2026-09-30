@@ -111,7 +111,7 @@ test.describe("fan golden path", () => {
     for (let i = 0; i < total; i++) {
       const q = questions.nth(i);
       await q.locator("label").first().click();
-      await expect(q.getByText(/That matches the report|Not quite/)).toBeVisible();
+      await expect(q.getByText(/Correct, and the report agrees\.|Not quite/)).toBeVisible();
       const figure = q.getByRole("button", { name: /Show source\.$/ });
       await expect(figure).toBeVisible();
       await expect(figure).toContainText(/Verified|Estimated/);
