@@ -1608,7 +1608,7 @@
     "flags": [
       {
         "kind": "inconsistent-equivalence",
-        "note": "Implies about 0.97 kg CO2e per lap. The 2025 report's equivalences imply about 13.4 kg per lap, roughly 14 times more. At least one of the two lap conversions is wrong, so Impact Lap only uses the 2025 figure.",
+        "note": "Implies about 0.97 kg CO2e per lap. The 2025 report's equivalences imply about 13.4 kg per lap, roughly 14 times more. At least one of the two lap conversions is wrong, so only the 2025 figure is used.",
         "relatedFactIds": [
           "est-kg-per-lap-2024",
           "est-kg-per-lap-2025"
