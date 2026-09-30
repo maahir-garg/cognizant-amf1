@@ -4,6 +4,7 @@ import { CHAPTER_IDS, DEMO_PERSONAS, FAN_CHAPTER_FACTS, STORY_DEFAULT_FAN, fanCh
 import { renderTemplate } from "@/lib/ai/templates";
 import { findFact, getFact } from "@/lib/data/load";
 import { CHAPTERS, allCopyStrings, chapterFactIds, parseCopy } from "@/lib/story/chapters";
+import { DEFAULT_FAN } from "@/lib/fan/quiz";
 import { formatDateRange } from "@/lib/story/dates";
 import { footprintSegments, graphicFactIds, progressRows, targetBars, tracksideStoryRows } from "@/lib/story/graphics";
 
@@ -136,6 +137,10 @@ describe("fanChapterRequest", () => {
       expect(fresh.factIds.length).toBeLessThan(deep.factIds.length);
       expect(deep.factIds).toEqual(FAN_CHAPTER_FACTS[id]);
     }
+  });
+
+  it("uses the same default fan as the race page and quick check", () => {
+    expect(STORY_DEFAULT_FAN).toEqual(DEFAULT_FAN);
   });
 
   it("keeps the pay gap, workforce share and per-round estimates out of AI personalisation", () => {

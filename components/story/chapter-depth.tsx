@@ -12,14 +12,17 @@ import { useAiText } from "@/lib/ai/client";
 import { STORY_DEFAULT_FAN, fanChapterRequest, type ChapterId } from "@/lib/ai/requests";
 import type { AiResponse, FanProfile } from "@/lib/data/schemas";
 import { useFanProfile } from "@/lib/fan/profile";
+import { useDepth } from "@/lib/fan/storage";
 import { cn } from "@/lib/utils";
 
 export type StoryLevel = "new" | "die-hard";
 
+/** The shared fan depth (lib/fan/storage.ts), in the level terms AI requests use. */
 export function useStoryLevel(): { level: StoryLevel; profile: FanProfile | null; setLevel: (l: StoryLevel) => void } {
-  const { profile, setProfile } = useFanProfile();
-  const level: StoryLevel = profile?.level === "die-hard" ? "die-hard" : "new";
-  return { level, profile, setLevel: (l) => setProfile({ ...(profile ?? STORY_DEFAULT_FAN), level: l }) };
+  const { profile } = useFanProfile();
+  const [depth, setDepth] = useDepth();
+  const level: StoryLevel = depth === "watched" ? "die-hard" : "new";
+  return { level, profile, setLevel: (l) => setDepth(l === "die-hard" ? "watched" : "new") };
 }
 
 const OPTIONS: { value: StoryLevel; label: string }[] = [

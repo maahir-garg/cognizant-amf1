@@ -291,8 +291,8 @@ export const CHAPTERS: Chapter[] = [
       },
       {
         heading: "Fans' travel",
-        text: "The report counts the first seven categories of scope three emissions, which cover the team's own supply chain, freight, business travel and commuting. Spectators' journeys are not among them.",
-        cite: { sourceId: "esg-2025", page: 85 },
+        text: "The report counts the categories of scope three emissions that cover the team's own supply chain, freight, business travel and commuting. Spectators' journeys are not among them.",
+        facts: ["g25-scope3-boundary"],
       },
       {
         heading: "Method",

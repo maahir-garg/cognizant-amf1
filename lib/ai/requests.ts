@@ -57,8 +57,8 @@ export const FAN_CHAPTER_FACTS: Record<ChapterId, string[]> = {
   finish: ["e25-progress-scope12", "e25-progress-scope3", "e25-target-scope3", "e25-target-netzero-year"],
 };
 
-/** The profile the story uses before a fan has chosen anything. */
-export const STORY_DEFAULT_FAN: FanProfile = { level: "new", cityId: "singapore", interests: ["environment"] };
+/** The profile the story uses before a fan has chosen anything (matches lib/fan/quiz.ts DEFAULT_FAN). */
+export const STORY_DEFAULT_FAN: FanProfile = { level: "new", cityId: "singapore", interests: ["environment", "stem"] };
 
 /**
  * One chapter's generated paragraph. The story has two depths, so any level
