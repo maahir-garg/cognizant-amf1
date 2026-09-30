@@ -149,9 +149,11 @@ export function partnerNarrativeFactIds(partnerId: string, pillars: Pillar[], li
 
 /**
  * Facts for a race-week post: the partner's role, then the programmes the
- * reports tie to the race's city, the partner's own programmes first, each
- * in the initiative's order so follow-on phrases stay next to their lead.
- * Calendar facts and even-split per-round estimates never qualify.
+ * reports tie to the race's city. Programmes held only in that city (the
+ * STEM Racing World Finals) come first, then those that include it; within
+ * a programme the partner's own facts lead, and follow-on phrases stay next
+ * to their lead. Calendar facts and even-split per-round estimates never
+ * qualify.
  */
 export function raceWeekFactIds(partnerId: string, raceId: string): string[] {
   const race = getRace(raceId);
@@ -159,8 +161,14 @@ export function raceWeekFactIds(partnerId: string, raceId: string): string[] {
   const role = facts.filter((f) => f.tags.includes(tag) && f.topic === "partners" && partnerUsable(f)).map((f) => f.id);
   const local = initiatives
     .filter((i) => i.status === "verified" && (i.cityIds.includes(race.cityId) || i.raceIds.includes(race.id)))
-    .sort((a, b) => Number(b.partners.includes("Cognizant")) - Number(a.partners.includes("Cognizant")));
-  const ids = local.flatMap((i) => i.factIds).filter((id) => partnerUsable(getFact(id)) && !id.startsWith("f1-"));
+    .sort((a, b) => a.cityIds.length - b.cityIds.length);
+  const leans = (id: string) => /^(They|Those|These|It|That)\b/.test(getFact(id).phrase ?? "");
+  const ids = local.flatMap((i) => {
+    const usable = i.factIds.filter((id) => partnerUsable(getFact(id)) && !id.startsWith("f1-"));
+    const partnerFirst = [...usable].sort((a, b) => Number(getFact(b).tags.includes(tag)) - Number(getFact(a).tags.includes(tag)));
+    // Keep a leaning phrase ("Those students came from ...") straight after the fact it follows.
+    return usable.some(leans) ? usable : partnerFirst;
+  });
   return [...new Set([...role, ...ids])];
 }
 

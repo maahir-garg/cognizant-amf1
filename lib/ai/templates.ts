@@ -230,7 +230,8 @@ function linkedinPostTemplate(req: AiRequest, facts: Fact[]): string {
 
   for (const f of flowing(facts)) {
     parts.push(factSentence(f));
-    if (words([...parts, closing].join(" ")) >= 90) break;
+    // A race-week post has two programmes to cover, so it may run a little longer.
+    if (words([...parts, closing].join(" ")) >= (race ? 115 : 90)) break;
   }
 
   return `${[...parts, closing].join(" ")}\n\n#MakeAMark #Cognizant #Motorsport`;
