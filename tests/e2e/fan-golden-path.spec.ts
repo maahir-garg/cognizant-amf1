@@ -108,7 +108,8 @@ test.describe("fan golden path", () => {
     for (let i = 0; i < total; i++) {
       const q = questions.nth(i);
       await q.locator("label").first().click();
-      await expect(q.getByText(/That matches the report|Not quite/)).toBeVisible();
+      // The verdict line, not the generated paragraph, which may also start "Not quite".
+      await expect(q.getByText(/^(✓ That matches the report\.|Not quite\. Here's what the report says\.)$/)).toBeVisible();
       const figure = q.getByRole("button", { name: /Show source\.$/ });
       await expect(figure).toBeVisible();
       await expect(figure).toContainText(/Verified|Estimated/);
