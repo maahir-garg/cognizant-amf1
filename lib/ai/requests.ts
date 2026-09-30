@@ -37,6 +37,46 @@ export function fanStoryRequest(fan: FanProfile, pillar: Pillar): Built {
   };
 }
 
+/** The story's chapters at "/", in reading order (lib/story/chapters.ts holds the copy). */
+export const CHAPTER_IDS = ["campus", "supply-chain", "moving", "circuit", "beyond", "finish"] as const;
+export type ChapterId = (typeof CHAPTER_IDS)[number];
+
+/**
+ * Facts each chapter's "In plain words" / "The detail" paragraph may use, in
+ * the order the template tells them. New fans get the first two. Deliberately
+ * excluded: the pay gap and workforce share (never in AI personalisation),
+ * per-round estimates, the derived renewable share, and the laps comparisons
+ * (the story words those itself as the team's own comparison).
+ */
+export const FAN_CHAPTER_FACTS: Record<ChapterId, string[]> = {
+  campus: ["e24-solar-panels", "e25-cups-removed", "e25-circularity", "e25-biodiversity-net-gain"],
+  "supply-chain": ["e25-supply-chain-share", "e25-supply-chain", "e25-freight-logistics", "e25-hq-energy"],
+  moving: ["e25-saf-avoided", "e25-saf-airfreight-cut", "e24-sea-freight-shift", "e25-travel-logistics-cut"],
+  circuit: ["e25-event-energy-cut", "e25-trackside-gbr-hvo", "e25-trackside-gbr-grid", "e25-trackside-gbr-solar"],
+  beyond: ["c25-stem-racing-students", "e25-ethiopia-children", "c25-maaden-target", "b25-accelerate-pairs"],
+  finish: ["e25-progress-scope12", "e25-progress-scope3", "e25-target-scope3", "e25-target-netzero-year"],
+};
+
+/** The profile the story uses before a fan has chosen anything. */
+export const STORY_DEFAULT_FAN: FanProfile = { level: "new", cityId: "singapore", interests: ["environment"] };
+
+/**
+ * One chapter's generated paragraph. The story has two depths, so any level
+ * other than "die-hard" reads as "new".
+ */
+export function fanChapterRequest(fan: FanProfile | null, chapterId: ChapterId): Built {
+  const base = fan ?? STORY_DEFAULT_FAN;
+  const level = base.level === "die-hard" ? "die-hard" : "new";
+  const ids = FAN_CHAPTER_FACTS[chapterId];
+  return {
+    task: "fan-story",
+    factIds: level === "new" ? ids.slice(0, 2) : [...ids],
+    derived: [],
+    fan: { ...base, level },
+    params: { chapter: chapterId },
+  };
+}
+
 /** One-line personalised reveal after a quiz answer. */
 export function quizRevealRequest(fan: FanProfile, quizId: string, correct: boolean): Built {
   const quiz = quizzes.find((q) => q.id === quizId);
