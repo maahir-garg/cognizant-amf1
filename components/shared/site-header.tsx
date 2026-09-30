@@ -1,19 +1,19 @@
 import Link from "next/link";
 import { APP_NAME } from "@/lib/config";
-import { MobileMenu, NavLinks } from "./nav-links";
+import { HeaderFrame, MobileMenu, NavLinks } from "./nav-links";
 
 /** Solid 56px paper bar. No blur or transparency: the story's sticky stage sits directly beneath it. */
 export function SiteHeader({ demo }: { demo: boolean }) {
   return (
     <header data-tone="paper" className="sticky top-0 z-40 h-14 border-b border-line">
-      <div className="wrap flex h-full items-center gap-6">
+      <HeaderFrame>
         <Wordmark />
         <NavLinks className="hidden md:flex" />
         <div className="ml-auto flex items-center gap-3">
           {demo && <DemoPill />}
           <MobileMenu demo={demo} className="md:hidden" />
         </div>
-      </div>
+      </HeaderFrame>
     </header>
   );
 }

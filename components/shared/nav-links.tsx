@@ -15,6 +15,13 @@ export const NAV_LINKS = [
   { href: "/sources", label: "Sources", match: (p: string) => p.startsWith("/sources") },
 ] as const;
 
+/** The header's frame matches the page below it: the partner desk runs wider (1680) than fan pages (1440). */
+export function HeaderFrame({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const desk = pathname.startsWith("/partners");
+  return <div className={cn(desk ? "wrap-desk" : "wrap", "flex h-full items-center gap-6")}>{children}</div>;
+}
+
 export function NavLinks({ className }: { className?: string }) {
   const pathname = usePathname();
   return (
