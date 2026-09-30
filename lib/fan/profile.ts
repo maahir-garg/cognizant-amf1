@@ -1,19 +1,13 @@
 "use client";
 
 /**
- * Fan profile: the small state the whole fan experience is personalised
- * from (level, home city, interests). Persisted to localStorage so a fan's
- * weekend view and share card stay consistent across visits.
+ * Fan profile: the small state the fan pages share (reading depth, plus the
+ * default city and interests). Persisted to localStorage so the story, the
+ * quick check and the share card agree across visits.
  */
-import { useCallback, useEffect, useSyncExternalStore } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 import { FanProfile } from "@/lib/data/schemas";
-
-export { ALL_INTERESTS, FAN_LEVEL_COPY, INTEREST_COPY, decodeProfile, encodeProfile } from "./profile-codec";
-
-const PROFILE_KEY = "impact-lap:profile";
-
-/** Fires in the same tab when we write localStorage ('storage' only fires cross-tab). */
-const LOCAL_EVENT = "impact-lap:local-storage";
+import { LOCAL_EVENT, PROFILE_KEY, readStored } from "./local-keys";
 
 function writeJson(key: string, value: unknown) {
   if (typeof window === "undefined") return;
@@ -41,12 +35,8 @@ let cachedProfile: FanProfile | null = null;
 
 function getProfileSnapshot(): FanProfile | null {
   if (typeof window === "undefined") return null;
-  let raw: string | null = null;
-  try {
-    raw = window.localStorage.getItem(PROFILE_KEY);
-  } catch {
-    // Blocked storage reads as "no profile yet".
-  }
+  // Blocked storage reads as "no profile yet".
+  const raw = readStored(PROFILE_KEY);
   if (raw === cachedProfileRaw) return cachedProfile;
   cachedProfileRaw = raw;
   try {
@@ -81,21 +71,4 @@ export function useFanProfile() {
   }, []);
 
   return { profile, setProfile, clearProfile };
-}
-
-/**
- * Resolves the profile a page should use: a `?p=` param (already decoded by
- * the caller) wins and is saved as the fan's new profile; otherwise falls
- * back to whatever is in storage. Lets a demo link fully set up a persona.
- */
-export function useResolvedProfile(paramProfile: FanProfile | null): FanProfile | null {
-  const { profile, setProfile } = useFanProfile();
-
-  useEffect(() => {
-    if (paramProfile) setProfile(paramProfile);
-    // Only re-run if the encoded param itself changes.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paramProfile ? JSON.stringify(paramProfile) : null]);
-
-  return paramProfile ?? profile;
 }
