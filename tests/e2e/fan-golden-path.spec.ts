@@ -65,31 +65,34 @@ test.describe("fan golden path", () => {
   });
 
   test("getting there: GET params render an Estimated ratio, never laps", async ({ page }) => {
-    await page.goto(`${HERO_RACE}?city=singapore&km=12&mode=mrt#getting-there`);
+    await page.goto(`${HERO_RACE}?km=12&mode=mrt#getting-there`);
     const section = page.locator("#getting-there");
     await expect(section.getByRole("group", { name: "How you'll get there" }).getByRole("radio", { name: /MRT/ })).toBeChecked();
     await expect(page.locator("#trip-km")).toHaveValue("12");
 
     const result = section.locator('[aria-live="polite"]');
     await expect(result.getByText("Estimated", { exact: true })).toBeVisible();
-    await expect(result).toContainText(/(times lower|% lower) than a taxi/i);
+    await expect(result).toContainText(/(of|than) a taxi's emissions/i);
     await expect(result).toContainText(/driving alone/i);
+    // The result follows every change, so the no-JavaScript Compare button stays hidden.
+    await expect(section.getByRole("button", { name: "Compare" })).toHaveCount(0);
     await expect(section).not.toContainText(/\blaps?\b/i);
 
     // Switching mode updates the comparison in place.
     await section.locator("label", { hasText: "Taxi or ride-hail" }).click();
     await expect(section.getByRole("radio", { name: /Taxi/ })).toBeChecked();
-    await expect(result).toContainText(/than driving alone/i);
+    await expect(result).toContainText(/driving alone/i);
     await expect(section).not.toContainText(/\blaps?\b/i);
   });
 
   test("getting there works without JavaScript", async ({ browser }) => {
     const context = await browser.newContext({ javaScriptEnabled: false });
     const page = await context.newPage();
-    await page.goto(`${HERO_RACE}?city=singapore&km=20&mode=bus#getting-there`);
+    await page.goto(`${HERO_RACE}?km=20&mode=bus#getting-there`);
     const section = page.locator("#getting-there");
     await expect(section.getByText("Estimated", { exact: true }).first()).toBeVisible();
-    await expect(section).toContainText(/lower than a taxi/i);
+    await expect(section).toContainText(/less than a taxi's emissions/i);
+    await expect(section.getByRole("button", { name: "Compare" })).toBeVisible();
     await expect(section).not.toContainText(/\blaps?\b/i);
     await context.close();
   });
@@ -108,7 +111,7 @@ test.describe("fan golden path", () => {
     for (let i = 0; i < total; i++) {
       const q = questions.nth(i);
       await q.locator("label").first().click();
-      await expect(q.getByText(/That matches the report|Not quite/)).toBeVisible();
+      await expect(q.getByText(/Correct, and the report agrees\.|Not quite/)).toBeVisible();
       const figure = q.getByRole("button", { name: /Show source\.$/ });
       await expect(figure).toBeVisible();
       await expect(figure).toContainText(/Verified|Estimated/);

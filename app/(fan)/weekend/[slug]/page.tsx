@@ -5,11 +5,12 @@ import { CardTeaser } from "@/components/fan/card-teaser";
 import { GettingThere } from "@/components/fan/getting-there";
 import { OtherRaces } from "@/components/fan/other-races";
 import { ProgrammeList } from "@/components/fan/programme-list";
-import { QuickCheck } from "@/components/fan/quick-check";
 import { RaceHeader, type RaceSection } from "@/components/fan/race-header";
 import { RacePublished } from "@/components/fan/race-published";
 import { SeasonContext } from "@/components/fan/season-context";
+import { Button } from "@/components/ui/button";
 import { heroRace, races } from "@/lib/data/load";
+import { DEPTH_COPY, QUIZ_BADGE_LABEL } from "@/lib/fan/quiz";
 import { isUpcoming, raceTitle } from "@/lib/fan/race";
 import { parseTripParams } from "@/lib/fan/trip";
 
@@ -60,11 +61,18 @@ export default async function WeekendPage({
       {upcoming ? (
         <>
           <GettingThere race={race} initial={trip} />
-          <section aria-label="Quick check" id="quick-check" className="scroll-mt-14">
-            <div className="wrap grid gap-10 py-[clamp(64px,10vw,128px)] lg:grid-cols-12 lg:gap-6">
+          {/* One canonical quick check lives at /quiz; the race page points to it rather than embedding a second copy. */}
+          <section aria-labelledby="quick-check-title" id="quick-check" className="scroll-mt-14">
+            <div className="wrap grid gap-6 py-[clamp(64px,10vw,128px)] lg:grid-cols-12 lg:gap-6">
               <p className="kicker kicker-rule lg:col-span-3">Quick check</p>
-              <div className="lg:col-span-8 lg:col-start-5 xl:col-span-7 xl:col-start-5">
-                <QuickCheck />
+              <div className="flex flex-col items-start gap-5 lg:col-span-8 lg:col-start-5 xl:col-span-7 xl:col-start-5">
+                <h2 id="quick-check-title" className="h2-chapter">
+                  Test yourself: {DEPTH_COPY.new.count} questions
+                </h2>
+                <p className="dek">Pick what sounds right, then see the exact figure and its page. Finish for the {QUIZ_BADGE_LABEL} badge on your card.</p>
+                <Button asChild variant="outline" size="lg">
+                  <Link href="/quiz">Start the quick check →</Link>
+                </Button>
               </div>
             </div>
           </section>

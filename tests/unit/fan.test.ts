@@ -45,21 +45,21 @@ describe("quick check", () => {
 });
 
 describe("trip planner", () => {
-  it("compares the MRT with a taxi as a ratio", () => {
-    const r = tripResult({ cityId: "singapore", modeId: "mrt", km: 10 }, singapore);
-    expect(r.lead).toBe("About 5 times lower than a taxi");
-    expect(r.secondary).toBe("About 6 times lower than driving alone");
+  it("compares the MRT with a taxi as a share of its emissions", () => {
+    const r = tripResult({ modeId: "mrt", km: 10 }, singapore);
+    expect(r.lead).toBe("About a fifth of a taxi's emissions");
+    expect(r.secondary).toBe("About a sixth of the emissions of driving alone");
     expect(r.kg).toBeCloseTo(0.572, 3);
   });
   it("words small differences as percentages, in both directions", () => {
-    expect(comparePhrase(1.125)).toBe("about 11% lower than");
-    expect(comparePhrase(1 / 1.125)).toBe("about 13% higher than");
-    expect(comparePhrase(1.43)).toBe("about 30% lower than");
-    expect(comparePhrase(Infinity)).toBe("no tailpipe emissions, unlike");
+    expect(comparePhrase(1.125, "car")).toBe("about 11% less than the emissions of driving alone");
+    expect(comparePhrase(1 / 1.125, "taxi")).toBe("about 13% more than a taxi's emissions");
+    expect(comparePhrase(1.43, "taxi")).toBe("about 30% less than a taxi's emissions");
+    expect(comparePhrase(Infinity, "taxi")).toBe("no tailpipe emissions, unlike a taxi");
   });
-  it("falls back to defaults for bad GET params", () => {
-    expect(parseTripParams({ city: "atlantis", mode: "rocket", km: "-4" })).toEqual({ cityId: "singapore", modeId: "mrt", km: 10 });
-    expect(parseTripParams({ city: "jakarta", mode: "bus", km: "500" })).toEqual({ cityId: "jakarta", modeId: "bus", km: 60 });
+  it("falls back to defaults for bad GET params and ignores the old city param", () => {
+    expect(parseTripParams({ city: "atlantis", mode: "rocket", km: "-4" })).toEqual({ modeId: "mrt", km: 5 });
+    expect(parseTripParams({ city: "jakarta", mode: "bus", km: "500" })).toEqual({ modeId: "bus", km: 40 });
   });
   it("writes the plan line for one fan or a group", () => {
     expect(planLine("mrt", singapore)).toBe("My plan: the MRT to Marina Bay");

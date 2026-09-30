@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import { APP_NAME } from "@/lib/config";
+import { APP_NAME, SITE_URL } from "@/lib/config";
 import { getFact } from "@/lib/data/load";
 import { QUIZ_BADGE_LABEL } from "@/lib/fan/quiz";
 import { shareFactLabel, shareFactValue, shareSourceLine } from "@/lib/fan/share";
@@ -140,6 +140,21 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function Sha
       >
         Figures: {shareSourceLine(factIds)} · Image: Aston Martin Aramco
       </p>
+
+      {/*
+        The link back sits in the top of the bottom well. Story apps may draw their reply bar over
+        the lowest part; nothing here is essential (the source line above names every page, and the
+        copied caption carries the same address).
+      */}
+      <div className="absolute flex flex-col" style={{ left: MARGIN, right: MARGIN, top: 1612, gap: 14 }}>
+        <span aria-hidden className="block bg-lime" style={{ width: 64, height: 3 }} />
+        <span className="font-sans text-ink-2" style={{ fontSize: 26, lineHeight: 1.2, fontStretch: "100%" }}>
+          See the page behind every figure at
+        </span>
+        <span className="font-sans font-semibold text-ink" style={{ fontSize: 48, lineHeight: 1.1, fontStretch: "100%" }}>
+          {SITE_URL}
+        </span>
+      </div>
     </div>
   );
 });

@@ -76,6 +76,39 @@ export function raceProgrammes(race: Race): Programme[] {
   return out;
 }
 
+/**
+ * Routes into F1 engineering through programmes the team reports, youngest
+ * first. "how" paraphrases the programme's own summary and report page;
+ * it never promises dates, places or eligibility the report doesn't give.
+ */
+export const WAYS_IN: { initiativeId: string; who: string; how: string }[] = [
+  {
+    initiativeId: "stem-racing-world-finals",
+    who: "At school",
+    how: "STEM Racing is the schools engineering competition the team supports. Ask your school whether it takes part.",
+  },
+  {
+    initiativeId: "unearth-your-greatness",
+    who: "Anyone, online",
+    how: "The team's programme with Maaden runs on a free online learning platform, STEM Racing Learn, open to students around the world.",
+  },
+  {
+    initiativeId: "aspiring-mechanics",
+    who: "Want to be a mechanic",
+    how: "Hands-on motorsport training with Valvoline for young people from under-represented backgrounds who want to work on the cars.",
+  },
+  {
+    initiativeId: "aleto-leadership",
+    who: "At university",
+    how: "A nine-month mentoring programme with the Aleto Foundation, pairing students from under-represented backgrounds with team members.",
+  },
+  {
+    initiativeId: "genai-ideathon",
+    who: "At university, into tech",
+    how: "Cognizant's Gen-AI Ideathon with the team sets university students real team problems to solve.",
+  },
+];
+
 export function raceCityName(race: Race): string {
   return getCity(race.cityId)?.name ?? race.country;
 }

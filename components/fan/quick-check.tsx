@@ -42,7 +42,7 @@ function Reveal({ quiz, correct, fan }: { quiz: Quiz; correct: boolean; fan: Fan
   const { data } = useAiText(quizRevealRequest(fan, quiz.id, correct));
   return (
     <div className="flex flex-col gap-5 border-l-2 border-ink pl-5">
-      <p className="font-sans text-base font-semibold text-ink">{correct ? "✓ That matches the report." : "Not quite. Here's what the report says."}</p>
+      <p className="font-sans text-base font-semibold text-ink">{correct ? "✓ Correct, and the report agrees." : "Not quite. Here's what the report says."}</p>
       <FactValue id={quiz.factId} size="lg" showMetric />
       {data ? <AiText response={data} className="max-w-[60ch] text-lg" /> : <p className="font-serif text-lg text-ink-3">Checking the figure…</p>}
       <p className="max-w-[60ch] font-serif text-[1.0625rem] leading-[1.45] text-ink-2">{quiz.explainer}</p>
@@ -97,7 +97,7 @@ function Question({
                     {answered && isAnswer && <span aria-hidden>✓ </span>}
                     {option}
                   </span>
-                  {answered && isAnswer && <span className="kicker text-ink-2">The report&apos;s answer{isPicked ? " · yours too" : ""}</span>}
+                  {answered && isAnswer && <span className="kicker text-ink-2">{isPicked ? "Correct, and the report agrees" : "The report's answer"}</span>}
                   {answered && isPicked && !isAnswer && <span className="kicker text-ink-3">Your answer</span>}
                 </span>
               </label>
@@ -146,7 +146,7 @@ export function QuickCheck({ depthOverride, headingLevel = "h2" }: { depthOverri
     <div className="flex flex-col gap-10">
       <div className="flex flex-col gap-6">
         <Heading className={headingLevel === "h1" ? "h1-feature" : "h2-chapter"}>Quick check before the lights go out</Heading>
-        <p className="dek">Pick what sounds right. Each answer opens the exact figure and the page it comes from.</p>
+        <p className="dek">Test yourself: {questions.length} questions. Each answer opens the exact figure and the page it comes from.</p>
         <DepthToggle
           depth={depth}
           onChange={(d) => {
@@ -192,8 +192,10 @@ export function QuickCheck({ depthOverride, headingLevel = "h2" }: { depthOverri
           </div>
         ) : (
           <p className="font-sans text-[0.9375rem] text-ink-3">
-            {answeredCount} of {questions.length} answered
-            {badge ? ` · you already hold the ${QUIZ_BADGE_LABEL} badge` : ""}
+            {answeredCount === 0
+              ? `Answer all ${questions.length} to earn the ${QUIZ_BADGE_LABEL} badge for your card.`
+              : `${answeredCount} of ${questions.length} answered. ${questions.length - answeredCount} to go for the ${QUIZ_BADGE_LABEL} badge.`}
+            {badge ? ` You already hold it from an earlier check.` : ""}
           </p>
         )}
       </div>
