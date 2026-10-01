@@ -36,7 +36,8 @@ export function RacePublished({ race }: { race: Race }) {
           id="published-title"
           className="lg:col-span-5"
           kicker="What the team has published"
-          title={`Energy at the ${name} Grand Prix`}
+          // Where the round has no published split, don't promise a race-specific figure in the title.
+          title={own ? `Energy at the ${name} Grand Prix` : "Energy at the circuit"}
           dek={own ? "The team reports the electricity its garage used at this round, by source." : "What the team reports about power in the paddock, and what it doesn't."}
         />
 
@@ -71,12 +72,14 @@ export function RacePublished({ race }: { race: Race }) {
                   ? " Singapore is a night race, and the paddock energy cut the team reports applies to European races only."
                   : " It reports trackside energy for European rounds only."}
               </DataGap>
-              <div className="flex flex-col gap-4">
+              {/* The European figure is context, so it sits below the gap at a secondary size. */}
+              <div className="flex flex-col gap-3 border-t border-line pt-4">
+                <p className="kicker text-ink-3">For comparison: European races</p>
                 <p className="prose-body">
                   At European races, the paddock runs on shared low-carbon power: solar, HVO biofuel, renewable grid supply and batteries.
                   {singapore && " It is not a Singapore figure."}
                 </p>
-                <FactValue id="e25-event-energy-cut" size="lg" caption="cut in event-energy emissions in paddock areas at European races, against previous set-ups" />
+                <FactValue id="e25-event-energy-cut" size="md" caption="cut in event-energy emissions in paddock areas at European races, against previous set-ups" />
               </div>
               <details className="group rounded-md border border-line-strong bg-card">
                 <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 px-5 py-3 font-sans text-base font-semibold text-ink [&::-webkit-details-marker]:hidden">

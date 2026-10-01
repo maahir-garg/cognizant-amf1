@@ -50,11 +50,16 @@ export function AiText({
     let last = 0;
     for (const m of para.matchAll(CITATION_RE)) {
       const index = m.index ?? 0;
-      out.push(para.slice(last, index).replace(/\s+$/, ""));
+      // Keep the cited word, its chip and any punctuation after it on one line, so a chip never wraps alone.
+      const before = para.slice(last, index).replace(/\s+$/, "");
+      const split = /^([\s\S]*?)(\S+)$/.exec(before);
+      const punct = /^[.,;:!?)]+/.exec(para.slice(index + m[0].length))?.[0] ?? "";
+      out.push(split ? split[1] : before);
       const [, kind, id] = m;
       const n = order.get(id) ?? 0;
+      let chip: ReactNode;
       if (kind === "F" && findFact(id)) {
-        out.push(
+        chip = (
           <button
             key={`${pi}-${index}`}
             type="button"
@@ -63,11 +68,11 @@ export function AiText({
             aria-label={`Source ${n}: ${findFact(id)?.metric}`}
           >
             {n}
-          </button>,
+          </button>
         );
       } else {
         const d = derived.find((x) => x.id === id);
-        out.push(
+        chip = (
           <Tooltip key={`${pi}-${index}`}>
             <TooltipTrigger asChild>
               <span
@@ -78,10 +83,17 @@ export function AiText({
               </span>
             </TooltipTrigger>
             <TooltipContent className="max-w-xs">{d ? `${d.label}: ${d.formula}` : "Documented calculation"}</TooltipContent>
-          </Tooltip>,
+          </Tooltip>
         );
       }
-      last = index + m[0].length;
+      out.push(
+        <span key={`${pi}-${index}-w`} className="whitespace-nowrap">
+          {split ? split[2] : ""}
+          {chip}
+          {punct}
+        </span>,
+      );
+      last = index + m[0].length + punct.length;
     }
     out.push(para.slice(last));
     return out;
