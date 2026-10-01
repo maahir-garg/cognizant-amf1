@@ -85,7 +85,7 @@ export function RacePublished({ race }: { race: Race }) {
                     ↓
                   </span>
                 </summary>
-                <div className="flex flex-col gap-3 border-t border-line px-5 pt-4 pb-5">
+                <div className="flex flex-col gap-3 border-t border-line px-5 pt-4 pb-5 animate-in fade-in-0 slide-in-from-top-1 duration-200 ease-[cubic-bezier(.4,0,.2,1)]">
                   <TracksideChart rows={rows} />
                   {solarGap && <p className="font-sans text-xs text-ink-3">Solar isn&apos;t published for {solarGap}: shown as a gap, not a zero.</p>}
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1">

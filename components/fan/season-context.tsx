@@ -20,7 +20,7 @@ export function SeasonContext() {
             ↓
           </span>
         </summary>
-        <div className="flex flex-col gap-12 pt-4 pb-10">
+        <div className="flex flex-col gap-12 pt-4 pb-10 animate-in fade-in-0 slide-in-from-top-1 duration-200 ease-[cubic-bezier(.4,0,.2,1)]">
           <p className="prose-body">
             The team publishes freight and travel for the whole season, not race by race. These are its own figures for moving cars,
             parts and garage kit, and what cleaner fuel and shipping changed.

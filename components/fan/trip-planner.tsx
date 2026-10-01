@@ -131,7 +131,7 @@ export function TripPlanner({ race, initial, explicit }: { race: Race; initial: 
           <summary className="w-fit cursor-pointer font-sans text-[0.8125rem] text-ink-3 underline decoration-1 underline-offset-[3px] hover:text-ink">
             How this is worked out
           </summary>
-          <div className="mt-3 flex flex-col gap-3 font-sans text-[0.8125rem] leading-snug text-ink-2">
+          <div className="mt-3 flex flex-col gap-3 font-sans text-[0.8125rem] leading-snug text-ink-2 animate-in fade-in-0 slide-in-from-top-1 duration-200 ease-[cubic-bezier(.4,0,.2,1)]">
             <p>
               Estimated with {sourceShortName("defra-2025")} UK conversion factors per passenger-km, used as proxies for travel in{" "}
               {race.country}. The comparison doesn&apos;t depend on distance; the kilograms do.

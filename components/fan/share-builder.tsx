@@ -57,6 +57,8 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
   const [factIds, setFactIds] = useState<string[]>([...DEFAULT_SHARE_FACT_IDS]);
   const [modeChoice, setModeChoice] = useState<string | null>(null);
   const [group, setGroup] = useState(false);
+  // The card row the fan just changed, so only that row fades in on the preview.
+  const [changedRow, setChangedRow] = useState<string | null>(null);
   const [showBadge, setShowBadge] = useState(true);
   const [busy, setBusy] = useState(false);
   const canShare = useSyncExternalStore(noopSubscribe, canShareFiles, () => false);
@@ -86,8 +88,19 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
     return () => ro.disconnect();
   }, []);
 
+  // On phones the pinned save bar would repeat the card while the full preview is on screen,
+  // so it steps aside until less than half of the preview is visible.
+  const [previewInView, setPreviewInView] = useState(false);
+  useEffect(() => {
+    const el = wrapperRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([entry]) => setPreviewInView(entry.intersectionRatio >= 0.5), { threshold: [0, 0.5, 1] });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   function toggleFact(id: string) {
+    setChangedRow(id);
     setFactIds((current) => {
       if (current.includes(id)) return current.length > 1 ? current.filter((x) => x !== id) : current;
       if (current.length >= SHARE_MAX_FACTS) return current;
@@ -186,7 +199,7 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
               aria-label={`Card preview: ${[line, ...factIds.map((id) => `${formatFact(getFact(id))}`)].filter(Boolean).join(", ")}`}
             >
               <div style={{ width: SHARE_CARD_WIDTH, height: SHARE_CARD_HEIGHT, transform: `scale(${scale})`, transformOrigin: "top left" }}>
-                <ShareCard ref={cardRef} raceShortName={raceShortName(race)} factIds={factIds} planLine={line} badge={hasBadge} />
+                <ShareCard ref={cardRef} raceShortName={raceShortName(race)} factIds={factIds} planLine={line} badge={hasBadge} enter={changedRow} />
               </div>
             </div>
           </div>
@@ -204,7 +217,8 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
           */}
           <div
             data-tone="paper"
-            className="fixed inset-x-0 bottom-0 z-30 flex items-center gap-3 border-t border-line-strong bg-bg px-4 py-3 lg:static lg:z-auto lg:order-2 lg:mx-auto lg:mt-4 lg:w-full lg:max-w-[400px] lg:flex-col lg:items-start lg:border-t-0 lg:bg-transparent lg:p-0"
+            data-hidden={previewInView || undefined}
+            className="fixed inset-x-0 bottom-0 z-30 flex items-center gap-3 border-t border-line-strong bg-bg px-4 py-3 transition-[transform,opacity] duration-200 ease-[cubic-bezier(.4,0,.2,1)] data-hidden:pointer-events-none data-hidden:translate-y-full data-hidden:opacity-0 data-hidden:focus-within:pointer-events-auto data-hidden:focus-within:translate-y-0 data-hidden:focus-within:opacity-100 lg:static lg:z-auto lg:order-2 lg:mx-auto lg:mt-4 lg:w-full lg:max-w-[400px] lg:flex-col lg:items-start lg:border-t-0 lg:bg-transparent lg:p-0 lg:transition-none lg:data-hidden:pointer-events-auto lg:data-hidden:translate-y-0 lg:data-hidden:opacity-100"
           >
             <button
               type="button"
@@ -281,7 +295,10 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {[...travelModes.map((m) => ({ id: m.id, label: modeLabel(m, race) })), { id: NO_PLAN, label: "Leave it off" }].map((m) => (
               <label key={m.id} className={CHIP}>
-                <input type="radio" name="plan" value={m.id} checked={modeId === m.id} onChange={() => setModeChoice(m.id)} className="sr-only" />
+                <input type="radio" name="plan" value={m.id} checked={modeId === m.id} onChange={() => {
+                    setChangedRow("plan");
+                    setModeChoice(m.id);
+                  }} className="sr-only" />
                 <span>
                   <span aria-hidden className="hidden group-has-[:checked]:inline">
                     ✓{" "}
@@ -292,7 +309,10 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
             ))}
           </div>
           <label className={cn(CHIP, "w-fit")}>
-            <input type="checkbox" checked={group} onChange={(e) => setGroup(e.target.checked)} className="sr-only" />
+            <input type="checkbox" checked={group} onChange={(e) => {
+                setChangedRow("plan");
+                setGroup(e.target.checked);
+              }} className="sr-only" />
             <span aria-hidden className="w-4 text-center group-has-[:checked]:visible invisible">
               ✓
             </span>
