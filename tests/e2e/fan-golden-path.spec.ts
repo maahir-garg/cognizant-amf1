@@ -85,6 +85,26 @@ test.describe("fan golden path", () => {
     await expect(section).not.toContainText(/\blaps?\b/i);
   });
 
+  test("the travel plan survives a trip to the card and back", async ({ page }) => {
+    await fresh(page);
+    const section = page.locator("#getting-there");
+    const preview = page.getByRole("img", { name: /^Card preview/ });
+
+    await page.goto(HERO_RACE);
+    await section.locator("label", { hasText: "Public bus" }).click();
+    await expect(section.getByRole("radio", { name: /Public bus/ })).toBeChecked();
+
+    await page.goto("/share");
+    await expect(preview).toHaveAttribute("aria-label", /the bus to Marina Bay/);
+
+    // Coming back to the race page must start from the saved plan, not reset it to the default.
+    await page.goto(HERO_RACE);
+    await expect(section.getByRole("radio", { name: /Public bus/ })).toBeChecked();
+
+    await page.goto("/share");
+    await expect(preview).toHaveAttribute("aria-label", /the bus to Marina Bay/);
+  });
+
   test("getting there works without JavaScript", async ({ browser }) => {
     const context = await browser.newContext({ javaScriptEnabled: false });
     const page = await context.newPage();

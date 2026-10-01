@@ -35,6 +35,11 @@ export function parseTripParams(params: Params): TripInput {
   };
 }
 
+/** True when the URL carries a planner choice (a shared or no-JavaScript link), which then beats a saved plan. */
+export function hasTripParams(params: Params): boolean {
+  return params.mode !== undefined || params.km !== undefined;
+}
+
 export function isTravelMode(id: string | null | undefined): id is string {
   return Boolean(id) && travelModes.some((m) => m.id === id);
 }

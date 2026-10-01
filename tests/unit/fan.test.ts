@@ -4,7 +4,7 @@ import { getFact, getRace, quizzes, races } from "@/lib/data/load";
 import { quickCheckQuestions } from "@/lib/fan/quiz";
 import { isUpcoming, raceDates, raceProgrammes } from "@/lib/fan/race";
 import { SHARE_FACT_IDS, shareFactValue, shareSourceLine } from "@/lib/fan/share";
-import { comparePhrase, parseTripParams, planLine, tripResult } from "@/lib/fan/trip";
+import { comparePhrase, hasTripParams, parseTripParams, planLine, tripResult } from "@/lib/fan/trip";
 
 const singapore = getRace("singapore-2026");
 
@@ -60,6 +60,11 @@ describe("trip planner", () => {
   it("falls back to defaults for bad GET params and ignores the old city param", () => {
     expect(parseTripParams({ city: "atlantis", mode: "rocket", km: "-4" })).toEqual({ modeId: "mrt", km: 5 });
     expect(parseTripParams({ city: "jakarta", mode: "bus", km: "500" })).toEqual({ modeId: "bus", km: 40 });
+  });
+  it("treats a link as explicit only when it carries a planner choice", () => {
+    expect(hasTripParams({})).toBe(false);
+    expect(hasTripParams({ mode: "bus" })).toBe(true);
+    expect(hasTripParams({ km: "3" })).toBe(true);
   });
   it("writes the plan line for one fan or a group", () => {
     expect(planLine("mrt", singapore)).toBe("My plan: the MRT to Marina Bay");

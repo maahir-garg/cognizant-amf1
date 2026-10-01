@@ -6,7 +6,7 @@ import { SourceButton } from "./source-button";
 import { TripPlanner } from "./trip-planner";
 
 /** "#getting-there": a green chapter with the honest context on the left and the planner on the right. */
-export function GettingThere({ race, initial }: { race: Race; initial: TripInput }) {
+export function GettingThere({ race, initial, explicit }: { race: Race; initial: TripInput; explicit: boolean }) {
   return (
     <section aria-labelledby="getting-there-title" id="getting-there" data-tone="green" className="scroll-mt-14">
       <div className="wrap grid gap-10 py-[clamp(64px,10vw,128px)] lg:grid-cols-12 lg:gap-6">
@@ -32,7 +32,7 @@ export function GettingThere({ race, initial }: { race: Race; initial: TripInput
           </div>
         </div>
         <div className="lg:col-span-8 lg:col-start-5 xl:col-span-7 xl:col-start-6">
-          <TripPlanner race={race} initial={initial} />
+          <TripPlanner race={race} initial={initial} explicit={explicit} />
         </div>
       </div>
     </section>
