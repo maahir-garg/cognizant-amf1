@@ -285,6 +285,7 @@ export function DraftChecker() {
           onChange={(e) => setText(e.target.value)}
           rows={11}
           spellCheck
+          placeholder="Paste a post, paragraph or slide note"
           className="min-h-64 w-full resize-y rounded-md border border-line-strong bg-surface p-4 text-base leading-relaxed text-ink"
         />
         <div className="flex flex-wrap gap-3">
