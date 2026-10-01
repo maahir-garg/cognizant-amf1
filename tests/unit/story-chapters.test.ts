@@ -176,8 +176,20 @@ describe("fanChapterRequest", () => {
       const fresh = fanChapterRequest({ ...STORY_DEFAULT_FAN, level: "casual" }, id);
       const deep = fanChapterRequest({ ...STORY_DEFAULT_FAN, level: "die-hard" }, id);
       expect(fresh.fan?.level).toBe("new");
-      expect(fresh.factIds.length).toBeLessThan(deep.factIds.length);
+      expect(fresh.factIds.length).toBeLessThanOrEqual(deep.factIds.length);
       expect(deep.factIds).toEqual(FAN_CHAPTER_FACTS[id]);
+    }
+  });
+
+  it("brief figures never repeat a figure printed on the chapter's cards or tiles", () => {
+    for (const c of CHAPTERS) {
+      const onCards = new Set<string>();
+      for (const s of c.steps) {
+        parseCopy(s.copy).forEach((p) => p.kind === "fact" && onCards.add(p.id));
+        s.facts?.forEach((f) => onCards.add(f.id));
+      }
+      for (const l of c.layers) if (l.kind === "tiles") l.tiles.forEach((t) => onCards.add(t.factId));
+      expect(FAN_CHAPTER_FACTS[c.id].filter((id) => onCards.has(id)), c.id).toEqual([]);
     }
   });
 

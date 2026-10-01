@@ -94,7 +94,8 @@ export function ChapterBrief({
       <h3 className="kicker text-ink">{level === "die-hard" ? "In brief" : "In plain words"}</h3>
       <div className="min-h-[7.5rem]" aria-live="polite">
         {response ? (
-          <AiText response={response} className="text-[clamp(1.0625rem,1rem+0.25vw,1.25rem)]" />
+          // The trust line is said once, on the title page; each brief keeps its citation chips.
+          <AiText response={response} showMeta={false} className="text-[clamp(1.0625rem,1rem+0.25vw,1.25rem)]" />
         ) : (
           <p className="kicker text-ink-3">Preparing a short summary…</p>
         )}

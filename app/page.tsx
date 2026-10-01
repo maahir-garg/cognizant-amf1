@@ -1,5 +1,5 @@
 import { StoryChapter } from "@/components/story/chapter";
-import { StoryHero, WhatYouGet } from "@/components/story/hero";
+import { StoryHero } from "@/components/story/hero";
 import { RaceWeekend } from "@/components/story/race-weekend";
 import styles from "@/components/story/story.module.css";
 import { ChapterTracker } from "@/components/story/tracker";
@@ -36,7 +36,6 @@ export default async function StoryPage() {
   return (
     <div className={styles.story}>
       <StoryHero />
-      <WhatYouGet />
       <div id="story" className={styles.storyTimeline}>
         <ChapterTracker chapters={CHAPTERS.map((c) => ({ id: c.id, number: c.number, label: c.name }))} />
         {CHAPTERS.map((c) => (

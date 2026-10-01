@@ -158,13 +158,8 @@ export const STORY_TITLE = "Before the lights go out at Marina Bay";
 export const STORY_DEK =
   "The carbon and the community work behind the team's race car, from the factory to Marina Bay, and how you can join in at the Singapore Grand Prix.";
 
-/** The four reasons a fan reads on, one line each (brief: "Why a fan uses it"). */
-export const WHAT_YOU_GET: { label: string; line: string }[] = [
-  { label: "The story", line: "The side of the car the broadcast never shows, told as a feature rather than a report." },
-  { label: "Know what's real", line: "Tap any figure to open the page of the team's report it came from." },
-  { label: "Take part", line: "Real programmes at the Singapore Grand Prix and a practical way to get to Marina Bay." },
-  { label: "Worth posting", line: "A race-week card with your quiz badge and one sourced team fact." },
-];
+/** Said once, on the title page: every figure on the page opens its source. */
+export const TRUST_LINE = "Every figure is checked against the team's report: tap one to see its page.";
 
 const HAWKINS: Quote = {
   text: "You do deserve a place at that table.",
@@ -242,7 +237,6 @@ export const CHAPTERS: Chapter[] = [
     steps: [
       {
         copy: "Behind every lap is a long list of suppliers. The materials, parts and services the team buys carry their own emissions long before they reach Silverstone.",
-        facts: [{ id: "e25-supply-chain-share", caption: "of the team's footprint sits in its supply chain, not on the track" }],
         layer: 0,
         zoom: { scale: 1, origin: { x: 50, y: 50 } },
       },
@@ -361,7 +355,6 @@ export const CHAPTERS: Chapter[] = [
     steps: [
       {
         copy: "Once the freight lands, the garage is rebuilt around the car. At European races, Formula One runs a shared power system in the paddock, drawing on solar, biofuels, batteries and renewable grid supply instead of each team's own generators.",
-        facts: [{ id: "e25-event-energy-cut", caption: "cut in paddock event energy emissions at European races" }],
         layer: 0,
       },
       {
@@ -545,7 +538,7 @@ export function chapterFactIds(c: Chapter): string[] {
 
 /** Every human-readable string in the story config, for the copy tests. */
 export function allCopyStrings(): string[] {
-  const out: string[] = [STORY_TITLE, STORY_DEK, ...WHAT_YOU_GET.flatMap((w) => [w.label, w.line])];
+  const out: string[] = [STORY_TITLE, STORY_DEK, TRUST_LINE];
   for (const c of CHAPTERS) {
     out.push(c.name, c.title, c.dek);
     for (const l of c.layers) {

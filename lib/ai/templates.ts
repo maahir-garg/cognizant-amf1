@@ -121,7 +121,7 @@ const CHAPTER_OPENERS: Record<string, { new: string; "die-hard": string; close?:
     "die-hard": "Freight is counted before Sustainable Aviation Fuel certificates, alongside the team's first certificate purchase and a shift from air to sea.",
   },
   circuit: {
-    new: "At the track the garage needs power all weekend, and at European races it now comes from a shared, lower-carbon system.",
+    new: "At the track the garage needs power from the first practice session to the chequered flag.",
     "die-hard": "Trackside, the team draws on the sport's shared paddock energy at European rounds.",
     close: "The team has not published trackside energy for Singapore.",
   },
