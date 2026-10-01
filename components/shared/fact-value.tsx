@@ -65,7 +65,7 @@ export function FactValue({
     <button
       type="button"
       onClick={() => openFact(id)}
-      className={cn("group flex flex-col items-start gap-2 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus", className)}
+      className={cn("group relative flex flex-col items-start gap-2 text-left before:absolute before:inset-x-0 before:-inset-y-1.5 before:content-[''] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus", className)}
       aria-label={`${metric}: ${p.prefix}${p.value}${p.unit ? ` ${p.unit}` : ""}${p.suffix}. ${fact.status}. ${cite.label}. Show source.`}
     >
       {qualitative ? (
