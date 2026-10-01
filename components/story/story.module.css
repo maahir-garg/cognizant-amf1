@@ -219,6 +219,8 @@
   }
   .graphicBox {
     pointer-events: auto;
+    /* A hairline marks the edge cards slide under. */
+    border-bottom: 1px solid var(--line);
   }
 }
 /* The last card rests in the first screen of its step; the extra half screen lets it scroll clear before the stage lets go. */
