@@ -8,6 +8,7 @@ import { checkDraft, draftWithCitations, type DraftCheck, type DraftFinding } fr
 import { factCitation, getFact } from "@/lib/data/load";
 import { draftKey } from "@/lib/partner/approvals";
 import { footnotedPlainText } from "@/lib/partner/citations";
+import { captionAfterUnit } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { ApprovalPanel } from "./approval-panel";
 
@@ -167,7 +168,7 @@ function FindingDetail({
           <InlineFact id={f.factId} />
           <span className="text-[0.8125rem] text-ink-3">{factCitation(fact).label}</span>
         </span>
-        <span className="text-[0.875em] leading-snug text-ink-2">{fact.metric}</span>
+        <span className="text-[0.875em] leading-snug text-ink-2">{captionAfterUnit(fact.metric, fact.unit)}</span>
         <ul className="flex flex-col gap-1">
           {f.needs.map((need) => (
             <li key={need} className="border-l-2 border-estimated pl-2 leading-snug text-ink">
@@ -198,7 +199,7 @@ function FindingDetail({
           <InlineFact id={f.factId} />
           <span className="text-[0.8125rem] text-ink-3">{factCitation(fact).label}</span>
         </span>
-        <span className="text-[0.875em] leading-snug text-ink-2">{fact.metric}</span>
+        <span className="text-[0.875em] leading-snug text-ink-2">{captionAfterUnit(fact.metric, fact.unit)}</span>
         {f.cautions.map((c) => (
           <span key={c} className="border-l-2 border-estimated pl-2 text-[0.875em] leading-snug text-ink">
             {c}
@@ -219,7 +220,7 @@ function FindingDetail({
           <span className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-[0.875em] text-ink-2">
             Closest published figure: <InlineFact id={f.nearest} />
             <span className="text-[0.8125rem] text-ink-3">
-              {getFact(f.nearest).metric}, {factCitation(getFact(f.nearest)).label}
+              {captionAfterUnit(getFact(f.nearest).metric, getFact(f.nearest).unit)}, {factCitation(getFact(f.nearest)).label}
             </span>
           </span>
         )}
@@ -236,7 +237,8 @@ function FindingDetail({
 }
 
 export function DraftChecker() {
-  const [text, setText] = useState(EXAMPLE_DRAFT);
+  // Starts empty so a pasted draft is the only text checked; the examples are one click away.
+  const [text, setText] = useState("");
   const deferred = useDeferredValue(text);
   const check = useMemo(() => checkDraft(deferred), [deferred]);
   const numbers = citationNumbers(check);
@@ -287,12 +289,12 @@ export function DraftChecker() {
         />
         <div className="flex flex-wrap gap-3">
           <Button variant="outline" onClick={() => setText(EXAMPLE_DRAFT)}>
-            Load the example
+            Try the example
           </Button>
           <Button variant="outline" onClick={() => setText(FRAMING_EXAMPLE)}>
             Try right numbers, wrong framing
           </Button>
-          <Button variant="ghost" onClick={() => setText("")}>
+          <Button variant="outline" onClick={() => setText("")} disabled={!text}>
             Clear
           </Button>
         </div>
@@ -308,7 +310,11 @@ export function DraftChecker() {
           <h2 className="text-[1.0625rem] font-semibold">What the fact base says</h2>
           {hasText && (
             <p className="text-[0.875em] text-ink-2" aria-live="polite">
-              <span className="font-semibold text-ink">✓ {check.matched} matched</span>
+              {/* The tick only when every figure matched, so it never sits beside a hold. */}
+              <span className="font-semibold text-ink">
+                {check.ok && <span aria-hidden>✓ </span>}
+                {check.matched} matched
+              </span>
               {" · "}
               <span className={cn(check.needsWording > 0 && "font-semibold text-estimated")}>{check.needsWording} need wording</span>
               {" · "}
@@ -399,7 +405,7 @@ export function DraftChecker() {
             />
           </>
         ) : (
-          <p className="text-ink-3">Paste a post, paragraph or slide note to check its figures.</p>
+          <p className="text-ink-3">Paste a post, paragraph or slide note to check its figures, or try one of the examples.</p>
         )}
       </div>
     </div>
