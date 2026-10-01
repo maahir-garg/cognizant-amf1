@@ -64,6 +64,21 @@ describe("story chapters", () => {
     expect(beyond.layers.some((l) => l.kind === "photo" && l.image === "active-aero")).toBe(false);
   });
 
+  it("never start a caption with its figure's unit word (\"600+ students / students reached…\")", () => {
+    const captions: { id: string; text: string }[] = [];
+    for (const c of CHAPTERS) {
+      for (const s of c.steps) for (const f of s.facts ?? []) captions.push({ id: f.id, text: f.caption });
+      for (const l of c.layers) if (l.kind === "tiles") for (const t of l.tiles) captions.push({ id: t.factId, text: t.label });
+    }
+    const offenders = captions.filter(({ id, text }) => {
+      const unit = getFact(id).unit.toLowerCase();
+      if (!/^[a-z]{3,}$/.test(unit)) return false;
+      const stem = unit.replace(/(ren|s)$/, "");
+      return text.toLowerCase().split(/\s+/)[0].startsWith(stem);
+    });
+    expect(offenders).toEqual([]);
+  });
+
   it("parses fact tokens", () => {
     expect(parseCopy("a {f:e25-removals} b")).toEqual([
       { kind: "text", text: "a " },
