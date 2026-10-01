@@ -25,7 +25,7 @@ import { factCitation, facts as allFacts, findFact, getFact, initiatives } from 
 import type { Fact } from "@/lib/data/schemas";
 import { unitLabel } from "@/lib/format";
 
-export type FindingStatus = "matched" | "wording" | "held" | "context";
+type FindingStatus = "matched" | "wording" | "held" | "context";
 
 export type DraftFinding = {
   /** The number as written, e.g. "257", "£140,000", "93%". */
@@ -51,7 +51,7 @@ export type DraftFinding = {
   rounded: boolean;
 };
 
-export type WordingNote = { phrase: string; start: number; end: number; reason: string };
+type WordingNote = { phrase: string; start: number; end: number; reason: string };
 
 export type DraftCheck = {
   /** The text that was checked (NFKC-normalised, which the offsets refer to). */

@@ -12,11 +12,11 @@ import { cn } from "@/lib/utils";
 import { ApprovalPanel } from "./approval-panel";
 
 /** Words only: the figures in it are checked like anyone else's. */
-export const EXAMPLE_DRAFT =
+const EXAMPLE_DRAFT =
   "This week in Singapore: Make A Mark Day reached 275 students, and 68% of them started the day unsure what skills a career in AI needs. Our real-time impact data shows the team's STEM programme has reached more than 1,000 young people in the UK and at race locations.";
 
 /** Right numbers, wrong framing: each one is caught for a different reason. */
-export const FRAMING_EXAMPLE =
+const FRAMING_EXAMPLE =
   "Cognizant brought 257 schools to Make A Mark Day. The team cut its total emissions 74%, and paddock energy emissions fell 90% at the Singapore Grand Prix. The footprint fell from 88,183 (2024) to 87,162 (2025), and the pay gap is 20.6%.";
 
 const RESULT_LABEL: Record<DraftFinding["status"], string> = {

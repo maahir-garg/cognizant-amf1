@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
-export const DESK_TABS = [
+const DESK_TABS = [
   { href: "/partners", label: "This race week" },
   { href: "/partners/narratives", label: "Narratives" },
   { href: "/partners/check", label: "Check my draft" },

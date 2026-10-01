@@ -62,7 +62,7 @@ export function progressFigures(): { id: string; label: string }[] {
     }));
 }
 
-export type PostAngle = {
+type PostAngle = {
   id: string;
   title: string;
   why: string;
