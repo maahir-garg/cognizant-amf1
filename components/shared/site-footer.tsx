@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { FOOTER_LABEL } from "@/lib/config";
+import { PartnerOnly } from "./partner-only";
 import { DataGap, StatusLegend } from "./status-badge";
 
 export function SiteFooter() {
@@ -13,7 +14,6 @@ export function SiteFooter() {
           <p className="font-serif text-lg leading-snug text-ink">
             A concept built for the Cognizant × Aston Martin Aramco Gen-AI Ideathon. Not an official team product.
           </p>
-          <p className="text-sm text-ink-2">{FOOTER_LABEL}</p>
         </section>
 
         <section aria-labelledby="footer-sources" className="flex flex-col gap-3">
@@ -34,11 +34,14 @@ export function SiteFooter() {
                 How the AI is checked
               </Link>
             </li>
-            <li>
-              <a href="/api/partner/metrics" className="link">
-                Metrics as JSON
-              </a>
-            </li>
+            {/* A data feed is for partners' BI tools; fans never need it. */}
+            <PartnerOnly>
+              <li>
+                <a href="/api/partner/metrics" className="link">
+                  Metrics as JSON
+                </a>
+              </li>
+            </PartnerOnly>
           </ul>
         </section>
 
@@ -51,7 +54,9 @@ export function SiteFooter() {
         </section>
       </div>
       <div className="border-t border-line">
-        <p className="wrap py-4 text-xs text-ink-3">Car imagery: Aston Martin Aramco. Used for this collaboration prototype.</p>
+        <p className="wrap py-4 text-xs text-ink-3">
+          Car imagery: Aston Martin Aramco. Used for this collaboration prototype. {FOOTER_LABEL}.
+        </p>
       </div>
     </footer>
   );

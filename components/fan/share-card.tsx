@@ -1,8 +1,10 @@
-import { forwardRef } from "react";
+"use client";
+
+import { forwardRef, useEffect, useRef, type ReactNode } from "react";
 import { APP_NAME, SITE_URL } from "@/lib/config";
 import { getFact } from "@/lib/data/load";
 import { QUIZ_BADGE_LABEL } from "@/lib/fan/quiz";
-import { shareFactLabel, shareFactValue, shareSourceLine } from "@/lib/fan/share";
+import { shareFactContext, shareFactLabel, shareFactValue, shareSourceLine } from "@/lib/fan/share";
 import { cn } from "@/lib/utils";
 
 export const SHARE_CARD_WIDTH = 1080;
@@ -48,10 +50,37 @@ function CardStatus({ status }: { status: "verified" | "estimated" }) {
  * the wrong affordance in a static image. Every number still comes straight
  * from the fact base (shareFactValue) and keeps its status badge.
  */
-function CardFigure({ id, primary }: { id: string; primary: boolean }) {
+/**
+ * Fades a newly changed row in (160ms, 4px rise) with the Web Animations API.
+ * Only the row that changed animates, never the whole card; nothing runs under
+ * reduced motion. WAAPI leaves no CSS animation on the node, so a PNG export
+ * that clones the card can never catch a row at its starting opacity.
+ */
+function EnterRow({ enter, className, children }: { enter: boolean; className?: string; children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!enter || !ref.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    ref.current.animate(
+      [
+        { opacity: 0, transform: "translateY(4px)" },
+        { opacity: 1, transform: "none" },
+      ],
+      { duration: 160, easing: "cubic-bezier(.4,0,.2,1)" },
+    );
+    // Runs once, when the row first mounts.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return (
+    <div ref={ref} className={className}>
+      {children}
+    </div>
+  );
+}
+
+function CardFigure({ id, primary, enter }: { id: string; primary: boolean; enter: boolean }) {
   const fact = getFact(id);
   return (
-    <div className="flex items-start gap-8">
+    <EnterRow enter={enter} className="flex items-start gap-8">
       <span className={cn("big-num shrink-0", primary ? "text-lime" : "text-ink")} style={{ fontSize: 150, lineHeight: 0.9, width: 340 }}>
         {shareFactValue(id)}
       </span>
@@ -59,9 +88,14 @@ function CardFigure({ id, primary }: { id: string; primary: boolean }) {
         <span className="font-serif text-ink" style={{ fontSize: 40, lineHeight: 1.15 }}>
           {shareFactLabel(id)}
         </span>
-        <CardStatus status={fact.status === "estimated" ? "estimated" : "verified"} />
+        <span className="flex flex-wrap items-center gap-x-4 gap-y-1">
+          <CardStatus status={fact.status === "estimated" ? "estimated" : "verified"} />
+          <span className="font-sans text-ink-2" style={{ fontSize: 24, lineHeight: "28px", fontStretch: "100%" }}>
+            {shareFactContext(id)}
+          </span>
+        </span>
       </span>
-    </div>
+    </EnterRow>
   );
 }
 
@@ -71,6 +105,8 @@ export type ShareCardProps = {
   factIds: string[];
   planLine: string | null;
   badge: boolean;
+  /** The row that just changed in the builder ("plan" or a fact id): only it fades in. */
+  enter?: string | null;
   className?: string;
 };
 
@@ -80,7 +116,7 @@ export type ShareCardProps = {
  * (html-to-image would otherwise draw the card shrunk into a corner).
  */
 export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
-  { raceShortName, factIds, planLine, badge, className },
+  { raceShortName, factIds, planLine, badge, enter = null, className },
   ref,
 ) {
   return (
@@ -103,9 +139,11 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function Sha
             {raceShortName} race week, off camera
           </h2>
           {planLine && (
-            <p className="font-serif text-ink italic" style={{ fontSize: 44, lineHeight: 1.2 }}>
-              {planLine}
-            </p>
+            <EnterRow key={planLine} enter={enter === "plan"}>
+              <p className="font-serif text-ink italic" style={{ fontSize: 44, lineHeight: 1.2 }}>
+                {planLine}
+              </p>
+            </EnterRow>
           )}
           {badge && (
             <p
@@ -129,7 +167,7 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function Sha
 
         <div className="flex flex-col" style={{ paddingInline: MARGIN, gap: 28 }}>
           {factIds.slice(0, 3).map((id, i) => (
-            <CardFigure key={id} id={id} primary={i === 0} />
+            <CardFigure key={id} id={id} primary={i === 0} enter={enter === id} />
           ))}
         </div>
       </div>

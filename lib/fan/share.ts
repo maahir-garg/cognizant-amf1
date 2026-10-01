@@ -6,7 +6,7 @@
  * beside it to read fairly. The labels are the short card wording, kept to two lines
  * at card size; the figure itself always comes from the fact base.
  */
-import { factCitation, getFact, getSource, sourceShortName } from "@/lib/data/load";
+import { factCitation, getCity, getFact, getSource, initiatives, sourceShortName } from "@/lib/data/load";
 import { factParts } from "@/lib/format";
 
 export const SHARE_FACTS: { id: string; label: string }[] = [
@@ -32,6 +32,18 @@ export function shareFactValue(id: string): string {
 
 export function shareFactLabel(id: string): string {
   return SHARE_FACTS.find((f) => f.id === id)?.label ?? getFact(id).metric;
+}
+
+/**
+ * Where and when, from data: "In Singapore, 2025" when the fact belongs to a
+ * programme that ran in one city, otherwise "2025 figure". Keeps a figure
+ * honest once it travels without the page around it.
+ */
+export function shareFactContext(id: string): string {
+  const fact = getFact(id);
+  const places = initiatives.filter((i) => i.factIds.includes(id) && i.cityIds.length === 1).map((i) => getCity(i.cityIds[0])?.name);
+  const place = places.length === 1 ? places[0] : undefined;
+  return place ? `In ${place}, ${fact.period}` : `${fact.period} figure`;
 }
 
 /** Keeps only curated ids, in curated order, at most three; falls back to the defaults. */

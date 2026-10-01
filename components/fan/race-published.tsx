@@ -34,7 +34,7 @@ export function RacePublished({ race }: { race: Race }) {
       <div className="grid gap-10 lg:grid-cols-12 lg:gap-6">
         <SectionHead
           id="published-title"
-          className="lg:col-span-4"
+          className="lg:col-span-5"
           kicker="What the team has published"
           title={`Energy at the ${name} Grand Prix`}
           dek={own ? "The team reports the electricity its garage used at this round, by source." : "What the team reports about power in the paddock, and what it doesn't."}
@@ -85,7 +85,7 @@ export function RacePublished({ race }: { race: Race }) {
                     ↓
                   </span>
                 </summary>
-                <div className="flex flex-col gap-3 border-t border-line px-5 pt-4 pb-5">
+                <div className="flex flex-col gap-3 border-t border-line px-5 pt-4 pb-5 animate-in fade-in-0 slide-in-from-top-1 duration-200 ease-[cubic-bezier(.4,0,.2,1)]">
                   <TracksideChart rows={rows} />
                   {solarGap && <p className="font-sans text-xs text-ink-3">Solar isn&apos;t published for {solarGap}: shown as a gap, not a zero.</p>}
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1">

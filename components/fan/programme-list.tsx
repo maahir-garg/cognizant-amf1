@@ -118,6 +118,7 @@ export function ProgrammeList({ race, upcoming }: { race: Race; upcoming: boolea
       <div className="wrap flex flex-col gap-10 py-[clamp(64px,10vw,128px)]">
         <SectionHead
           id="take-part-title"
+          split
           kicker={upcoming ? "Take part" : "Beyond the circuit"}
           title={upcoming ? `Programmes around the race in ${city}` : `What the team reported in ${city}`}
           dek={

@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { heroRace, races } from "@/lib/data/load";
 import { DEPTH_COPY, QUIZ_BADGE_LABEL } from "@/lib/fan/quiz";
 import { isUpcoming, raceTitle } from "@/lib/fan/race";
-import { parseTripParams } from "@/lib/fan/trip";
+import { hasTripParams, parseTripParams } from "@/lib/fan/trip";
 
 export function generateStaticParams() {
   return races.map((r) => ({ slug: r.id }));
@@ -39,7 +39,9 @@ export default async function WeekendPage({
   if (!race) notFound();
 
   const upcoming = isUpcoming(race);
-  const trip = parseTripParams(await searchParams);
+  const query = await searchParams;
+  const trip = parseTripParams(query);
+  const explicitTrip = hasTripParams(query);
   const sections: RaceSection[] = [
     { id: "published", label: "Published for this race" },
     { id: "take-part", label: upcoming ? "Take part" : "Programmes" },
@@ -60,7 +62,7 @@ export default async function WeekendPage({
 
       {upcoming ? (
         <>
-          <GettingThere race={race} initial={trip} />
+          <GettingThere race={race} initial={trip} explicit={explicitTrip} />
           {/* One canonical quick check lives at /quiz; the race page points to it rather than embedding a second copy. */}
           <section aria-labelledby="quick-check-title" id="quick-check" className="scroll-mt-14">
             <div className="wrap grid gap-6 py-[clamp(64px,10vw,128px)] lg:grid-cols-12 lg:gap-6">

@@ -1,7 +1,8 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { factCitation, getFact } from "@/lib/data/load";
-import { factParts } from "@/lib/format";
+import { captionAfterUnit, factParts } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { useProvenance } from "./provenance";
 import { StatusBadge, StatusMark } from "./status-badge";
@@ -56,14 +57,15 @@ export function FactValue({
   const conflict = showFlags && fact.flags.some((f) => f.kind === "source-conflict");
   const qualitative = fact.value === null;
   const metric = (fan && fact.fanLabel) || fact.metric;
-  const text = caption ?? label ?? (showMetric ? metric : undefined);
+  // A caption taken from the metric reads on from the unit shown above it (never "600+ students / Students engaged…").
+  const text = caption ?? label ?? (showMetric ? (p.unit ? captionAfterUnit(metric, fact.unit) : metric) : undefined);
   const cite = factCitation(fact);
 
   return (
     <button
       type="button"
       onClick={() => openFact(id)}
-      className={cn("group flex flex-col items-start gap-2 text-left", className)}
+      className={cn("group relative flex flex-col items-start gap-2 text-left before:absolute before:inset-x-0 before:-inset-y-1.5 before:content-[''] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus", className)}
       aria-label={`${metric}: ${p.prefix}${p.value}${p.unit ? ` ${p.unit}` : ""}${p.suffix}. ${fact.status}. ${cite.label}. Show source.`}
     >
       {qualitative ? (
@@ -117,9 +119,16 @@ export function InlineFact({
   className,
   hideUnit = false,
   absolute = false,
+  trail,
 }: {
   id: string;
   className?: string;
+  /**
+   * Punctuation that follows the figure in the sentence (".", ",", ")"). It is
+   * kept on the same line as the figure and its status mark, so a full stop
+   * never wraps onto a line of its own.
+   */
+  trail?: string;
   /** Drop a word unit the sentence already says, e.g. "Round 17" rather than "Round 17 round". */
   hideUnit?: boolean;
   /** Show a change without its sign when the sentence already says the direction ("down 74%"). */
@@ -129,21 +138,31 @@ export function InlineFact({
   const { openFact } = useProvenance();
   const p = factParts(fact);
   const cite = factCitation(fact);
+  // The pseudo-element grows the tap target to 44px tall without moving the text around it.
   const base =
-    "inline text-left font-semibold text-ink underline decoration-line-strong decoration-dotted decoration-1 underline-offset-4 hover:decoration-solid hover:decoration-link";
+    "relative inline text-left font-semibold text-ink underline decoration-line-strong decoration-dotted decoration-1 underline-offset-4 before:absolute before:inset-x-0 before:-inset-y-2.5 before:content-[''] hover:decoration-solid hover:decoration-link focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
+  const withTrail = (button: ReactNode) =>
+    trail ? (
+      <span className="whitespace-nowrap">
+        {button}
+        {trail}
+      </span>
+    ) : (
+      button
+    );
   if (fact.value === null) {
-    return (
+    return withTrail(
       <button type="button" onClick={() => openFact(id)} className={cn(base, className)} aria-label={`${fact.valueText}. ${fact.status}. ${cite.label}. Show source.`}>
         {fact.valueText}
         <StatusMark status={fact.status} className="ml-1 align-middle" />
-      </button>
+      </button>,
     );
   }
   const unit = hideUnit && p.unit !== "%" ? "" : p.unit;
   const digits = absolute ? p.value.replace(/^[-−–]/, "") : p.value;
   // "1,000+ children", but "90%+": an at-least mark follows the number, and a percent sign stays attached to it.
   const value = unit === "%" ? `${p.prefix}${digits}%${p.suffix}` : `${p.prefix}${digits}${p.suffix}${unit ? ` ${unit}` : ""}`;
-  return (
+  return withTrail(
     <button
       type="button"
       onClick={() => openFact(id)}
@@ -152,6 +171,6 @@ export function InlineFact({
     >
       {value}
       <StatusMark status={fact.status} className="self-center" />
-    </button>
+    </button>,
   );
 }

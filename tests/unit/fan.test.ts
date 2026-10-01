@@ -2,13 +2,30 @@ import { describe, expect, it } from "vitest";
 import { DEFAULT_SHARE_FACT_IDS } from "@/lib/ai/requests";
 import { getFact, getRace, quizzes, races } from "@/lib/data/load";
 import { quickCheckQuestions } from "@/lib/fan/quiz";
+import { captionAfterUnit } from "@/lib/format";
 import { isUpcoming, raceDates, raceProgrammes } from "@/lib/fan/race";
-import { SHARE_FACT_IDS, shareFactValue, shareSourceLine } from "@/lib/fan/share";
-import { comparePhrase, parseTripParams, planLine, tripResult } from "@/lib/fan/trip";
+import { SHARE_FACT_IDS, shareFactContext, shareFactValue, shareSourceLine } from "@/lib/fan/share";
+import { comparePhrase, hasTripParams, parseTripParams, planLine, tripResult } from "@/lib/fan/trip";
 
 const singapore = getRace("singapore-2026");
 
+describe("captions under a figure", () => {
+  it("read on from the unit instead of repeating it", () => {
+    expect(captionAfterUnit("Students engaged at the STEM Racing World Finals", "students")).toBe("engaged at the STEM Racing World Finals");
+    expect(captionAfterUnit("Young people reached by the STEM learning programme", "young people")).toBe("reached by the STEM learning programme");
+    expect(captionAfterUnit("Countries represented at the finals", "countries")).toBe("represented at the finals");
+  });
+  it("leave other captions alone", () => {
+    expect(captionAfterUnit("Supply chain share of the footprint", "%")).toBe("Supply chain share of the footprint");
+    expect(captionAfterUnit("Solar panels on the campus roof", "panels")).toBe("Solar panels on the campus roof");
+  });
+});
+
 describe("share card facts", () => {
+  it("say where and when from data", () => {
+    expect(shareFactContext("c25-stem-racing-students")).toBe("In Singapore, 2025");
+    expect(shareFactContext("e24-solar-panels")).toBe("2024 figure");
+  });
   it("are verified and carry no data-quality flags", () => {
     for (const id of [...SHARE_FACT_IDS, ...DEFAULT_SHARE_FACT_IDS]) {
       const f = getFact(id);
@@ -60,6 +77,11 @@ describe("trip planner", () => {
   it("falls back to defaults for bad GET params and ignores the old city param", () => {
     expect(parseTripParams({ city: "atlantis", mode: "rocket", km: "-4" })).toEqual({ modeId: "mrt", km: 5 });
     expect(parseTripParams({ city: "jakarta", mode: "bus", km: "500" })).toEqual({ modeId: "bus", km: 40 });
+  });
+  it("treats a link as explicit only when it carries a planner choice", () => {
+    expect(hasTripParams({})).toBe(false);
+    expect(hasTripParams({ mode: "bus" })).toBe(true);
+    expect(hasTripParams({ km: "3" })).toBe(true);
   });
   it("writes the plan line for one fan or a group", () => {
     expect(planLine("mrt", singapore)).toBe("My plan: the MRT to Marina Bay");

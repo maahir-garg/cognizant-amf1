@@ -53,13 +53,13 @@ test.describe("fan golden path", () => {
     expect(names.some((n) => /STEM Racing/.test(n))).toBe(true);
     expect(names.some((n) => /Unearth Your Greatness/.test(n))).toBe(true);
 
-    // A figure opens the provenance drawer on its report page.
-    await published
-      .getByRole("button", { name: /Show source\.$/ })
-      .first()
-      .click();
+    // A figure opens the provenance drawer on its report page, and closing it hands focus back to the figure.
+    const figure = published.getByRole("button", { name: /Show source\.$/ }).first();
+    await figure.focus();
+    await page.keyboard.press("Enter");
     await expectDrawerWithPage(page);
     await closeDrawer(page);
+    await expect(figure).toBeFocused();
 
     expect(errors, errors.join("\n")).toEqual([]);
   });
@@ -83,6 +83,26 @@ test.describe("fan golden path", () => {
     await expect(section.getByRole("radio", { name: /Taxi/ })).toBeChecked();
     await expect(result).toContainText(/driving alone/i);
     await expect(section).not.toContainText(/\blaps?\b/i);
+  });
+
+  test("the travel plan survives a trip to the card and back", async ({ page }) => {
+    await fresh(page);
+    const section = page.locator("#getting-there");
+    const preview = page.getByRole("img", { name: /^Card preview/ });
+
+    await page.goto(HERO_RACE);
+    await section.locator("label", { hasText: "Public bus" }).click();
+    await expect(section.getByRole("radio", { name: /Public bus/ })).toBeChecked();
+
+    await page.goto("/share");
+    await expect(preview).toHaveAttribute("aria-label", /the bus to Marina Bay/);
+
+    // Coming back to the race page must start from the saved plan, not reset it to the default.
+    await page.goto(HERO_RACE);
+    await expect(section.getByRole("radio", { name: /Public bus/ })).toBeChecked();
+
+    await page.goto("/share");
+    await expect(preview).toHaveAttribute("aria-label", /the bus to Marina Bay/);
   });
 
   test("getting there works without JavaScript", async ({ browser }) => {

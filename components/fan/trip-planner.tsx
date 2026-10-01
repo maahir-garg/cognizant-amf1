@@ -1,14 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 import { APP_NAME } from "@/lib/config";
 import { sourceShortName, travelModes } from "@/lib/data/load";
 import type { Race } from "@/lib/data/schemas";
 import { useTripPlan } from "@/lib/fan/storage";
-import { clampKm, destinationName, formatKg, modeLabel, TRIP_KM_MAX, TRIP_KM_MIN, tripResult, type TripInput } from "@/lib/fan/trip";
+import { clampKm, destinationName, formatKg, isTravelMode, modeLabel, TRIP_KM_MAX, TRIP_KM_MIN, tripResult, type TripInput } from "@/lib/fan/trip";
 import { cn } from "@/lib/utils";
 
 const FIELD = "h-12 w-full max-w-[12rem] rounded-md border border-line-strong bg-card px-3 font-sans text-base text-ink";
@@ -19,18 +19,25 @@ const FIELD = "h-12 w-full max-w-[12rem] rounded-md border border-line-strong bg
  * renders the same result without JavaScript; with it, the result follows
  * every change and the Compare button isn't needed.
  */
-export function TripPlanner({ race, initial }: { race: Race; initial: TripInput }) {
-  const [input, setInput] = useState<TripInput>(initial);
-  const [kmText, setKmText] = useState(String(initial.km));
-  const [, setPlan] = useTripPlan();
+export function TripPlanner({ race, initial, explicit }: { race: Race; initial: TripInput; explicit: boolean }) {
+  const [plan, setPlan] = useTripPlan();
+  // What the fan has changed on this visit. Until then the planner shows, in order: the GET params
+  // (an explicit link), the plan saved for this race on an earlier visit, then the defaults. Nothing
+  // is written on first render, so coming back to the page never overwrites the saved plan.
+  const [changed, setChanged] = useState<TripInput | null>(null);
+  const saved = plan?.raceId === race.id && isTravelMode(plan.modeId) ? { modeId: plan.modeId, km: clampKm(plan.km) } : null;
+  const input: TripInput = changed ?? (explicit ? initial : (saved ?? initial));
+  // The distance box keeps what the fan is typing (even an empty field) until it loses focus.
+  const [kmText, setKmText] = useState<string | null>(null);
   const result = tripResult(input, race);
   const dest = destinationName(race);
   const action = `/weekend/${race.id}#getting-there`;
 
-  // The share card and the card hand-off below read the plan from here.
-  useEffect(() => {
-    setPlan({ raceId: race.id, cityId: race.cityId, modeId: input.modeId, km: input.km });
-  }, [race.id, race.cityId, input, setPlan]);
+  function update(next: TripInput) {
+    setChanged(next);
+    // The share card and the card hand-off below read the plan from here.
+    setPlan({ raceId: race.id, cityId: race.cityId, modeId: next.modeId, km: next.km });
+  }
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -53,13 +60,13 @@ export function TripPlanner({ race, initial }: { race: Race; initial: TripInput 
             min={TRIP_KM_MIN}
             max={TRIP_KM_MAX}
             step={1}
-            value={kmText}
+            value={kmText ?? String(input.km)}
             onChange={(e) => {
               setKmText(e.target.value);
               const n = Number(e.target.value);
-              if (Number.isFinite(n) && n > 0) setInput((s) => ({ ...s, km: clampKm(n) }));
+              if (Number.isFinite(n) && n > 0) update({ ...input, km: clampKm(n) });
             }}
-            onBlur={() => setKmText(String(input.km))}
+            onBlur={() => setKmText(null)}
             className={cn(FIELD, "num")}
           />
         </div>
@@ -78,7 +85,7 @@ export function TripPlanner({ race, initial }: { race: Race; initial: TripInput 
                   name="mode"
                   value={m.id}
                   checked={m.id === input.modeId}
-                  onChange={() => setInput((s) => ({ ...s, modeId: m.id }))}
+                  onChange={() => update({ ...input, modeId: m.id })}
                   className="sr-only"
                 />
                 <span>
@@ -124,7 +131,7 @@ export function TripPlanner({ race, initial }: { race: Race; initial: TripInput 
           <summary className="w-fit cursor-pointer font-sans text-[0.8125rem] text-ink-3 underline decoration-1 underline-offset-[3px] hover:text-ink">
             How this is worked out
           </summary>
-          <div className="mt-3 flex flex-col gap-3 font-sans text-[0.8125rem] leading-snug text-ink-2">
+          <div className="mt-3 flex flex-col gap-3 font-sans text-[0.8125rem] leading-snug text-ink-2 animate-in fade-in-0 slide-in-from-top-1 duration-200 ease-[cubic-bezier(.4,0,.2,1)]">
             <p>
               Estimated with {sourceShortName("defra-2025")} UK conversion factors per passenger-km, used as proxies for travel in{" "}
               {race.country}. The comparison doesn&apos;t depend on distance; the kilograms do.
