@@ -80,11 +80,11 @@
 }
 .imageBox[data-image="render-rear"] {
   /*
-   * The render's own backdrop, sampled from its top and bottom edges. A hard
-   * two-tone split (hidden behind the image) so the contained image has no
-   * visible edge above or below it.
+   * The render is shown whole, as a plate on the chapter ground: its backdrop
+   * is vignetted, so no flat fill could hide the edge, and a clean hard edge
+   * reads as intended.
    */
-  background: linear-gradient(#c1dfe3 50%, #cee8ec 50%);
+  background: var(--bg);
 }
 .imageBox[data-image="active-aero"] {
   background: #b6d3d9;
