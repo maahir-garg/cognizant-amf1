@@ -159,6 +159,10 @@
     background-color 500ms var(--ease) 150ms,
     border-color 500ms var(--ease) 150ms;
 }
+/* Small marks get their own layer only while their chapter is on screen, so growing and recolouring never repaints the stage. */
+.stage[data-near] .layer[data-active] [data-grow] {
+  will-change: transform;
+}
 .stage [data-grow="x"] {
   transform-origin: 0 50%;
 }

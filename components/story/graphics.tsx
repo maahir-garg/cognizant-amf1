@@ -268,7 +268,7 @@ export function TracksideGraphic({ highlight }: { highlight?: string[] }) {
       </div>
       <ul className="flex flex-col">
         {rows.map((r, ri) => (
-          <li key={r.raceId} className={cn("grid h-7 items-center gap-x-3 border-t border-line text-[0.8125rem] sm:text-[0.875rem] lg:h-9 min-[1440px]:text-base", COLS)}>
+          <li key={r.raceId} className={cn("grid h-7 items-center gap-x-3 border-t border-line [contain:layout_paint] text-[0.8125rem] sm:text-[0.875rem] lg:h-9 min-[1440px]:text-base", COLS)}>
             <span className="truncate text-ink-2">{r.label}</span>
             <span aria-hidden data-grow="x" className="flex h-3 w-full gap-px lg:h-4" style={{ "--i": ri } as CSSProperties}>
               {r.parts.map((p) =>
