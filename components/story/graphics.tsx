@@ -126,7 +126,7 @@ export function FootprintGraphic({ highlight }: { highlight?: string[] }) {
       </div>
 
       {/* The bar: 2px ground-coloured gaps, the part under discussion highlighted. */}
-      <div aria-hidden className="flex h-8 w-full gap-[2px] lg:h-10">
+      <div aria-hidden data-grow="x" className="flex h-8 w-full gap-[2px] lg:h-10">
         {segs.map((s) => (
           <div
             key={s.key}
@@ -141,8 +141,8 @@ export function FootprintGraphic({ highlight }: { highlight?: string[] }) {
         {/* Staircase labels with 1px leader lines for the mid-sized categories. */}
         {fromBar.map((s, i) => (
           <Leader key={s.key} x={s.centre} top={0} y={22 + i * ROW} lit={on(s.key)}>
-            <span className="text-[0.875rem] lg:text-[0.9375rem]">{s.label}</span>
-            <Figure id={s.factId} className="text-[0.875rem] font-semibold lg:text-[0.9375rem]" />
+            <span className="text-[0.875rem] lg:text-[0.9375rem] min-[1440px]:text-base">{s.label}</span>
+            <Figure id={s.factId} className="text-[0.875rem] font-semibold lg:text-[0.9375rem] min-[1440px]:text-base" />
           </Leader>
         ))}
 
@@ -160,7 +160,12 @@ export function FootprintGraphic({ highlight }: { highlight?: string[] }) {
           <span className="sm:hidden">Enlarged</span>
           <span className="hidden sm:inline">End of the bar, enlarged</span>
         </span>
-        <div aria-hidden className="absolute left-1/2 flex w-1/2 gap-[2px]" style={{ top: `${insetTop}px`, height: `${insetH}px` }}>
+        <div
+          aria-hidden
+          data-grow="x"
+          className="absolute left-1/2 flex w-1/2 gap-[2px]"
+          style={{ top: `${insetTop}px`, height: `${insetH}px`, "--i": 3 } as CSSProperties}
+        >
           {tail.map((t) => (
             <div
               key={t.key}
@@ -173,8 +178,8 @@ export function FootprintGraphic({ highlight }: { highlight?: string[] }) {
           const t = tail.find((x) => x.key === s.key)!;
           return (
             <Leader key={s.key} x={50 + t.tailCentre / 2} top={insetRowsTop} y={insetRowsTop + 22 + i * ROW} lit={on(s.key)}>
-              <span className="text-[0.875rem] lg:text-[0.9375rem]">{s.label}</span>
-              <Figure id={s.factId} className="text-[0.875rem] font-semibold lg:text-[0.9375rem]" />
+              <span className="text-[0.875rem] lg:text-[0.9375rem] min-[1440px]:text-base">{s.label}</span>
+              <Figure id={s.factId} className="text-[0.875rem] font-semibold lg:text-[0.9375rem] min-[1440px]:text-base" />
             </Leader>
           );
         })}
@@ -262,10 +267,10 @@ export function TracksideGraphic({ highlight }: { highlight?: string[] }) {
         <Crossfade showA={showHvo} a="HVO" b="grid · solar" className="shrink-0 text-right" />
       </div>
       <ul className="flex flex-col">
-        {rows.map((r) => (
-          <li key={r.raceId} className={cn("grid h-7 items-center gap-x-3 border-t border-line text-[0.8125rem] sm:text-[0.875rem] lg:h-9", COLS)}>
+        {rows.map((r, ri) => (
+          <li key={r.raceId} className={cn("grid h-7 items-center gap-x-3 border-t border-line text-[0.8125rem] sm:text-[0.875rem] lg:h-9 min-[1440px]:text-base", COLS)}>
             <span className="truncate text-ink-2">{r.label}</span>
-            <span aria-hidden className="flex h-3 w-full gap-px lg:h-4">
+            <span aria-hidden data-grow="x" className="flex h-3 w-full gap-px lg:h-4" style={{ "--i": ri } as CSSProperties}>
               {r.parts.map((p) =>
                 p.fact ? (
                   <span
@@ -313,7 +318,7 @@ export function TargetsGraphic({ highlight }: { highlight?: string[] }) {
         const target = getFact(r.targetId);
         return (
           <div key={r.key} className={cn("flex flex-col gap-1.5 transition-colors", EASE, lit ? "text-ink" : "text-ink-3")}>
-            <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5 text-[0.8125rem] sm:text-[0.875rem]">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5 text-[0.8125rem] sm:text-[0.875rem] min-[1440px]:text-base">
               <span>{r.label}</span>
               <span className="flex items-baseline gap-2">
                 {/* A fall reads as "down 74%", never a signed "-74%". */}
@@ -327,6 +332,7 @@ export function TargetsGraphic({ highlight }: { highlight?: string[] }) {
             </div>
             <div aria-hidden className="relative h-2.5 w-full bg-surface-2">
               <span
+                data-grow="x"
                 className={cn("absolute inset-y-0 left-0 transition-colors", EASE, lit || nothing ? "bg-highlight" : "bg-line-strong")}
                 style={{ width: `${r.progress * 100}%` }}
               />
@@ -345,19 +351,24 @@ export function TargetsGraphic({ highlight }: { highlight?: string[] }) {
       {/* Phones: the progress rows come first so a resting card never covers them. */}
       <div className="order-last mt-5 lg:order-none lg:mt-0">
         <div className="grid h-[clamp(110px,18svh,160px)] grid-cols-4 items-end gap-3 sm:gap-5 lg:h-[clamp(150px,26svh,250px)]">
-          {bars.map((b) => {
+          {bars.map((b, bi) => {
             const lit = hl.includes(b.key);
-            const style: CSSProperties = { height: `${Math.max(b.share * 100, 1.5)}%` };
+            const style = { height: `${Math.max(b.share * 100, 1.5)}%`, "--i": bi } as CSSProperties;
             return (
               <div key={b.key} className="flex h-full flex-col justify-end gap-1.5">
-                <Figure id={b.factId} className={cn("text-[0.8125rem] font-semibold transition-colors sm:text-[0.875rem] lg:text-[0.9375rem]", EASE, lit ? "text-ink" : "text-ink-3")}>
+                <Figure id={b.factId} className={cn("text-[0.8125rem] font-semibold transition-colors sm:text-[0.875rem] lg:text-[0.9375rem] min-[1440px]:text-base", EASE, lit ? "text-ink" : "text-ink-3")}>
                   {/* The unit is in the chart title. */}
                   {formatFact(getFact(b.factId)).replace(/\s*tCO₂e$/, "")}
                 </Figure>
                 {b.kind === "achieved" ? (
-                  <span aria-hidden className={cn("block w-full transition-colors", EASE, lit || nothing ? "bg-highlight" : "bg-line-strong")} style={style} />
+                  <span aria-hidden data-grow="y" className={cn("block w-full transition-colors", EASE, lit || nothing ? "bg-highlight" : "bg-line-strong")} style={style} />
                 ) : (
-                  <span aria-hidden className={cn("block w-full border-[1.5px] border-dashed transition-colors", EASE, lit ? "border-highlight" : "border-ink-3")} style={style} />
+                  <span
+                    aria-hidden
+                    data-grow="y"
+                    className={cn("block w-full border-[1.5px] border-dashed transition-colors", EASE, lit ? "border-highlight" : "border-ink-3")}
+                    style={style}
+                  />
                 )}
               </div>
             );
@@ -365,7 +376,7 @@ export function TargetsGraphic({ highlight }: { highlight?: string[] }) {
         </div>
         <div className="mt-2 grid grid-cols-4 gap-3 border-t border-line-strong pt-2 sm:gap-5">
           {bars.map((b) => (
-            <span key={b.key} className={cn("text-[0.8125rem] leading-tight transition-colors", EASE, hl.includes(b.key) ? "text-ink" : "text-ink-3")}>
+            <span key={b.key} className={cn("text-[0.8125rem] leading-tight transition-colors min-[1440px]:text-base", EASE, hl.includes(b.key) ? "text-ink" : "text-ink-3")}>
               {b.label}
             </span>
           ))}
@@ -384,13 +395,13 @@ function TileValue({ id }: { id: string }) {
   const symbol = p.unit === "%" || p.unit === "×";
   return (
     <Figure id={id} className="items-baseline gap-2">
-      <span className="text-[clamp(1.75rem,1.2rem+1.8vw,3rem)] leading-none font-bold [font-stretch:75%]">
+      <span className="text-[clamp(1.75rem,1.2rem+1.8vw,3rem)] leading-none font-bold [font-stretch:75%] lg:text-[clamp(2.5rem,1.5rem+2.5vw,4.5rem)]">
         {p.prefix}
         {p.value}
         {symbol ? p.unit : ""}
         {p.suffix}
       </span>
-      {!symbol && p.unit && <span className="text-[0.9375rem] font-medium">{p.unit}</span>}
+      {!symbol && p.unit && <span className="text-[0.9375rem] font-medium lg:text-lg">{p.unit}</span>}
     </Figure>
   );
 }

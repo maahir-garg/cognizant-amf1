@@ -65,8 +65,8 @@ test.describe("the story", () => {
     await expect(watched).toBeChecked();
     await page.reload();
     await expect(watched).toBeChecked();
-    // Long-time fans get the detail open by default.
-    await expect(page.locator("details[open]").first()).toBeAttached();
+    // Long-time fans get the denser brief at the top of each chapter; the detail stays one tap away.
+    await expect(page.getByRole("heading", { name: "In brief" }).first()).toBeAttached();
   });
 
   test("the chapter tracker lists every chapter", async ({ page }) => {
