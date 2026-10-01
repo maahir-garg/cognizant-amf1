@@ -122,8 +122,27 @@ function MarkedDraft({ check }: { check: DraftCheck }) {
 function replacementFor(f: DraftFinding): string | null {
   const value = f.nearest ? getFact(f.nearest).value : null;
   if (value === null || /[a-z]/i.test(f.raw.replace(/per ?cent/i, ""))) return null;
+  // Same number, wrong unit or direction: swapping digits would fix nothing.
+  if (Math.abs(value) === f.value) return null;
   const formatted = new Intl.NumberFormat("en-GB", { maximumFractionDigits: 2, useGrouping: f.raw.includes(",") || Math.abs(value) >= 10000 }).format(Math.abs(value));
   return f.raw.replace(/\d[\d,]*(?:\.\d+)?/, formatted);
+}
+
+/** Other facts a number could be, by name and page rather than id. */
+function OtherFigures({ label, ids }: { label: string; ids: string[] }) {
+  return (
+    <span className="flex flex-col gap-0.5 text-[0.8125rem] leading-snug text-ink-3">
+      <span>{label}:</span>
+      {ids.map((id) => {
+        const fact = getFact(id);
+        return (
+          <span key={id}>
+            {fact.metric} ({factCitation(fact).label})
+          </span>
+        );
+      })}
+    </span>
+  );
 }
 
 function FindingDetail({
@@ -185,11 +204,10 @@ function FindingDetail({
             {c}
           </span>
         ))}
-        {f.alternatives.length > 0 && (
-          <span className="text-[0.8125rem] text-ink-3">
-            Could also be: <span className="font-mono text-[0.75rem]">{f.alternatives.join(", ")}</span>
-          </span>
+        {f.rounded && (
+          <span className="text-[0.875em] leading-snug text-ink">Rounded in your draft. The published figure is shown above.</span>
         )}
+        {f.alternatives.length > 0 && <OtherFigures label="Could also be" ids={f.alternatives} />}
       </div>
     );
   }
@@ -210,11 +228,7 @@ function FindingDetail({
             Use the published figure
           </Button>
         )}
-        {f.alternatives.length > 0 && (
-          <span className="text-[0.8125rem] text-ink-3">
-            Published figures with this value: <span className="font-mono text-[0.75rem]">{f.alternatives.join(", ")}</span>
-          </span>
-        )}
+        {f.alternatives.length > 0 && <OtherFigures label="Published figures with this value" ids={f.alternatives} />}
       </div>
     );
   }

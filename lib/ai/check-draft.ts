@@ -47,6 +47,8 @@ export type DraftFinding = {
   cautions: string[];
   /** For "wording": what the sentence must say or stop saying before the figure can go. */
   needs: string[];
+  /** Matched to a figure the draft rounds (e.g. "about 70,000" for 69,837): the desk shows the exact one. */
+  rounded: boolean;
 };
 
 export type WordingNote = { phrase: string; start: number; end: number; reason: string };
@@ -128,6 +130,53 @@ const COUNTED_NOUNS = new Set<string>([
   ...allFacts.flatMap((f) => (f.value === null ? [] : unitWordsFor(f))).filter((w) => !["t", "x", "time", "carbon"].includes(w)),
   ..."school company team volunteer hour tree car race staff employee colleague partner mentor mentee city pupil class charity day week month kid".split(" "),
 ]);
+
+/**
+ * Unit symbols a writer may put after a number, by canonical symbol. A
+ * symbol has to agree with the fact's own unit: "1,188 kg" is not the
+ * figure published as 1,188 tCO2e, and "3,434 MW" is not 3,434 panels.
+ */
+const UNIT_SYMBOLS: Record<string, string> = {
+  kg: "kg", kilogram: "kg", kilo: "kg", g: "g", gram: "g",
+  t: "t", tonne: "t", ton: "t", tco2e: "t", tco2: "t", kt: "kt", kilotonne: "kt", mt: "Mt", megatonne: "Mt",
+  kwh: "kWh", mwh: "MWh", gwh: "GWh", twh: "TWh", kw: "kW", mw: "MW", gw: "GW",
+  gj: "GJ", mj: "MJ", tj: "TJ",
+  m2: "m²", sqm: "m²", hectare: "ha", ha: "ha", acre: "acre", km: "km", mile: "mile",
+  litre: "l", liter: "l",
+};
+
+/** The canonical symbol a fact's unit is published in, for measured (not counted) units. */
+const FACT_SYMBOL: Record<string, string> = {
+  tCO2e: "t", tonnes: "t", "tCO2e/flight": "t", "kgCO2e/lap": "kg", kg: "kg",
+  kWh: "kWh", GJ: "GJ", "m²": "m²", litres: "l",
+};
+
+/** Words that sit between a number and its noun without being the noun ("of", "the"). */
+const LINK_WORDS = new Set(["of", "in", "at", "for", "to", "from", "and", "or", "by", "on", "with", "the", "a", "an", "more", "than", "over", "about", "around"]);
+
+/**
+ * What the writer says a number counts or measures: a unit symbol straight
+ * after it, or the first counted noun within two words ("1,188 solar panels").
+ */
+function statedUnit(text: string, end: number): { symbol: string | null; noun: string | null; word: string | null } {
+  const raw = /^[\s-]*([A-Za-z][A-Za-z0-9²]*)(?:\s+([A-Za-z][A-Za-z0-9²]*))?/.exec(text.slice(end));
+  if (!raw) return { symbol: null, noun: null, word: null };
+  const words = [raw[1], raw[2]].filter((w): w is string => Boolean(w));
+  const norm = (w: string) => stem(w.toLowerCase().replace("²", "2"));
+  const first = norm(words[0]);
+  if (UNIT_SYMBOLS[first]) return { symbol: UNIT_SYMBOLS[first], noun: null, word: words[0] };
+  if (COUNTED_NOUNS.has(first)) return { symbol: null, noun: first, word: words[0] };
+  if (words[1] && !LINK_WORDS.has(first)) {
+    const second = norm(words[1]);
+    if (COUNTED_NOUNS.has(second)) return { symbol: null, noun: second, word: words[1] };
+  }
+  return { symbol: null, noun: null, word: null };
+}
+
+/** "published in tCO₂e" for a measured unit, "published as a count of students" for a counted one. */
+function publishedAs(f: Fact): string {
+  return FACT_SYMBOL[f.unit] ? `published in ${unitLabel(f.unit)}` : `published as a count of ${unitLabel(f.unit)}`;
+}
 
 /** The one or two words straight after a number, e.g. "students", "tCO2e removed". */
 function followingWords(text: string, end: number): string[] {
@@ -239,7 +288,7 @@ function scoreCandidates(
   pool: Fact[],
 ): Candidate[] & { mismatched?: Fact[] } {
   const after = followingWords(text, end);
-  const noun = after[0] && COUNTED_NOUNS.has(after[0]) ? after[0] : null;
+  const stated = statedUnit(text, end);
   const currency = currencyOf(n.raw);
   const out: Candidate[] & { mismatched?: Fact[] } = [];
   out.mismatched = [];
@@ -252,7 +301,11 @@ function scoreCandidates(
     if (!numbersMatch(n, Math.abs(f.value))) continue;
 
     const unitWords = unitWordsFor(f);
-    if (noun && !isPercent && !isMoney && !unitWords.includes(noun)) {
+    // A unit symbol must be the fact's own; a counted noun must be the fact's unit,
+    // which also rules out nouns against measured units ("panels" for tCO2e).
+    const symbolClash = stated.symbol !== null && FACT_SYMBOL[f.unit] !== stated.symbol;
+    const nounClash = stated.noun !== null && !isPercent && !isMoney && !unitWords.includes(stated.noun);
+    if (symbolClash || nounClash) {
       out.mismatched.push(f);
       continue;
     }
@@ -332,6 +385,7 @@ export function checkDraft(input: string, pool: Fact[] = allFacts): DraftCheck {
       nearest: null,
       cautions: [] as string[],
       needs: [] as string[],
+      rounded: false,
     };
 
     if (isOrdinal(text, end)) {
@@ -356,6 +410,8 @@ export function checkDraft(input: string, pool: Fact[] = allFacts): DraftCheck {
           .map((c) => c.fact.id),
         reason: `Matches a published figure: ${best.fact.metric} (${factCitation(best.fact).label}).`,
         cautions: cautionsFor(best.fact),
+        // More than the loss of decimals: the writer rounded, so show the exact published figure.
+        rounded: Math.abs(n.value - Math.abs(best.fact.value!)) >= 1 && Math.abs(n.value - Math.abs(best.fact.value!)) / Math.abs(best.fact.value!) > 0.001,
       });
       continue;
     }
@@ -368,13 +424,13 @@ export function checkDraft(input: string, pool: Fact[] = allFacts): DraftCheck {
     const mismatched = candidates.mismatched ?? [];
     if (candidates.length === 0 && mismatched.length > 0) {
       const f = mismatched.find((m) => [...tokens(sentenceText)].some((t) => factBag(m).has(t))) ?? mismatched[0];
-      const noun = /^[\s-]*([A-Za-z]+)/.exec(text.slice(end))?.[1] ?? "that";
+      const said = statedUnit(text, end).word ?? "that";
       findings.push({
         ...base,
         status: "held",
         factId: null,
         nearest: f.id,
-        reason: `${n.raw} is published as a count of ${unitLabel(f.unit)}, not ${noun}. Check what the figure counts.`,
+        reason: `${n.raw} is ${publishedAs(f)}, not ${said}. Check what the figure counts or measures.`,
       });
       continue;
     }
@@ -405,6 +461,8 @@ export function checkDraft(input: string, pool: Fact[] = allFacts): DraftCheck {
     });
   }
 
+  findings.push(...numberWords(text, findings));
+  findings.sort((a, b) => a.start - b.start);
   applyFraming(text, findings);
 
   const cited = findings.filter((f) => f.status === "matched" || f.status === "wording");
@@ -420,6 +478,54 @@ export function checkDraft(input: string, pool: Fact[] = allFacts): DraftCheck {
     ok: findings.length > 0 && held === 0 && needsWording === 0,
     factIds: [...new Set(cited.map((f) => f.factId!))],
   };
+}
+
+/* ------------------------------------------------------- number words */
+
+const NUMBER_WORD_VALUES: Record<string, number> = {
+  one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12,
+  thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16, seventeen: 17, eighteen: 18, nineteen: 19, twenty: 20, thirty: 30,
+  forty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80, ninety: 90, hundred: 100, thousand: 1000, million: 1e6, billion: 1e9,
+};
+const NUMBER_WORD = Object.keys(NUMBER_WORD_VALUES).join("|");
+const NUMBER_WORDS_RE = new RegExp(`\\b(?:${NUMBER_WORD})(?:[\\s-]+(?:and[\\s-]+)?(?:${NUMBER_WORD}))*\\b(?:\\s*(?:per\\s?cent|%))?`, "gi");
+const TIME_NOUNS = new Set(["day", "week", "month", "year", "time"]);
+
+/**
+ * Quantities spelled out in words ("three thousand four hundred panels",
+ * "ninety per cent") can't be matched to a figure, so they are held back
+ * rather than silently skipped. Small words ("two days", "one of") are left
+ * alone unless a counted noun follows ("nine interns").
+ */
+function numberWords(text: string, existing: DraftFinding[]): DraftFinding[] {
+  const out: DraftFinding[] = [];
+  for (const m of text.matchAll(NUMBER_WORDS_RE)) {
+    const start = m.index ?? 0;
+    const end = start + m[0].length;
+    if (existing.some((f) => start < f.end && end > f.start)) continue;
+    if (/formula\s*$/i.test(text.slice(Math.max(0, start - 10), start))) continue; // "Formula One"
+    const parts = m[0].toLowerCase().split(/[\s-]+/).filter((w) => w in NUMBER_WORD_VALUES);
+    const percent = /per\s?cent|%/i.test(m[0]);
+    const big = parts.some((w) => NUMBER_WORD_VALUES[w] >= 10);
+    const noun = statedUnit(text, end).noun;
+    const counted = noun !== null && !TIME_NOUNS.has(noun);
+    if (!(parts.length > 1 || big || percent || counted)) continue;
+    out.push({
+      raw: m[0],
+      value: NaN,
+      start,
+      end,
+      status: "held",
+      factId: null,
+      alternatives: [],
+      nearest: null,
+      cautions: [],
+      needs: [],
+      rounded: false,
+      reason: "Write figures as digits so they can be checked against the fact base.",
+    });
+  }
+  return out;
 }
 
 /* ------------------------------------------------------------ framing */
@@ -471,6 +577,66 @@ const SENSITIVE: { ids: string[]; ok: (draft: string, sentence: string) => boole
   },
 ];
 
+const ACHIEVED_WORDS = /\b(hit|hits|achieved|achieves|met|meets|reached|reaches|beat|beaten|exceeded|delivered|attained|already)\b/i;
+const RISE_WORDS = /\b(rose|risen|rises|rising|increas\w*|grew|grown|grows|growing|higher|climb\w*|jump\w*|soar\w*|doubled|tripled|went up|gone up)\b/i;
+const FALL_WORDS = /\b(fell|fall|falls|fallen|falling|cut|cuts|reduc\w*|lower\w*|decreas\w*|drop\w*|declin\w*|down|saved|saves|saving|avoid\w*|less|shrank|halved|removed)\b/i;
+
+/** The clause around a number: commas and semicolons split "fell 14%, while interactions rose 33%". */
+function clauseAround(text: string, start: number, end: number): string {
+  const sentence = sentenceAround(text, start);
+  const offset = text.indexOf(sentence);
+  const local = start - offset;
+  const before = sentence.slice(0, local).split(/[,;:]|\bwhile\b|\bbut\b|\bwhereas\b/).at(-1) ?? "";
+  const after = sentence.slice(local + (end - start)).split(/[,;:]|\bwhile\b|\bbut\b|\bwhereas\b/)[0] ?? "";
+  return `${before}${text.slice(start, end)}${after}`;
+}
+
+/** A fall reported as a rise (or the reverse) is a wrong claim, not a wording issue. */
+function directionClash(f: Fact, clause: string): string | null {
+  const context = `${f.metric} ${f.phrase ?? ""}`;
+  const reduction = (f.value ?? 0) < 0 || /\b(reduction|cut|cuts|fell|fall|avoided|saved|saving|lower|down|decrease|less)\b/i.test(context);
+  const increase = !reduction && (f.value ?? 0) > 0 && /\b(growth|increase|grew|rise|rose)\b/i.test(context);
+  const rise = RISE_WORDS.test(clause) || /\bup\s+(by\s+)?[£$€]?\d/i.test(clause);
+  const fall = FALL_WORDS.test(clause);
+  if (reduction && rise && !fall) return "The report gives this figure as a fall; the sentence says it rose. Check the direction.";
+  if (increase && fall && !rise) return "The report gives this figure as a rise; the sentence says it fell. Check the direction.";
+  return null;
+}
+
+/** Organisations a sentence may credit, from every programme's partner list. */
+const PARTNER_NAMES = [...new Set(["Cognizant", ...initiatives.flatMap((i) => i.partners)])].filter(
+  (p) => !/^(Formula 1|Aston Martin Lagonda)$/.test(p),
+);
+const EVENT_RE = /\b([A-Z][a-z]+(?:[ -][A-Z][a-z]+)?) (Grand Prix|GP)\b|\bMake A Mark Day\b|\bWorld Finals\b|\bIndustry Day\b|\bTransition Event\b/g;
+
+/** Words that tie a fact to its programme, partners and events. */
+function factContext(f: Fact): string {
+  const own = initiatives.filter((i) => i.factIds.includes(f.id));
+  const tagNames = f.tags.filter((t) => /^(partner|charity):/.test(t)).map((t) => t.split(":")[1].replace(/-/g, " "));
+  return [f.metric, f.phrase ?? "", f.valueText ?? "", ...tagNames, ...own.flatMap((i) => [i.name, ...i.partners])].join(" ").toLowerCase();
+}
+
+/** A sentence that credits a partner or event the report doesn't tie to this figure. */
+function attributionProblem(f: Fact, sentence: string): string | null {
+  const ctx = factContext(f);
+  const clean = sentence.replace(/Aston Martin Aramco/g, "");
+  const partner = PARTNER_NAMES.find((p) => new RegExp(`\\b${p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`).test(clean) && !ctx.includes(p.toLowerCase()));
+  const own = initiatives.find((i) => i.factIds.includes(f.id));
+  const where = own ? ` It belongs to ${own.name}.` : "";
+  if (partner) return `The report does not tie this figure to ${partner}.${where} Say who it is about.`;
+  for (const m of clean.matchAll(EVENT_RE)) {
+    const event = m[0];
+    const key = (m[1] ?? event).toLowerCase();
+    // "Singapore Grand Prix" is fine for a figure about Singapore only if the event itself is named in the fact.
+    const named = m[2] ? ctx.includes(event.toLowerCase()) || ctx.includes(`${key} gp`) : ctx.includes(event.toLowerCase());
+    if (!named)
+      return own
+        ? `The report ties this figure to ${own.name}, not the ${event}. Name the right event.`
+        : `The report does not tie this figure to the ${event}. Take the event out or use a figure for it.`;
+  }
+  return null;
+}
+
 /** Turns matched findings into "needs wording" where the sentence frames the figure in a way the report does not. */
 function applyFraming(text: string, findings: DraftFinding[]): void {
   const matched = findings.filter((f) => f.status === "matched" && f.factId);
@@ -493,7 +659,12 @@ function applyFraming(text: string, findings: DraftFinding[]): void {
 
     if (f.qualifier === "target" && !TARGET_WORDS.test(sentence)) {
       needs.push("This is a target, not a result. Say it is what the team aims for.");
+    } else if (f.qualifier === "target" && ACHIEVED_WORDS.test(sentence)) {
+      needs.push("This is a target the team is working towards, not one it has reached. Say it is the target.");
     }
+
+    const attribution = attributionProblem(f, sentence);
+    if (attribution) needs.push(attribution);
 
     if (/as originally reported/i.test(f.metric)) {
       needs.push("This figure was replaced when the report restated earlier years. Use the restated figure or the report's own progress figures.");
@@ -514,6 +685,16 @@ function applyFraming(text: string, findings: DraftFinding[]): void {
 
     for (const rule of SENSITIVE) {
       if (rule.ids.includes(f.id) && !rule.ok(text, sentence)) needs.push(rule.need);
+    }
+
+    const direction = directionClash(f, clauseAround(text, finding.start, finding.end));
+    if (direction) {
+      finding.status = "held";
+      finding.nearest = f.id;
+      finding.factId = null;
+      finding.alternatives = [];
+      finding.reason = direction;
+      continue;
     }
 
     if (needs.length) {
