@@ -78,6 +78,13 @@ test.describe("partner golden path", () => {
     const input = page.getByLabel("Your draft");
     const summary = page.getByText(/matched · \d+ need wording · \d+ held back/);
 
+    // The checker opens empty; the example is a button away.
+    await expect(input).toHaveValue("");
+    await page.getByRole("button", { name: "Try the example" }).click();
+    await expect(input).not.toHaveValue("");
+    await page.getByRole("button", { name: "Clear", exact: true }).click();
+    await expect(input).toHaveValue("");
+
     await input.fill(DEMO_LINE);
     await expect(summary).toContainText("✓ 1 matched · 0 need wording · 0 held back");
     const chip = page.getByRole("button", { name: /^Source 1: / });
@@ -91,6 +98,7 @@ test.describe("partner golden path", () => {
 
     await input.fill(TYPO_LINE);
     await expect(summary).toContainText("0 matched · 0 need wording · 1 held back");
+    await expect(summary).not.toContainText("✓");
     await expect(page.getByRole("cell", { name: /Held back/ })).toBeVisible();
     await expect(page.getByRole("cell", { name: "275", exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: "Send for review" })).toBeDisabled();

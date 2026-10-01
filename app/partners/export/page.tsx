@@ -72,9 +72,15 @@ export default async function ExportPage() {
                         {p.note} · <span className="num">{rows}</span> rows
                       </span>
                     </p>
-                    <code className="block overflow-x-auto rounded-sm bg-surface-2 px-3 py-2 font-mono text-[0.75rem] whitespace-nowrap text-ink">
-                      {`curl "${origin}${ENDPOINT}${q}"`}
-                    </code>
+                    {/* The command scrolls sideways on a phone, so keyboard users can focus it to scroll. */}
+                    <div
+                      role="region"
+                      tabIndex={0}
+                      aria-label={`curl command for ${p.label.toLowerCase()}`}
+                      className="overflow-x-auto rounded-sm bg-surface-2 px-3 py-2"
+                    >
+                      <code className="block font-mono text-[0.75rem] whitespace-nowrap text-ink">{`curl "${origin}${ENDPOINT}${q}"`}</code>
+                    </div>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <Button asChild variant="outline">

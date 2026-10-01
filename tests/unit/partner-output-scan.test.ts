@@ -72,4 +72,18 @@ describe("partner output scan", () => {
       expect(o.text, label(o)).not.toMatch(/Our Transition Event[^.]*\. [^.]*The AFBE-UK Transition Event/);
     }
   });
+
+  it("no two LinkedIn drafts share an opening sentence", () => {
+    const posts = outputs.filter((o) => o.req.task === "linkedin-post");
+    const openers = posts.map((o) => o.text.split(/(?<=\.)\s+/)[0]);
+    expect(new Set(openers).size, openers.join("\n")).toBe(openers.length);
+    for (const o of posts) expect(o.text.split(/(?<=\.)\s+/)[1], label(o)).not.toMatch(/Global AI Services Partner/);
+  });
+
+  it("follow-on figures join their lead sentence instead of standing alone", () => {
+    for (const o of outputs.filter((x) => x.req.task !== "story-kit")) {
+      expect(o.text, label(o)).not.toMatch(/(^|[.\n] ?|- )(Those \w+|They) came from/);
+      expect(o.text, label(o)).not.toMatch(/World Finals[^.]*\. At the STEM Racing World Finals/);
+    }
+  });
 });

@@ -200,8 +200,22 @@ const POST_INTRO: Record<string, string> = {
   belong: "Mentoring and inclusion programmes are a quiet part of the Aston Martin Aramco Formula One Team's year.",
   environment: "The Aston Martin Aramco Formula One Team has published how its footprint is changing, and where it has to go.",
   governance: "The Aston Martin Aramco Formula One Team's impact figures are checked and published, and here is how.",
-  mixed: "The Aston Martin Aramco Formula One Team's latest impact report covers the car, the campus and the people around it.",
 };
+
+/** What each pillar adds to a post that covers several, so every combination opens differently. */
+const PILLAR_SUBJECT: Record<Pillar, string> = {
+  environment: "its carbon footprint",
+  belong: "its mentoring and inclusion programmes",
+  community: "its work with schools and students",
+  governance: "how its figures are checked",
+};
+
+function postIntro(pillars: string[]): string {
+  if (pillars.length === 1 && POST_INTRO[pillars[0]]) return POST_INTRO[pillars[0]];
+  const subjects = PILLAR_ORDER.filter((p) => pillars.includes(p) || pillars.length === 0).map((p) => PILLAR_SUBJECT[p]);
+  const list = subjects.length > 1 ? `${subjects.slice(0, -1).join(", ")} and ${subjects.at(-1)}` : subjects[0];
+  return `The Aston Martin Aramco Formula One Team's latest impact report covers ${list}.`;
+}
 const POST_CLOSING = "Each figure comes from the team's published report, with the page it is on.";
 
 /** A phrase that leans on the sentence before it ("They came from ..."), so it can't open a bullet or follow an unrelated fact. */
@@ -261,6 +275,21 @@ function namesProgramme(sentence: string, programme: Initiative): boolean {
  * programme" becomes its name, "Its"/"It" outside a programme becomes "the
  * team", and a follow-on line joins the line it follows or is dropped.
  */
+/**
+ * Adds a follow-on sentence to the line it follows without repeating it:
+ * "Those students came from 35 countries." becomes ", from 35 countries" on
+ * the lead sentence, and "At the STEM Racing World Finals the team ..."
+ * after a sentence that already named the World Finals becomes "There, the
+ * team ...".
+ */
+function joinFollowOn(unit: string, sentence: string): string {
+  const from = /^(?:Those \w+|They) came from (.+?)\.$/.exec(sentence);
+  if (from && /\.$/.test(unit)) return `${unit.slice(0, -1)}, from ${from[1]}.`;
+  const at = /^At the ([A-Z][\w-]*(?: [A-Z][\w-]*)*),? /.exec(sentence);
+  if (at && unit.includes(at[1])) return `${unit} There, ${sentence.slice(at[0].length)}`;
+  return `${unit} ${sentence}`;
+}
+
 function partnerUnits(facts: Fact[]): { fact: Fact; text: string }[] {
   const units: { fact: Fact; text: string }[] = [];
   let prev: Fact | undefined;
@@ -278,7 +307,7 @@ function partnerUnits(facts: Fact[]): { fact: Fact; text: string }[] {
     const sameProgramme = Boolean(programme && prev && programmeOf(prev)?.id === programme.id);
     // Consecutive figures from one programme, and follow-on lines, stay in one unit.
     if (units.length && (sameProgramme || ((startsLeaning || midPronoun) && follows(prev, f)))) {
-      units[units.length - 1].text += ` ${sentence}`;
+      units[units.length - 1].text = joinFollowOn(units[units.length - 1].text, sentence);
       prev = f;
       continue;
     }
@@ -304,11 +333,14 @@ function linkedinPostTemplate(req: AiRequest, facts: Fact[]): string {
   const race = typeof req.params.race === "string" ? getRace(req.params.race) : null;
   const intro = race
     ? `The Aston Martin Aramco Formula One Team races at the ${race.name.replace(/\s*\d{4}$/, "")} this week, and its work with students there started well before the lights go out.`
-    : (POST_INTRO[pillars.length === 1 ? pillars[0] : "mixed"] ?? POST_INTRO.mixed);
+    : postIntro(pillars);
   const parts: string[] = [intro];
-  const closing = POST_CLOSING;
+  // The partnership title closes the post instead of opening every one of them.
+  const units = partnerUnits(facts);
+  const role = units.filter((u) => u.fact.topic === "partners");
+  const closing = [...role.map((u) => u.text), POST_CLOSING].join(" ");
 
-  for (const unit of partnerUnits(facts)) {
+  for (const unit of units.filter((u) => !role.includes(u))) {
     // A unit can carry several sentences; never let one push the post past its length.
     if (words([...parts, unit.text, closing].join(" ")) > 135) break;
     parts.push(unit.text);

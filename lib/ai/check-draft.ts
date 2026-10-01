@@ -591,6 +591,35 @@ function clauseAround(text: string, start: number, end: number): string {
   return `${before}${text.slice(start, end)}${after}`;
 }
 
+/**
+ * A share or proportion ("81% of the footprint sits in the supply chain") is
+ * not a change. A percentage fact counts as a share unless its metric
+ * describes a change; a "who ..." clause ("mentees who felt they grew") is
+ * the population, not a change.
+ */
+function isShare(f: Fact): boolean {
+  if (f.unit !== "%" || (f.value ?? 0) < 0) return false;
+  const metric = f.metric.replace(/\bwho\b.*$/i, "");
+  return !/\b(reduction|cut|change|growth|progress|increase|decrease|fell|avoided|saved|lower|down|target|rise|grew|improvement)\b/i.test(metric);
+}
+
+const CHANGE_BEFORE =
+  /\b(fell|fall|falls|fallen|cut|cuts|down|reduc\w*|lower(?:ed)?|dropp?\w*|declin\w*|decreas\w*|rose|rise|rises|risen|grew|grow|grown|grows|up|increas\w*|climb\w*|jump\w*|improv\w*|shrank|halved)(\s+(by|of|to))?\s*$/i;
+const CHANGE_AFTER = /^\s*(lower|higher|less|more|down|up|drop|cut|fall|rise|reduction|increase|decrease|decline|improvement|smaller|bigger)\b/i;
+
+/** A share written as a change ("Emissions fell 81 per cent" for a share of the footprint) is a wrong claim. */
+function shareAsChange(f: Fact, text: string, start: number, end: number): string | null {
+  if (!isShare(f)) return null;
+  const clause = clauseAround(text, start, end);
+  const at = clause.indexOf(text.slice(start, end));
+  const before = clause.slice(Math.max(0, at - 40), at);
+  const after = clause.slice(at + (end - start), at + (end - start) + 30);
+  // "cut waste by 54%": a change verb a few words before "by".
+  const byChange = /\b(fell|cut|cuts|reduc\w*|lower\w*|dropp?\w*|decreas\w*|rose|grew|increas\w*|improv\w*|shrank)\b(?:\s+[\w'-]+){1,3}\s+by\s*$/i.test(before);
+  if (!CHANGE_BEFORE.test(before) && !CHANGE_AFTER.test(after) && !byChange) return null;
+  return `This figure is a share, not a change: the report gives it as "${f.metric}". Say what it is a share of, or use a published change figure.`;
+}
+
 /** A fall reported as a rise (or the reverse) is a wrong claim, not a wording issue. */
 function directionClash(f: Fact, clause: string): string | null {
   const context = `${f.metric} ${f.phrase ?? ""}`;
@@ -687,7 +716,7 @@ function applyFraming(text: string, findings: DraftFinding[]): void {
       if (rule.ids.includes(f.id) && !rule.ok(text, sentence)) needs.push(rule.need);
     }
 
-    const direction = directionClash(f, clauseAround(text, finding.start, finding.end));
+    const direction = shareAsChange(f, text, finding.start, finding.end) ?? directionClash(f, clauseAround(text, finding.start, finding.end));
     if (direction) {
       finding.status = "held";
       finding.nearest = f.id;
