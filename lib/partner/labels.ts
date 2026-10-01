@@ -5,7 +5,7 @@
  * figure always comes from the fact.
  */
 import { getFact } from "@/lib/data/load";
-import { unitLabel } from "@/lib/format";
+import { captionAfterUnit } from "@/lib/format";
 
 const DESK_CAPTIONS: Record<string, string> = {
   "c25-stem-racing-students": "at the STEM Racing World Finals in Singapore",
@@ -24,32 +24,10 @@ const DESK_CAPTIONS: Record<string, string> = {
   "b25-accelerate-sentiment": "positive sentiment on posts about Accelerate Women",
 };
 
-/** The words a unit is printed as, singular and plural ("students", "student"). */
-function unitWords(unit: string): string[] {
-  const label = unitLabel(unit).toLowerCase();
-  if (!/[a-z]/.test(label)) return [];
-  return [label, label.replace(/s$/, ""), label.split(" ")[0], label.split(" ")[0].replace(/s$/, "")].filter(Boolean);
-}
-
-/** True when a caption starts with the unit the tile has just printed ("students at ..."). */
-export function repeatsUnit(caption: string, unit: string): boolean {
-  const first = caption.toLowerCase();
-  return unitWords(unit).some((w) => first === w || first.startsWith(`${w} `) || first.startsWith(`${w},`));
-}
-
-/** Drops a leading unit word from a caption, so a fallback metric label still reads on from the figure. */
-export function withoutLeadingUnit(caption: string, unit: string): string {
-  if (!repeatsUnit(caption, unit)) return caption;
-  const words = unitWords(unit).sort((a, b) => b.length - a.length);
-  const lower = caption.toLowerCase();
-  const w = words.find((x) => lower.startsWith(x));
-  return w ? caption.slice(w.length).replace(/^[\s,]+/, "") : caption;
-}
-
 /** The caption a desk tile shows under a figure. */
 export function deskCaption(factId: string): string {
   const fact = getFact(factId);
-  return withoutLeadingUnit(DESK_CAPTIONS[factId] ?? fact.metric, fact.unit);
+  return captionAfterUnit(DESK_CAPTIONS[factId] ?? fact.metric, fact.unit);
 }
 
 export const DESK_CAPTION_IDS = Object.keys(DESK_CAPTIONS);

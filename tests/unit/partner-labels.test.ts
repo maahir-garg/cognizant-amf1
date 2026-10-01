@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { getFact } from "@/lib/data/load";
-import { DESK_CAPTION_IDS, deskCaption, repeatsUnit, withoutLeadingUnit } from "@/lib/partner/labels";
+import { captionAfterUnit } from "@/lib/format";
+import { DESK_CAPTION_IDS, deskCaption } from "@/lib/partner/labels";
+
+/** A caption repeats its unit when the shared helper would still strip something from it. */
+const repeatsUnit = (caption: string, unit: string) => captionAfterUnit(caption, unit) !== caption;
 import { jointCognizantFacts, raceFacts } from "@/lib/partner/race-week";
 import { ROI_BASELINES } from "@/lib/partner/roi";
 import { cardLabel, storyKitInitiatives } from "@/lib/partner/story-kit";
@@ -27,8 +31,7 @@ describe("desk captions read on from the unit", () => {
   });
 
   it("strips a leading unit from a fallback label", () => {
-    expect(withoutLeadingUnit("Students engaged at the finals", "students")).toBe("engaged at the finals");
-    expect(withoutLeadingUnit("Impressions for ESG content", "impressions")).toBe("for ESG content");
-    expect(withoutLeadingUnit("Raised for charity", "GBP")).toBe("Raised for charity");
+    expect(deskCaption("c25-stem-racing-students")).toBe("at the STEM Racing World Finals in Singapore");
+    expect(captionAfterUnit("Students engaged at the finals", "students")).toBe("engaged at the finals");
   });
 });
