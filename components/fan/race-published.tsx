@@ -34,7 +34,7 @@ export function RacePublished({ race }: { race: Race }) {
       <div className="grid gap-10 lg:grid-cols-12 lg:gap-6">
         <SectionHead
           id="published-title"
-          className="lg:col-span-4"
+          className="lg:col-span-5"
           kicker="What the team has published"
           title={`Energy at the ${name} Grand Prix`}
           dek={own ? "The team reports the electricity its garage used at this round, by source." : "What the team reports about power in the paddock, and what it doesn't."}
