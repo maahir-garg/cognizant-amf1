@@ -1,38 +1,27 @@
-import { Fragment, type ReactNode } from "react";
+import { Fragment } from "react";
 import { InlineFact } from "@/components/shared/fact-value";
 import { parseCopy } from "@/lib/story/chapters";
 
-const TRAIL = /^[.,;:!?)\u2019]+/;
+const TRAIL = /^[.,;:!?)’]+/;
 
 /**
  * Story copy with `{f:fact-id}` tokens rendered as inline, sourced figures.
- * Punctuation right after a figure stays on its line ("5,124 tCO₂e." never
- * wraps to a lone full stop).
+ * Punctuation right after a figure travels with it as `trail`, so
+ * "5,124 tCO₂e." never wraps to a lone full stop.
  */
 export function StoryCopy({ copy }: { copy: string }) {
   const parts = parseCopy(copy);
-  const out: ReactNode[] = [];
-  parts.forEach((part, i) => {
-    if (part.kind === "fact") {
-      const next = parts[i + 1];
-      const trail = next?.kind === "text" ? (TRAIL.exec(next.text)?.[0] ?? "") : "";
-      // Padding with matching negative margin: a taller tap target without opening up the line.
-      const fact = <InlineFact id={part.id} className="-my-2.5 py-2.5" />;
-      out.push(
-        trail ? (
-          <span key={i} className="whitespace-nowrap">
-            {fact}
-            {trail}
-          </span>
-        ) : (
-          <Fragment key={i}>{fact}</Fragment>
-        ),
-      );
-    } else {
-      const prev = parts[i - 1];
-      const text = prev?.kind === "fact" ? part.text.replace(TRAIL, "") : part.text;
-      out.push(<Fragment key={i}>{text}</Fragment>);
-    }
-  });
-  return <>{out}</>;
+  return (
+    <>
+      {parts.map((part, i) => {
+        if (part.kind === "fact") {
+          const next = parts[i + 1];
+          const trail = next?.kind === "text" ? TRAIL.exec(next.text)?.[0] : undefined;
+          return <InlineFact key={i} id={part.id} trail={trail} />;
+        }
+        const prev = parts[i - 1];
+        return <Fragment key={i}>{prev?.kind === "fact" ? part.text.replace(TRAIL, "") : part.text}</Fragment>;
+      })}
+    </>
+  );
 }

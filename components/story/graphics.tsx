@@ -15,7 +15,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { useProvenance } from "@/components/shared/provenance";
 import { StatusMark } from "@/components/shared/status-badge";
 import { factCitation, getFact, sourceShortName } from "@/lib/data/load";
-import { factParts, formatFact } from "@/lib/format";
+import { captionAfterUnit, factParts, formatFact } from "@/lib/format";
 import type { GraphicKey, Quote, Tile } from "@/lib/story/chapters";
 import {
   FOOTPRINT_TAIL_FROM,
@@ -425,7 +425,9 @@ export function TilesGraphic({ title, tiles, highlight }: { title: string; tiles
               <span className={cn("transition-colors", EASE, lit ? "text-ink" : "text-ink-3")}>
                 <TileValue id={t.factId} />
               </span>
-              <span className={cn("font-serif text-[0.9375rem] leading-snug transition-colors lg:text-base", EASE, lit ? "text-ink-2" : "text-ink-3")}>{t.label}</span>
+              <span className={cn("font-serif text-[0.9375rem] leading-snug transition-colors lg:text-base", EASE, lit ? "text-ink-2" : "text-ink-3")}>
+                {captionAfterUnit(t.label, getFact(t.factId).unit)}
+              </span>
             </li>
           );
         })}

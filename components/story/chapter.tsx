@@ -1,7 +1,8 @@
 import Image from "next/image";
 import type { CSSProperties } from "react";
 import { FactValue } from "@/components/shared/fact-value";
-import { sourceShortName } from "@/lib/data/load";
+import { getFact, sourceShortName } from "@/lib/data/load";
+import { captionAfterUnit } from "@/lib/format";
 import type { AiResponse } from "@/lib/data/schemas";
 import { STORY_IMAGE_SIZES, STORY_IMAGES, type Chapter, type DetailSection, type ImageKey, type Layer, type Quote, type Step } from "@/lib/story/chapters";
 import { cn } from "@/lib/utils";
@@ -104,7 +105,7 @@ function StepCard({ step, layer, fallback }: { step: Step; layer: Layer; fallbac
       {step.facts?.length ? (
         <div className="mt-5 flex flex-col gap-5 border-t border-line pt-4">
           {step.facts.map((f) => (
-            <FactValue key={f.id} id={f.id} size="lg" caption={f.caption} />
+            <FactValue key={f.id} id={f.id} size="lg" caption={captionAfterUnit(f.caption, getFact(f.id).unit)} />
           ))}
         </div>
       ) : null}
@@ -180,22 +181,28 @@ export function StoryChapter({
 
   return (
     <section id={chapter.id} data-tone={chapter.tone} aria-labelledby={`${chapter.id}-title`} className={styles.chapter}>
-      <header className="wrap" style={{ paddingTop: RHYTHM, paddingBottom: "clamp(40px,6vw,72px)" }}>
-        <p className="kicker kicker-rule">
-          Chapter {chapter.number} of {total} · {chapter.name}
-        </p>
-        <h2 id={`${chapter.id}-title`} className="h2-chapter mt-3 max-w-[20ch]">
-          {chapter.title}
-        </h2>
-        <p className="dek mt-4 max-w-[40ch]">{chapter.dek}</p>
-        <div className="measure mt-8">
+      {/* From 1024px the brief sits beside the title, so the opener is one screen band rather than two. */}
+      <header
+        className="wrap grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-x-12"
+        style={{ paddingTop: RHYTHM, paddingBottom: "clamp(40px,5vw,64px)" }}
+      >
+        <div className="lg:col-span-7">
+          <p className="kicker kicker-rule">
+            Chapter {chapter.number} of {total} · {chapter.name}
+          </p>
+          <h2 id={`${chapter.id}-title`} className="h2-chapter mt-3 max-w-[20ch]">
+            {chapter.title}
+          </h2>
+          <p className="dek mt-4 max-w-[40ch]">{chapter.dek}</p>
+        </div>
+        <div className="measure lg:col-span-5">
           <ChapterBrief chapterId={chapter.id} preloaded={preloaded} />
         </div>
       </header>
 
       <Scrolly layers={layers} meta={stepMeta(chapter)} steps={steps} />
 
-      <div className="wrap" style={{ paddingBottom: "clamp(48px,6vw,80px)" }}>
+      <div className="wrap" style={{ paddingBottom: "clamp(32px,4vw,56px)" }}>
         <div className="measure border-t border-line">
           <ChapterDetail>
             <DetailBody sections={chapter.detail} />

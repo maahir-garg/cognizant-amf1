@@ -79,8 +79,12 @@
   background: #3a4a4b;
 }
 .imageBox[data-image="render-rear"] {
-  /* The render's own flat backdrop, so the contained image has no visible edge. */
-  background: #c0dbdf;
+  /*
+   * The render's own backdrop, sampled from its top and bottom edges. A hard
+   * two-tone split (hidden behind the image) so the contained image has no
+   * visible edge above or below it.
+   */
+  background: linear-gradient(#c1dfe3 50%, #cee8ec 50%);
 }
 .imageBox[data-image="active-aero"] {
   background: #b6d3d9;
@@ -201,7 +205,7 @@
 }
 /* The last card rests in the first screen of its step; the extra half screen lets it scroll clear before the stage lets go. */
 .step:last-child {
-  padding-bottom: 35svh;
+  padding-bottom: 25svh;
 }
 
 .card {
@@ -252,8 +256,14 @@
     align-items: center;
     padding-top: 0;
   }
+  /* A little less than a full screen per step on laptops: the gap still clears the previous card. */
+  .stepInner,
+  .step[data-box="tall"] .stepInner,
+  .step[data-box="graphic"] .stepInner {
+    min-height: 88svh;
+  }
   .step:last-child {
-    padding-bottom: 50svh;
+    padding-bottom: 20svh;
   }
   .card {
     width: var(--card-w);
