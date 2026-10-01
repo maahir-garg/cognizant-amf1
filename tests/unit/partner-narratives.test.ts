@@ -18,6 +18,23 @@ import { PILLARS } from "@/lib/data/schemas";
 const partnerRequests = enumerateDemoRequests().filter((r) => ["linkedin-post", "quarterly-brief", "leadership-update", "story-kit"].includes(r.task));
 const render = (r: (typeof partnerRequests)[number]) => renderTemplate(r, r.factIds.map(getFact));
 
+describe("pillar toggles visibly change every draft", () => {
+  const draft = (format: (typeof NARRATIVE_FORMATS)[number], pillars: (typeof PILLARS)[number][]) => {
+    const req = narrativeRequest(format, { partnerId: "cognizant", pillars });
+    return { req, text: renderTemplate(req, req.factIds.map(getFact)) };
+  };
+
+  it.each(NARRATIVE_FORMATS)("%s: adding a pillar to Community brings in that pillar's facts", (format) => {
+    const base = draft(format, ["community"]);
+    for (const added of PILLARS.filter((p) => p !== "community")) {
+      const next = draft(format, ["community", added]);
+      expect(next.text, `${format} + ${added}`).not.toBe(base.text);
+      const cited = next.req.factIds.filter((id) => next.text.includes(`[F:${id}]`));
+      expect(cited.some((id) => getFact(id).pillar === added), `${format} + ${added} cites no ${added} fact`).toBe(true);
+    }
+  });
+});
+
 describe("partner narratives", () => {
   it("change with the pillar focus: each pillar's own facts lead", () => {
     for (const pillar of PILLARS) {

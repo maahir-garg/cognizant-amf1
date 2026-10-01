@@ -7,7 +7,7 @@
  * each builder may be tuned by the AI workstream.
  */
 import { facts, getFact, getRace, initiatives, isDisputed, quizzes } from "@/lib/data/load";
-import type { AiRequest, DerivedValue, Fact, FanProfile, Pillar } from "@/lib/data/schemas";
+import { PILLARS, type AiRequest, type DerivedValue, type Fact, type FanProfile, type Pillar } from "@/lib/data/schemas";
 
 type Built = AiRequest;
 
@@ -130,22 +130,36 @@ export function partnerNarrativeFactIds(partnerId: string, pillars: Pillar[], li
   const tag = `partner:${partnerId}`;
   const rank = (f: Fact) => (f.tags.includes("hero") ? 0 : 2) + (f.value === null ? 1 : 0) + (f.status === "verified" ? 0 : 1);
   const role = facts.filter((f) => f.tags.includes(tag) && f.value === null && f.pillar === "governance" && partnerUsable(f));
-  const joint = facts
-    .filter((f) => f.tags.includes(tag) && pillars.includes(f.pillar) && !role.includes(f) && partnerUsable(f))
-    .sort((a, b) => rank(a) - rank(b));
-  const jointBudget = pillars.length === 1 && pillars[0] === "community" ? 5 : pillars.includes("community") ? 3 : 1;
-  const chosen = [...role, ...joint.slice(0, jointBudget)];
-
-  // Headline, partner and charity facts first; the pillar's other published figures after, so a
-  // pillar with few headline facts (Governance) still fills a brief.
   const featured = (f: Fact) => f.tags.includes("hero") || f.tags.some((t) => t.startsWith("partner:") || t.startsWith("charity:"));
-  const byPillar = pillars.map((p) =>
-    facts
-      .filter((f) => f.pillar === p && !chosen.includes(f) && partnerUsable(f))
-      .sort((a, b) => Number(featured(b)) - Number(featured(a)) || rank(a) - rank(b)),
-  );
-  for (let i = 0; chosen.length < limit && byPillar.some((list) => i < list.length); i++) {
-    for (const list of byPillar) if (list[i] && chosen.length < limit) chosen.push(list[i]);
+  const ordered = PILLARS.filter((p) => pillars.includes(p));
+  const joint = facts.filter((f) => f.tags.includes(tag) && !role.includes(f) && partnerUsable(f));
+  const jointBudget = ordered.length === 1 ? 5 : 3;
+
+  // Each pillar's list: its joint facts first (capped when several pillars share the draft), then
+  // headline, partner and charity facts, then its other published figures.
+  const lists = ordered.map((p) => {
+    const own = joint.filter((f) => f.pillar === p).sort((a, b) => rank(a) - rank(b)).slice(0, jointBudget);
+    const rest = facts
+      .filter((f) => f.pillar === p && !role.includes(f) && !joint.includes(f) && partnerUsable(f))
+      .sort((a, b) => Number(featured(b)) - Number(featured(a)) || rank(a) - rank(b));
+    return [...own, ...rest];
+  });
+
+  // Turns of at most two facts from one programme (a lead and its follow-on), taken round-robin
+  // across the ticked pillars, so every added pillar shows up near the top of the draft.
+  const programmeOf = (f: Fact) => initiatives.find((i) => i.factIds.includes(f.id))?.id ?? f.id;
+  const turns = lists.map((list) => {
+    const out: Fact[][] = [];
+    for (const f of list) {
+      const last = out.at(-1);
+      if (last && last.length < 2 && programmeOf(last[0]) === programmeOf(f)) last.push(f);
+      else out.push([f]);
+    }
+    return out;
+  });
+  const chosen: Fact[] = [...role];
+  for (let i = 0; chosen.length < limit && turns.some((t) => i < t.length); i++) {
+    for (const t of turns) for (const f of t[i] ?? []) if (chosen.length < limit && !chosen.includes(f)) chosen.push(f);
   }
   return chosen.map((f) => f.id);
 }
