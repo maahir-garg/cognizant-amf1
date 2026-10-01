@@ -9,7 +9,12 @@ import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
   { href: "/", label: "The story", match: (p: string) => p === "/" },
-  { href: "/weekend/singapore-2026", label: "Singapore GP", match: (p: string) => p.startsWith("/weekend") },
+  // The quick check and the card are part of race week, so they sit under Singapore GP.
+  {
+    href: "/weekend/singapore-2026",
+    label: "Singapore GP",
+    match: (p: string) => p.startsWith("/weekend") || p.startsWith("/share") || p.startsWith("/quiz"),
+  },
   { href: "/partners", label: "Partners", match: (p: string) => p.startsWith("/partners") },
   { href: "/how-it-works", label: "How it works", match: (p: string) => p.startsWith("/how-it-works") },
   { href: "/sources", label: "Sources", match: (p: string) => p.startsWith("/sources") },
@@ -34,7 +39,7 @@ export function NavLinks({ className }: { className?: string }) {
             href={l.href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "relative flex shrink-0 items-center text-[0.9375rem] font-medium text-ink-2 transition-colors hover:text-ink",
+              "relative flex shrink-0 items-center text-[0.9375rem] font-medium text-ink-2 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
               active && "text-ink after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-ink",
             )}
           >
@@ -55,7 +60,7 @@ export function MobileMenu({ demo, className }: { demo: boolean; className?: str
       <SheetTrigger asChild>
         <button
           type="button"
-          className={cn("-mr-2 h-11 px-2 text-[0.9375rem] font-semibold text-ink underline-offset-4 hover:underline", className)}
+          className={cn("-mr-2 h-11 px-2 text-[0.9375rem] font-semibold text-ink underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus", className)}
         >
           Menu
         </button>
@@ -72,7 +77,7 @@ export function MobileMenu({ demo, className }: { demo: boolean; className?: str
             {APP_NAME}
           </SheetTitle>
           <SheetClose asChild>
-            <button type="button" className="-mr-2 h-11 px-2 text-[0.9375rem] font-semibold text-ink underline-offset-4 hover:underline">
+            <button type="button" className="-mr-2 h-11 px-2 text-[0.9375rem] font-semibold text-ink underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
               Close
             </button>
           </SheetClose>
@@ -88,7 +93,7 @@ export function MobileMenu({ demo, className }: { demo: boolean; className?: str
                 onClick={() => setOpen(false)}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex min-h-16 items-center border-b border-line font-serif text-[1.75rem] leading-tight text-ink-2",
+                  "flex min-h-16 items-center border-b border-line font-serif text-[1.75rem] leading-tight text-ink-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
                   active && "font-semibold text-ink",
                 )}
               >

@@ -64,7 +64,7 @@ export function FactValue({
     <button
       type="button"
       onClick={() => openFact(id)}
-      className={cn("group flex flex-col items-start gap-2 text-left", className)}
+      className={cn("group flex flex-col items-start gap-2 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus", className)}
       aria-label={`${metric}: ${p.prefix}${p.value}${p.unit ? ` ${p.unit}` : ""}${p.suffix}. ${fact.status}. ${cite.label}. Show source.`}
     >
       {qualitative ? (
@@ -139,7 +139,7 @@ export function InlineFact({
   const cite = factCitation(fact);
   // The pseudo-element grows the tap target to 44px tall without moving the text around it.
   const base =
-    "relative inline text-left font-semibold text-ink underline decoration-line-strong decoration-dotted decoration-1 underline-offset-4 before:absolute before:inset-x-0 before:-inset-y-2.5 before:content-[''] hover:decoration-solid hover:decoration-link";
+    "relative inline text-left font-semibold text-ink underline decoration-line-strong decoration-dotted decoration-1 underline-offset-4 before:absolute before:inset-x-0 before:-inset-y-2.5 before:content-[''] hover:decoration-solid hover:decoration-link focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
   const withTrail = (button: ReactNode) =>
     trail ? (
       <span className="whitespace-nowrap">
