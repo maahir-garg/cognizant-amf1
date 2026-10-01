@@ -63,10 +63,12 @@ export function ChapterTracker({ chapters }: { chapters: Item[] }) {
 
   return (
     <nav aria-label="Chapters" data-tone="paper" className="sticky top-14 z-30 h-10 border-b border-line">
-      <div className="wrap relative flex h-full items-center">
+      <div className="wrap h-full">
+      {/* Positioned content box: the indicator and the hairline line up with the page frame, not its padding. */}
+      <div className="relative flex h-full items-center">
         {/* Phones and tablets: one button that opens the chapter list and the depth toggle. */}
         <details ref={menuRef} className="group relative h-full flex-1 lg:hidden">
-          <summary className="flex h-11 cursor-pointer list-none items-center justify-between gap-3 [&::-webkit-details-marker]:hidden">
+          <summary className="flex h-11 cursor-pointer list-none items-center justify-between gap-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus [&::-webkit-details-marker]:hidden">
             <span className="kicker truncate text-ink">
               <span className="num">
                 {current.number}/{chapters.length}
@@ -99,7 +101,7 @@ export function ChapterTracker({ chapters }: { chapters: Item[] }) {
                 </li>
               ))}
             </ol>
-            <DepthToggle compact className="mt-4 justify-start" />
+            <DepthToggle compact className="mt-4 justify-start" onPick={() => menuRef.current && (menuRef.current.open = false)} />
           </div>
         </details>
 
@@ -117,9 +119,10 @@ export function ChapterTracker({ chapters }: { chapters: Item[] }) {
                   onClick={(e) => go(e, c.id)}
                   aria-current={on ? "step" : undefined}
                   className={cn(
-                    "flex h-full items-center px-3 font-sans text-[0.8125rem] whitespace-nowrap transition-colors focus-visible:outline-focus xl:px-4",
+                    "flex h-full items-center px-3 font-sans text-[0.8125rem] whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus xl:px-4",
                     i === 0 && "pl-0 xl:pl-0",
-                    on ? "text-ink" : "text-ink-3 hover:text-ink",
+                    // The label darkens as the indicator arrives, not before.
+                    on ? "text-ink delay-300 duration-200" : "text-ink-3 duration-150 hover:text-ink",
                   )}
                 >
                   <span data-label className="flex items-baseline gap-1.5">
@@ -137,9 +140,10 @@ export function ChapterTracker({ chapters }: { chapters: Item[] }) {
         <span
           aria-hidden
           className={cn(styles.trackerIndicator, "hidden lg:block")}
-          style={bar ? { transform: `translateX(${bar.x}px)`, width: `${bar.w}px`, opacity: 1 } : { opacity: 0 }}
+          style={bar ? { transform: `translateX(${bar.x}px) scaleX(${bar.w / 100})`, opacity: 1 } : { opacity: 0 }}
         />
         <span aria-hidden className={styles.trackerProgress} />
+      </div>
       </div>
     </nav>
   );

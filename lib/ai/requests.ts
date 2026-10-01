@@ -37,12 +37,12 @@ export type ChapterId = (typeof CHAPTER_IDS)[number];
  * (the story words those itself as the team's own comparison).
  */
 export const FAN_CHAPTER_FACTS: Record<ChapterId, string[]> = {
-  campus: ["e24-solar-panels", "e25-cups-removed", "e25-circularity", "e25-biodiversity-net-gain"],
-  "supply-chain": ["e25-supply-chain-share", "e25-supply-chain", "e25-freight-logistics", "e25-hq-energy"],
-  moving: ["e25-saf-avoided", "e25-saf-airfreight-cut", "e24-sea-freight-shift", "e25-travel-logistics-cut"],
+  campus: ["e25-hq-energy", "e24-solar-kwh", "e25-cups-tco2e"],
+  "supply-chain": ["e25-supply-chain-share", "g25-scope3-boundary"],
+  moving: ["e25-freight-logistics", "e25-business-travel"],
   circuit: ["e25-event-energy-cut", "e25-trackside-gbr-hvo", "e25-trackside-gbr-grid", "e25-trackside-gbr-solar"],
-  beyond: ["c25-stem-racing-students", "e25-ethiopia-children", "c25-maaden-target", "b25-accelerate-pairs"],
-  finish: ["e25-progress-scope12", "e25-progress-scope3", "e25-target-scope3", "e25-target-netzero-year"],
+  beyond: ["c25-stem-racing-singapore", "c25-charity-since-2023", "b25-iwd-students"],
+  finish: ["e25-progress-scope12", "e25-progress-scope3"],
 };
 
 /** The profile the story uses before a fan has chosen anything (matches lib/fan/quiz.ts DEFAULT_FAN). */
@@ -58,7 +58,8 @@ export function fanChapterRequest(fan: FanProfile | null, chapterId: ChapterId):
   const ids = FAN_CHAPTER_FACTS[chapterId];
   return {
     task: "fan-story",
-    factIds: level === "new" ? ids.slice(0, 2) : [...ids],
+    // New fans get one figure (both progress figures for the targets, so neither reads alone).
+    factIds: level === "new" ? ids.slice(0, chapterId === "finish" ? 2 : 1) : [...ids],
     derived: [],
     fan: { ...base, level },
     params: { chapter: chapterId },

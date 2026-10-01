@@ -2,18 +2,26 @@ import { Fragment } from "react";
 import { InlineFact } from "@/components/shared/fact-value";
 import { parseCopy } from "@/lib/story/chapters";
 
-/** Story copy with `{f:fact-id}` tokens rendered as inline, sourced figures. */
+const TRAIL = /^[.,;:!?)’]+/;
+
+/**
+ * Story copy with `{f:fact-id}` tokens rendered as inline, sourced figures.
+ * Punctuation right after a figure travels with it as `trail`, so
+ * "5,124 tCO₂e." never wraps to a lone full stop.
+ */
 export function StoryCopy({ copy }: { copy: string }) {
+  const parts = parseCopy(copy);
   return (
     <>
-      {parseCopy(copy).map((part, i) =>
-        part.kind === "fact" ? (
-          // Padding with matching negative margin: a taller tap target without opening up the line.
-          <InlineFact key={i} id={part.id} className="-my-2.5 py-2.5" />
-        ) : (
-          <Fragment key={i}>{part.text}</Fragment>
-        ),
-      )}
+      {parts.map((part, i) => {
+        if (part.kind === "fact") {
+          const next = parts[i + 1];
+          const trail = next?.kind === "text" ? TRAIL.exec(next.text)?.[0] : undefined;
+          return <InlineFact key={i} id={part.id} trail={trail} />;
+        }
+        const prev = parts[i - 1];
+        return <Fragment key={i}>{prev?.kind === "fact" ? part.text.replace(TRAIL, "") : part.text}</Fragment>;
+      })}
     </>
   );
 }

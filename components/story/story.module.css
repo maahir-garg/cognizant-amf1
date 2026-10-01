@@ -79,7 +79,12 @@
   background: #3a4a4b;
 }
 .imageBox[data-image="render-rear"] {
-  background: #b5d3d7;
+  /*
+   * The render is shown whole, as a plate on the chapter ground: its backdrop
+   * is vignetted, so no flat fill could hide the edge, and a clean hard edge
+   * reads as intended.
+   */
+  background: var(--bg);
 }
 .imageBox[data-image="active-aero"] {
   background: #b6d3d9;
@@ -94,7 +99,8 @@
   inset: 0;
   transform-origin: 0 0;
   transform: translate(var(--mtx, 0%), var(--mty, 0%)) scale(var(--s, 1));
-  transition: transform 1500ms var(--settle);
+  /* Reveal, then focus: a push-in starts a beat after the step changes and settles slowly. */
+  transition: transform 1600ms var(--settle) 200ms;
 }
 /* Promote only the visible photo, and only while its chapter is on screen. */
 .stage[data-near] .layer[data-active] .zoomer {
@@ -104,6 +110,9 @@
 .image {
   object-fit: cover;
   object-position: var(--pos);
+}
+.imageContain {
+  object-fit: contain;
 }
 
 .credit {
@@ -131,6 +140,40 @@
 .graphicInner {
   width: 100%;
   max-width: 840px;
+}
+@media (min-width: 1600px) {
+  .graphicInner {
+    max-width: 960px;
+  }
+}
+
+/*
+ * Chart marks grow in from their axis the first time their layer appears.
+ * Scrolly arms a layer (data-armed) only after hydration and only while it
+ * has never been shown, so the server HTML and a no-JS reader see full bars.
+ * Colour changes wait 150 ms so a highlight lands after the marks settle.
+ */
+.stage [data-grow] {
+  transition:
+    transform 600ms var(--settle) calc(var(--i, 0) * 40ms),
+    background-color 500ms var(--ease) 150ms,
+    border-color 500ms var(--ease) 150ms;
+}
+/* Small marks get their own layer only while their chapter is on screen, so growing and recolouring never repaints the stage. */
+.stage[data-near] .layer[data-active] [data-grow] {
+  will-change: transform;
+}
+.stage [data-grow="x"] {
+  transform-origin: 0 50%;
+}
+.stage [data-grow="y"] {
+  transform-origin: 50% 100%;
+}
+.layer[data-armed] [data-grow="x"] {
+  transform: scaleX(0);
+}
+.layer[data-armed] [data-grow="y"] {
+  transform: scaleY(0);
 }
 /* A quote is short: centre it in its box on phones too. */
 .graphicBox[data-kind="quote"] {
@@ -161,11 +204,12 @@
   padding-top: calc(var(--box-tall) - 24px);
 }
 .step[data-box="graphic"] .stepInner {
-  padding-top: calc(var(--box-graphic) - 16px);
+  /* Below the chart, never on it: the marks a step discusses stay uncovered while the card rests. */
+  padding-top: calc(var(--box-graphic) + 8px);
 }
 /* The last card rests in the first screen of its step; the extra half screen lets it scroll clear before the stage lets go. */
 .step:last-child {
-  padding-bottom: 50svh;
+  padding-bottom: 25svh;
 }
 
 .card {
@@ -216,6 +260,15 @@
     align-items: center;
     padding-top: 0;
   }
+  /* A little less than a full screen per step on laptops: the gap still clears the previous card. */
+  .stepInner,
+  .step[data-box="tall"] .stepInner,
+  .step[data-box="graphic"] .stepInner {
+    min-height: 88svh;
+  }
+  .step:last-child {
+    padding-bottom: 20svh;
+  }
   .card {
     width: var(--card-w);
   }
@@ -246,12 +299,13 @@
   left: 0;
   bottom: 0;
   height: 2px;
-  width: 0;
+  /* Scaled from a 100px base: transform only, never width. */
+  width: 100px;
   background: var(--lime);
   outline: 1px solid var(--ink);
+  transform-origin: 0 50%;
   transition:
-    transform 400ms var(--ease),
-    width 400ms var(--ease),
+    transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1),
     opacity 200ms linear;
 }
 
@@ -278,6 +332,21 @@
     animation-range: contain 0% contain 100%;
   }
 }
+/* An opened detail settles in: opacity and a 4px rise, nothing that moves the layout. */
+details[open] > .detailBody {
+  animation: detail-in 200ms ease-out;
+}
+@keyframes detail-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @keyframes story-progress {
   from {
     transform: scaleX(0);

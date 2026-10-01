@@ -15,6 +15,7 @@ import type { AiResponse, FanProfile } from "@/lib/data/schemas";
 import { useFanProfile } from "@/lib/fan/profile";
 import { useDepth } from "@/lib/fan/storage";
 import { cn } from "@/lib/utils";
+import styles from "./story.module.css";
 
 export type StoryLevel = "new" | "die-hard";
 
@@ -35,11 +36,11 @@ const OPTIONS: { value: StoryLevel; label: string }[] = [
  * Segmented radio control. Native radios, visually hidden but focusable.
  * `compact` is the mid-story copy in the chapter tracker.
  */
-export function DepthToggle({ className, compact = false }: { className?: string; compact?: boolean }) {
+export function DepthToggle({ className, compact = false, onPick }: { className?: string; compact?: boolean; onPick?: () => void }) {
   const { level, setLevel } = useStoryLevel();
   const name = useId();
   return (
-    <fieldset className={cn("flex items-center", compact ? "gap-2" : "flex-col gap-2 sm:flex-row sm:gap-4", className)}>
+    <fieldset className={cn("flex items-center", compact ? "gap-2" : "flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-4", className)}>
       <legend className="sr-only">How much detail?</legend>
       <span aria-hidden className={cn("kicker text-ink-3", compact && "hidden xl:inline")}>
         {compact ? "Detail" : "How much detail?"}
@@ -56,7 +57,10 @@ export function DepthToggle({ className, compact = false }: { className?: string
                 on ? "border-ink bg-lime-tint text-lime-ink" : "border-transparent text-ink-2 hover:text-ink",
               )}
             >
-              <input type="radio" name={name} value={o.value} checked={on} onChange={() => setLevel(o.value)} className="sr-only" />
+              <input type="radio" name={name} value={o.value} checked={on} onChange={() => {
+                  setLevel(o.value);
+                  onPick?.();
+                }} className="sr-only" />
               {on && <span aria-hidden>✓</span>}
               {o.label}
             </label>
@@ -94,7 +98,8 @@ export function ChapterBrief({
       <h3 className="kicker text-ink">{level === "die-hard" ? "In brief" : "In plain words"}</h3>
       <div className="min-h-[7.5rem]" aria-live="polite">
         {response ? (
-          <AiText response={response} className="text-[clamp(1.0625rem,1rem+0.25vw,1.25rem)]" />
+          // The trust line is said once, on the title page; each brief keeps its citation chips.
+          <AiText response={response} showMeta={false} className="text-[clamp(1.0625rem,1rem+0.25vw,1.25rem)]" />
         ) : (
           <p className="kicker text-ink-3">Preparing a short summary…</p>
         )}
@@ -104,20 +109,27 @@ export function ChapterBrief({
 }
 
 const SUMMARY =
-  "flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 py-3 font-sans text-base font-semibold text-ink [&::-webkit-details-marker]:hidden";
+  "flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 py-2 font-sans text-base font-semibold text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus [&::-webkit-details-marker]:hidden";
 
-/** "More figures and method": closed for new fans, open for long-time fans. */
+/**
+ * The end-of-chapter band: "The detail" kicker over "More figures and
+ * method". Closed by default at both depths: the extra depth lives here, on
+ * request, rather than lengthening the story (long-time fans get the denser
+ * brief up top).
+ */
 export function ChapterDetail({ children }: { children: ReactNode }) {
-  const { level } = useStoryLevel();
   return (
-    <details key={level} open={level === "die-hard"} className="group">
+    <details className="group">
       <summary className={SUMMARY}>
-        More figures and method
+        <span className="flex flex-col gap-1">
+          <span className="kicker text-ink-3">The detail</span>
+          More figures and method
+        </span>
         <span aria-hidden className="text-ink-3 transition-transform group-open:rotate-180">
           ↓
         </span>
       </summary>
-      <div className="pt-3 pb-2">{children}</div>
+      <div className={cn("pt-3 pb-2", styles.detailBody)}>{children}</div>
     </details>
   );
 }

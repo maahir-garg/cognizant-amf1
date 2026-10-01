@@ -64,6 +64,8 @@ export function Scrolly({
 }) {
   const [active, setActive] = useState(0);
   const [near, setNear] = useState(false);
+  // Graphic layers not yet shown, armed after hydration so their marks can grow in once.
+  const [armed, setArmed] = useState<Set<number>>(new Set());
   const rootRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLOListElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -78,12 +80,23 @@ export function Scrolly({
     const steps = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
-          if (e.isIntersecting) setActive(Number((e.target as HTMLElement).dataset.step ?? 0));
+          if (!e.isIntersecting) continue;
+          const step = Number((e.target as HTMLElement).dataset.step ?? 0);
+          setActive(step);
+          // Disarm the layer as it is shown: its marks grow in while it fades up.
+          const layer = meta[step]?.layer;
+          setArmed((prev) => {
+            if (layer === undefined || !prev.has(layer)) return prev;
+            const next = new Set(prev);
+            next.delete(layer);
+            return next;
+          });
         }
       },
       { rootMargin: "-50% 0px -50% 0px", threshold: 0 },
     );
     items.forEach((el) => steps.observe(el));
+    setArmed(new Set(layers.flatMap((l, i) => (l.kind === "graphic" && i !== meta[0].layer ? [i] : []))));
 
     const nearby = new IntersectionObserver(([e]) => setNear(e.isIntersecting), { rootMargin: "100% 0px 100% 0px", threshold: 0 });
     nearby.observe(root);
@@ -107,9 +120,12 @@ export function Scrolly({
       nearby.disconnect();
       warm.disconnect();
     };
+    // Layers and meta are fixed for the life of the page.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const m = meta[active] ?? meta[0];
+
 
   return (
     <div ref={rootRef} className={cn(styles.scrolly, className)}>
@@ -123,6 +139,7 @@ export function Scrolly({
                 className={styles.layer}
                 data-active={on ? "" : undefined}
                 data-kind={layer.kind}
+                data-armed={armed.has(i) ? "" : undefined}
                 aria-hidden={layer.kind === "photo" || !on ? true : undefined}
                 style={zoomStyle(m.zooms[i] ?? null)}
               >
