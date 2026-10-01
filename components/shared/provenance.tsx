@@ -9,7 +9,7 @@
  * flag notes) to /partners and /sources.
  */
 import { ArrowUpRight, ChevronLeft } from "lucide-react";
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from "react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { factPhrase } from "@/lib/ai/templates";
 import { findFact, getSource, isDisputed, sourceLink, sourceShortName } from "@/lib/data/load";
@@ -31,7 +31,12 @@ export function useProvenance(): ProvenanceCtx {
 export function ProvenanceProvider({ children }: { children: ReactNode }) {
   // A stack so derivation inputs can be explored and walked back.
   const [stack, setStack] = useState<string[]>([]);
-  const openFact = useCallback((id: string) => setStack([id]), []);
+  // The drawer is opened from code, not a Radix trigger, so remember the opener to hand focus back on close.
+  const opener = useRef<HTMLElement | null>(null);
+  const openFact = useCallback((id: string) => {
+    if (document.activeElement instanceof HTMLElement && document.activeElement !== document.body) opener.current = document.activeElement;
+    setStack([id]);
+  }, []);
   const push = useCallback((id: string) => setStack((s) => [...s, id]), []);
   const pop = useCallback(() => setStack((s) => s.slice(0, -1)), []);
   const value = useMemo(() => ({ openFact }), [openFact]);
@@ -44,8 +49,22 @@ export function ProvenanceProvider({ children }: { children: ReactNode }) {
         <SheetContent
           side="right"
           data-tone="paper"
-          className="w-full gap-0 overflow-y-auto border-line-strong bg-bg p-0 sm:max-w-[480px]"
+          className={cn(
+            "w-full gap-0 overflow-y-auto border-line-strong bg-bg p-0 sm:max-w-[480px]",
+            // Open: 260ms ease-out from 24px to the right; close: 160ms ease-in. Reduced motion is handled globally.
+            "data-open:duration-[260ms] data-open:ease-[cubic-bezier(.22,1,.36,1)] data-open:[--tw-enter-translate-x:24px]!",
+            "data-closed:duration-[160ms] data-closed:ease-[cubic-bezier(.4,0,1,1)] data-closed:[--tw-exit-translate-x:24px]!",
+          )}
+          overlayClassName="data-open:duration-[260ms] data-open:ease-[cubic-bezier(.22,1,.36,1)] data-closed:duration-[160ms] data-closed:ease-[cubic-bezier(.4,0,1,1)]"
           aria-describedby={undefined}
+          onCloseAutoFocus={(e) => {
+            const target = opener.current;
+            opener.current = null;
+            if (target?.isConnected) {
+              e.preventDefault();
+              target.focus({ preventScroll: true });
+            }
+          }}
         >
           {fact && <FactDetail fact={fact} canGoBack={stack.length > 1} onBack={pop} onOpen={push} />}
         </SheetContent>

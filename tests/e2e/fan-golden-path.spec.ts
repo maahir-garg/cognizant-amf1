@@ -53,13 +53,13 @@ test.describe("fan golden path", () => {
     expect(names.some((n) => /STEM Racing/.test(n))).toBe(true);
     expect(names.some((n) => /Unearth Your Greatness/.test(n))).toBe(true);
 
-    // A figure opens the provenance drawer on its report page.
-    await published
-      .getByRole("button", { name: /Show source\.$/ })
-      .first()
-      .click();
+    // A figure opens the provenance drawer on its report page, and closing it hands focus back to the figure.
+    const figure = published.getByRole("button", { name: /Show source\.$/ }).first();
+    await figure.focus();
+    await page.keyboard.press("Enter");
     await expectDrawerWithPage(page);
     await closeDrawer(page);
+    await expect(figure).toBeFocused();
 
     expect(errors, errors.join("\n")).toEqual([]);
   });
