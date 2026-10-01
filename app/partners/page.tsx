@@ -20,19 +20,6 @@ import {
 
 export const metadata: Metadata = { title: "Impact desk: this race week" };
 
-/** Short, number-free tile captions for the figures this page shows. */
-const CAPTIONS: Record<string, string> = {
-  "c25-stem-racing-students": "Students at the STEM Racing World Finals in Singapore",
-  "c25-stem-racing-countries": "Countries those students came from",
-  "m-stem-programme-reach": "Young people reached by the STEM programme, UK and race locations",
-  "c25-mam-day-students": "Students at Make A Mark Day, where Cognizant ran the careers sessions",
-  "c25-mam-day-schools": "Schools and community groups at Make A Mark Day",
-  "c25-mam-day-early-careers": "Make A Mark Day students who met the Early Careers team",
-  "c25-ai-skills-gap": "Students unsure, at the start of the day, what skills AI work needs",
-  "c24-mam-day-students": "Students at Make A Mark Day in British Grand Prix week, the year before",
-  "c24-esg-impressions-partners": "Extra impressions when partners, Cognizant included, shared the team's stories",
-};
-
 /** "9 to 11 Oct 2026", or "30 Sept to 2 Oct 2026" across a month. */
 function dateRange(start: string, end: string): string {
   const [a, b] = [formatDate(start), formatDate(end)];
@@ -83,7 +70,7 @@ export default function RaceWeekPage() {
           note={`From the programmes the reports tie to ${programmes.length ? "Singapore" : "this city"}`}
           className="lg:col-span-8"
         >
-          <FactTiles ids={numeric(published)} captions={CAPTIONS} />
+          <FactTiles ids={numeric(published)} />
           <FactNotes ids={text(published)} />
           {programmes.length > 0 && (
             <p className="text-[0.875em] text-ink-3">
@@ -119,7 +106,7 @@ export default function RaceWeekPage() {
           note={`Facts tagged as joint ${PARTNER_NAME} activity`}
           className="lg:col-span-8"
         >
-          <FactTiles ids={numeric(joint)} captions={CAPTIONS} />
+          <FactTiles ids={numeric(joint)} />
           <FactNotes ids={text(joint)} />
         </DeskSection>
 

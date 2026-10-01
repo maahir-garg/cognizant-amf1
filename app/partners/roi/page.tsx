@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { DeskHeader, DeskSection } from "@/components/partner/desk-header";
+import { TILE_CELL, TILE_GRID, TILE_NUMBER } from "@/components/partner/fact-tiles";
 import { FactValue, InlineFact } from "@/components/shared/fact-value";
 import { DataGap } from "@/components/shared/status-badge";
 import { getFact } from "@/lib/data/load";
+import { deskCaption } from "@/lib/partner/labels";
 import { PILOT_COST_ASSUMPTION, PILOT_METRICS, pilotCostRange, ROI_BASELINES } from "@/lib/partner/roi";
 
 const AUDIENCE = { partner: "Partner desk", charity: "Charity partners", fan: "Fan story" } as const;
@@ -11,7 +13,6 @@ const gbpShort = (n: number) => `£${new Intl.NumberFormat("en-GB", { maximumFra
 
 export const metadata: Metadata = { title: "Impact desk: ROI" };
 
-const TILE_NUMBER = "[&_.big-num]:text-[length:clamp(3rem,2.25rem+1.25vw,4rem)]";
 
 export default function RoiPage() {
   return (
@@ -25,10 +26,10 @@ export default function RoiPage() {
       <div className="grid gap-x-12 gap-y-12 pt-8 lg:grid-cols-12">
         <DeskSection id="baselines" title="Published baselines" note="From the team's reports" className="lg:col-span-7">
           <div className="overflow-hidden">
-            <ul className="-mt-px -ml-px grid grid-cols-[repeat(auto-fill,minmax(min(100%,280px),1fr))]">
+            <ul className={TILE_GRID}>
               {ROI_BASELINES.map((b) => (
-                <li key={b.factId} className="flex flex-col gap-3 border-t border-l border-line px-5 py-5">
-                  <FactValue id={b.factId} size="lg" showMetric className={TILE_NUMBER} />
+                <li key={b.factId} className={TILE_CELL}>
+                  <FactValue id={b.factId} size="lg" caption={deskCaption(b.factId)} className={TILE_NUMBER} />
                   <p className="text-[0.875em] leading-snug text-ink-3">{b.why}</p>
                 </li>
               ))}
