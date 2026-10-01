@@ -83,6 +83,19 @@ test.describe("the story", () => {
       ).toBe(true);
   });
 
+  test("the phone chapter menu closes once the depth is changed", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "mobile", "the folded menu is the phone tracker");
+    await page.goto("/");
+    await page.locator("#campus").scrollIntoViewIfNeeded();
+    const tracker = page.getByRole("navigation", { name: /chapter/i });
+    const menu = tracker.locator("details");
+    await tracker.getByText("Chapters and detail").click();
+    await expect(menu).toHaveAttribute("open", "");
+    await menu.locator("label", { hasText: "Watched for years" }).click();
+    await expect(menu).not.toHaveAttribute("open", "");
+    await expect(page.getByRole("radio", { name: "Watched for years" }).first()).toBeChecked();
+  });
+
   test("the ending sends fans to the race page, the quiz and the card", async ({ page }) => {
     await page.goto("/");
     for (const href of ["/weekend/singapore-2026#take-part", "/weekend/singapore-2026#getting-there", "/quiz"]) {

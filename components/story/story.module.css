@@ -195,14 +195,33 @@
   display: flex;
   min-height: 100svh;
   align-items: flex-start;
-  padding-top: calc(var(--box-wide) - 24px);
+  /* Clear of the photo and its credit line. */
+  padding-top: calc(var(--box-wide) + 32px);
 }
 .step[data-box="tall"] .stepInner {
-  padding-top: calc(var(--box-tall) - 24px);
+  padding-top: calc(var(--box-tall) + 32px);
 }
 .step[data-box="graphic"] .stepInner {
-  /* Below the chart, never on it: the marks a step discusses stay uncovered while the card rests. */
   padding-top: calc(var(--box-graphic) + 8px);
+}
+
+/*
+ * Phones and tablets: the stage sits above the cards, with only its photo or
+ * chart box opaque. A card rests below the box and, as the reader scrolls on,
+ * slides under it rather than over it, so a card can never hide the chart or
+ * photo it describes, at any screen height (tests/e2e/story-overlap.spec.ts).
+ */
+@media (max-width: 1023px) {
+  .stage {
+    z-index: 2;
+    background: transparent;
+    pointer-events: none;
+  }
+  .graphicBox {
+    pointer-events: auto;
+    /* A hairline marks the edge cards slide under. */
+    border-bottom: 1px solid var(--line);
+  }
 }
 /* The last card rests in the first screen of its step; the extra half screen lets it scroll clear before the stage lets go. */
 .step:last-child {
