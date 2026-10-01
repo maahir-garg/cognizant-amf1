@@ -40,7 +40,7 @@ export function DepthToggle({ className, compact = false, onPick }: { className?
   const { level, setLevel } = useStoryLevel();
   const name = useId();
   return (
-    <fieldset className={cn("flex items-center", compact ? "gap-2" : "flex-col gap-2 sm:flex-row sm:gap-4", className)}>
+    <fieldset className={cn("flex items-center", compact ? "gap-2" : "flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-4", className)}>
       <legend className="sr-only">How much detail?</legend>
       <span aria-hidden className={cn("kicker text-ink-3", compact && "hidden xl:inline")}>
         {compact ? "Detail" : "How much detail?"}
