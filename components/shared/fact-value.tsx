@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { factCitation, getFact } from "@/lib/data/load";
 import { factParts } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -117,9 +118,16 @@ export function InlineFact({
   className,
   hideUnit = false,
   absolute = false,
+  trail,
 }: {
   id: string;
   className?: string;
+  /**
+   * Punctuation that follows the figure in the sentence (".", ",", ")"). It is
+   * kept on the same line as the figure and its status mark, so a full stop
+   * never wraps onto a line of its own.
+   */
+  trail?: string;
   /** Drop a word unit the sentence already says, e.g. "Round 17" rather than "Round 17 round". */
   hideUnit?: boolean;
   /** Show a change without its sign when the sentence already says the direction ("down 74%"). */
@@ -129,21 +137,31 @@ export function InlineFact({
   const { openFact } = useProvenance();
   const p = factParts(fact);
   const cite = factCitation(fact);
+  // The pseudo-element grows the tap target to 44px tall without moving the text around it.
   const base =
-    "inline text-left font-semibold text-ink underline decoration-line-strong decoration-dotted decoration-1 underline-offset-4 hover:decoration-solid hover:decoration-link";
+    "relative inline text-left font-semibold text-ink underline decoration-line-strong decoration-dotted decoration-1 underline-offset-4 before:absolute before:inset-x-0 before:-inset-y-2.5 before:content-[''] hover:decoration-solid hover:decoration-link";
+  const withTrail = (button: ReactNode) =>
+    trail ? (
+      <span className="whitespace-nowrap">
+        {button}
+        {trail}
+      </span>
+    ) : (
+      button
+    );
   if (fact.value === null) {
-    return (
+    return withTrail(
       <button type="button" onClick={() => openFact(id)} className={cn(base, className)} aria-label={`${fact.valueText}. ${fact.status}. ${cite.label}. Show source.`}>
         {fact.valueText}
         <StatusMark status={fact.status} className="ml-1 align-middle" />
-      </button>
+      </button>,
     );
   }
   const unit = hideUnit && p.unit !== "%" ? "" : p.unit;
   const digits = absolute ? p.value.replace(/^[-−–]/, "") : p.value;
   // "1,000+ children", but "90%+": an at-least mark follows the number, and a percent sign stays attached to it.
   const value = unit === "%" ? `${p.prefix}${digits}%${p.suffix}` : `${p.prefix}${digits}${p.suffix}${unit ? ` ${unit}` : ""}`;
-  return (
+  return withTrail(
     <button
       type="button"
       onClick={() => openFact(id)}
@@ -152,6 +170,6 @@ export function InlineFact({
     >
       {value}
       <StatusMark status={fact.status} className="self-center" />
-    </button>
+    </button>,
   );
 }

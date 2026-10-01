@@ -59,7 +59,7 @@ export function AiText({
             key={`${pi}-${index}`}
             type="button"
             onClick={() => openFact(id)}
-            className="num relative -top-2 ml-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-sm border border-line-strong px-1 font-sans text-[0.6875rem] leading-none font-semibold text-ink-2 hover:border-link hover:text-link"
+            className="num relative -top-2 ml-0.5 inline-flex h-4 min-w-4 items-center before:absolute before:-inset-3.5 before:content-['']  justify-center rounded-sm border border-line-strong px-1 font-sans text-[0.6875rem] leading-none font-semibold text-ink-2 hover:border-link hover:text-link"
             aria-label={`Source ${n}: ${findFact(id)?.metric}`}
           >
             {n}
@@ -72,7 +72,7 @@ export function AiText({
             <TooltipTrigger asChild>
               <span
                 tabIndex={0}
-                className="num relative -top-2 ml-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-sm border border-dashed border-estimated px-1 font-sans text-[0.6875rem] leading-none font-semibold text-estimated"
+                className="num relative -top-2 ml-0.5 inline-flex h-4 min-w-4 items-center before:absolute before:-inset-3.5 before:content-['']  justify-center rounded-sm border border-dashed border-estimated px-1 font-sans text-[0.6875rem] leading-none font-semibold text-estimated"
               >
                 {n}
               </span>
