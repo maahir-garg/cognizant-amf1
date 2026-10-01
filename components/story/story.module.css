@@ -79,7 +79,8 @@
   background: #3a4a4b;
 }
 .imageBox[data-image="render-rear"] {
-  background: #b5d3d7;
+  /* The render's own flat backdrop, so the contained image has no visible edge. */
+  background: #c0dbdf;
 }
 .imageBox[data-image="active-aero"] {
   background: #b6d3d9;
@@ -94,7 +95,8 @@
   inset: 0;
   transform-origin: 0 0;
   transform: translate(var(--mtx, 0%), var(--mty, 0%)) scale(var(--s, 1));
-  transition: transform 1500ms var(--settle);
+  /* Reveal, then focus: a push-in starts a beat after the step changes and settles slowly. */
+  transition: transform 1600ms var(--settle) 200ms;
 }
 /* Promote only the visible photo, and only while its chapter is on screen. */
 .stage[data-near] .layer[data-active] .zoomer {
@@ -104,6 +106,9 @@
 .image {
   object-fit: cover;
   object-position: var(--pos);
+}
+.imageContain {
+  object-fit: contain;
 }
 
 .credit {

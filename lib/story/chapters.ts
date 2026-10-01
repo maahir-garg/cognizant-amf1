@@ -32,6 +32,8 @@ export type StoryImage = {
   desktop: Focal;
   mobile: Focal;
   shape: "landscape" | "square";
+  /** "contain" for an image on a flat backdrop: the whole car shows, the box is painted in the backdrop colour. */
+  fit?: "contain";
 };
 
 export const STORY_IMAGES: Record<ImageKey, StoryImage> = {
@@ -63,6 +65,7 @@ export const STORY_IMAGES: Record<ImageKey, StoryImage> = {
     desktop: { x: 52, y: 50 },
     mobile: { x: 54, y: 55 },
     shape: "landscape",
+    fit: "contain",
   },
   "active-aero": {
     src: "/brand/amr26-active-aero.png",
@@ -84,6 +87,14 @@ export const STORY_IMAGES: Record<ImageKey, StoryImage> = {
     shape: "landscape",
   },
 };
+
+/**
+ * One `sizes` for every use of every story photo (title band and stage
+ * layers alike), so the browser picks the same file each time and never
+ * downloads a photo twice. Phones stop at 130vw, which keeps a push-in sharp
+ * without fetching the 3840w file.
+ */
+export const STORY_IMAGE_SIZES = "(min-width: 1024px) 100vw, 130vw";
 
 export type GraphicKey = "footprint" | "trackside" | "targets" | "tiles";
 
@@ -172,7 +183,7 @@ export const CHAPTERS: Chapter[] = [
     dek: "The AMR26, this season's car, is designed, built and tested at the team's campus in Silverstone. Here is what changed there.",
     tone: "paper",
     layers: [
-      { kind: "photo", image: "launch-front" },
+      { kind: "photo", image: "render-rear" },
       {
         kind: "tiles",
         title: "The campus in figures",
@@ -224,7 +235,7 @@ export const CHAPTERS: Chapter[] = [
     dek: "Carbon fibre, electronics, catering and software: the biggest source of the team's emissions arrives through the factory gates.",
     tone: "green",
     layers: [
-      // The campus photo again, moved in close on the front wing and suspension: the parts the team buys.
+      // The whole car first, then a push-in on the nose and suspension: the parts the team buys.
       { kind: "photo", image: "launch-front" },
       { kind: "graphic", graphic: "footprint" },
     ],
@@ -233,7 +244,12 @@ export const CHAPTERS: Chapter[] = [
         copy: "Behind every lap is a long list of suppliers. The materials, parts and services the team buys carry their own emissions long before they reach Silverstone.",
         facts: [{ id: "e25-supply-chain-share", caption: "of the team's footprint sits in its supply chain, not on the track" }],
         layer: 0,
-        zoom: { scale: 1.8, origin: { x: 50, y: 88 } },
+        zoom: { scale: 1, origin: { x: 50, y: 50 } },
+      },
+      {
+        copy: "Look closer. Carbon fibre, electronics, equipment and digital services all carry an environmental cost long before they reach the team, and most of that cost lands in its footprint.",
+        layer: 0,
+        zoom: { scale: 1.35, origin: { x: 50, y: 70 } },
       },
       {
         copy: "This bar is the team's whole footprint for the year, {f:e25-ghg-total-sbti}. The highlighted block is the supply chain: {f:e25-supply-chain}.",
@@ -339,7 +355,7 @@ export const CHAPTERS: Chapter[] = [
     dek: "The garage needs power from Friday practice to Sunday night. At European races it now comes from a shared, lower-carbon system.",
     tone: "green",
     layers: [
-      { kind: "photo", image: "render-rear" },
+      { kind: "photo", image: "launch-quarter" },
       { kind: "graphic", graphic: "trackside" },
     ],
     steps: [
@@ -402,9 +418,8 @@ export const CHAPTERS: Chapter[] = [
       {
         copy: "Last year the STEM Racing World Finals came to Singapore, where school teams design and race miniature cars. The team met students from {f:c25-stem-racing-countries} there, and launched Unearth Your Greatness with Maaden, whose name is on the car: a free STEM programme that aims to reach {f:c25-maaden-target}.",
         facts: [{ id: "c25-stem-racing-students", caption: "reached at the World Finals launch" }],
+        // The whole car at rest: no sponsor name is pushed into focus beside copy about young people.
         layer: 0,
-        // In on the Maaden name on the engine cover, well away from the other sponsors.
-        zoom: { scale: 1.9, origin: { x: 46, y: 45 }, mobileOrigin: { x: 44, y: 45 } },
       },
       {
         copy: "Inside the sport, the team mentors people who rarely get a seat at the table. Accelerate Women, with Arm, matched mentors and mentees in {f:b25-accelerate-pairs}; {f:b25-aleto-network} of Aleto Foundation mentees said it grew their network; AFBE-UK's event hosted {f:b25-afbe-students}.",
@@ -447,7 +462,7 @@ export const CHAPTERS: Chapter[] = [
     tone: "green",
     layers: [
       { kind: "graphic", graphic: "targets" },
-      { kind: "photo", image: "launch-quarter" },
+      { kind: "photo", image: "render-rear" },
     ],
     steps: [
       {
@@ -473,7 +488,6 @@ export const CHAPTERS: Chapter[] = [
       {
         copy: "How do you know any of this is true? Independent assurers checked the carbon inventory, CDP rated the team's climate disclosure {f:g25-cdp}, and every figure here opens the report page it came from.",
         layer: 1,
-        zoom: { scale: 1, origin: { x: 50, y: 60 } },
       },
     ],
     detail: [

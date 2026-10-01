@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { APP_NAME } from "@/lib/config";
 import { getSource } from "@/lib/data/load";
-import { STORY_DEK, STORY_IMAGES, STORY_TITLE, WHAT_YOU_GET } from "@/lib/story/chapters";
+import { STORY_DEK, STORY_IMAGE_SIZES, STORY_IMAGES, STORY_TITLE, WHAT_YOU_GET } from "@/lib/story/chapters";
 import { cn } from "@/lib/utils";
 import { DepthToggle } from "./chapter-depth";
 import styles from "./story.module.css";
@@ -41,7 +41,7 @@ export function StoryHero() {
             alt={img.alt}
             fill
             preload
-            sizes="100vw"
+            sizes={STORY_IMAGE_SIZES}
             className="object-cover object-[50%_60%]"
           />
         </div>

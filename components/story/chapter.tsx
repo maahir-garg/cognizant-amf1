@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 import { FactValue } from "@/components/shared/fact-value";
 import { sourceShortName } from "@/lib/data/load";
 import type { AiResponse } from "@/lib/data/schemas";
-import { STORY_IMAGES, type Chapter, type DetailSection, type ImageKey, type Layer, type Quote, type Step } from "@/lib/story/chapters";
+import { STORY_IMAGE_SIZES, STORY_IMAGES, type Chapter, type DetailSection, type ImageKey, type Layer, type Quote, type Step } from "@/lib/story/chapters";
 import { cn } from "@/lib/utils";
 import { ChapterBrief, ChapterDetail } from "./chapter-depth";
 import { StoryCopy } from "./copy";
@@ -37,24 +37,29 @@ function stepMeta(chapter: Chapter): StepMeta[] {
   });
 }
 
-function maxScale(chapter: Chapter, layer: number): number {
-  return Math.max(1, ...chapter.steps.filter((s) => s.layer === layer).map((s) => s.zoom?.scale ?? 1));
-}
-
-function PhotoLayer({ image, scale }: { image: ImageKey; scale: number }) {
+function PhotoLayer({ image, eager }: { image: ImageKey; eager: boolean }) {
   const img = STORY_IMAGES[image];
   const vars = {
     "--dpos": `${img.desktop.x}% ${img.desktop.y}%`,
     "--mpos": `${img.mobile.x}% ${img.mobile.y}%`,
   } as CSSProperties;
-  // Ask for enough pixels that the deepest push-in stays sharp.
-  const sizes = `(min-width: 1024px) ${Math.ceil(70 * scale)}vw, ${Math.ceil(100 * scale)}vw`;
   return (
     <>
       <div className={styles.imageBox} data-shape={img.shape} data-image={image} style={vars}>
         <div className={styles.zoomer}>
-          {/* Lazy by default; Scrolly starts the fetch and decode a few screens early. */}
-          <Image src={img.src} alt="" fill sizes={sizes} loading="lazy" className={styles.image} />
+          {/*
+            The first two chapters load eagerly at low priority, so a fast scroll on a slow
+            connection still finds them there; later ones are lazy and Scrolly warms them early.
+          */}
+          <Image
+            src={img.src}
+            alt=""
+            fill
+            sizes={STORY_IMAGE_SIZES}
+            loading={eager ? "eager" : "lazy"}
+            fetchPriority={eager ? "low" : undefined}
+            className={cn(styles.image, img.fit === "contain" && styles.imageContain)}
+          />
         </div>
       </div>
       <p className={cn(styles.credit, "kicker text-ink-3")}>Image: Aston Martin Aramco</p>
@@ -158,9 +163,9 @@ export function StoryChapter({
   total: number;
   preloaded: Partial<Record<"new" | "die-hard", AiResponse>> | null;
 }) {
-  const layers: StageLayer[] = chapter.layers.map((l, i) =>
+  const layers: StageLayer[] = chapter.layers.map((l) =>
     l.kind === "photo"
-      ? { kind: "photo", node: <PhotoLayer image={l.image} scale={maxScale(chapter, i)} /> }
+      ? { kind: "photo", node: <PhotoLayer image={l.image} eager={chapter.number <= 2} /> }
       : { kind: "graphic", node: <GraphicLayer layer={l} /> },
   );
   const firstUse = chapter.layers.map((_, i) => chapter.steps.findIndex((s) => s.layer === i));
