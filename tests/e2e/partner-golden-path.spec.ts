@@ -82,7 +82,7 @@ test.describe("partner golden path", () => {
     await expect(input).toHaveValue("");
     await page.getByRole("button", { name: "Try the example" }).click();
     await expect(input).not.toHaveValue("");
-    await page.getByRole("button", { name: "Clear" }).click();
+    await page.getByRole("button", { name: "Clear", exact: true }).click();
     await expect(input).toHaveValue("");
 
     await input.fill(DEMO_LINE);
