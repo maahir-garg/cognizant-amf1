@@ -30,7 +30,8 @@ function Wordmark() {
 function DemoPill() {
   return (
     <span
-      className="kicker shrink-0 rounded-sm border border-line-strong px-2 py-0.5 text-ink-2"
+      // A quiet caption, not a control: no border or fill that could read as a button.
+      className="shrink-0 font-sans text-xs text-ink-3"
       title="Runs with no network: generated text is served from the offline cache"
     >
       Offline demo
