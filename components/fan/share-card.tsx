@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 import { APP_NAME, SITE_URL } from "@/lib/config";
 import { getFact } from "@/lib/data/load";
 import { QUIZ_BADGE_LABEL } from "@/lib/fan/quiz";
-import { shareFactLabel, shareFactValue, shareSourceLine } from "@/lib/fan/share";
+import { shareFactContext, shareFactLabel, shareFactValue, shareSourceLine } from "@/lib/fan/share";
 import { cn } from "@/lib/utils";
 
 export const SHARE_CARD_WIDTH = 1080;
@@ -59,7 +59,12 @@ function CardFigure({ id, primary }: { id: string; primary: boolean }) {
         <span className="font-serif text-ink" style={{ fontSize: 40, lineHeight: 1.15 }}>
           {shareFactLabel(id)}
         </span>
-        <CardStatus status={fact.status === "estimated" ? "estimated" : "verified"} />
+        <span className="flex flex-wrap items-center gap-x-4 gap-y-1">
+          <CardStatus status={fact.status === "estimated" ? "estimated" : "verified"} />
+          <span className="font-sans text-ink-2" style={{ fontSize: 24, lineHeight: "28px", fontStretch: "100%" }}>
+            {shareFactContext(id)}
+          </span>
+        </span>
       </span>
     </div>
   );

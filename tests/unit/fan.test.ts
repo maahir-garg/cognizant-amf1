@@ -3,12 +3,16 @@ import { DEFAULT_SHARE_FACT_IDS } from "@/lib/ai/requests";
 import { getFact, getRace, quizzes, races } from "@/lib/data/load";
 import { quickCheckQuestions } from "@/lib/fan/quiz";
 import { isUpcoming, raceDates, raceProgrammes } from "@/lib/fan/race";
-import { SHARE_FACT_IDS, shareFactValue, shareSourceLine } from "@/lib/fan/share";
+import { SHARE_FACT_IDS, shareFactContext, shareFactValue, shareSourceLine } from "@/lib/fan/share";
 import { comparePhrase, hasTripParams, parseTripParams, planLine, tripResult } from "@/lib/fan/trip";
 
 const singapore = getRace("singapore-2026");
 
 describe("share card facts", () => {
+  it("say where and when from data", () => {
+    expect(shareFactContext("c25-stem-racing-students")).toBe("In Singapore, 2025");
+    expect(shareFactContext("e24-solar-panels")).toBe("2024 figure");
+  });
   it("are verified and carry no data-quality flags", () => {
     for (const id of [...SHARE_FACT_IDS, ...DEFAULT_SHARE_FACT_IDS]) {
       const f = getFact(id);
