@@ -3,7 +3,7 @@ import type { Fact } from "@/lib/data/schemas";
 const nf = (maxFrac: number) => new Intl.NumberFormat("en-GB", { maximumFractionDigits: maxFrac });
 
 /** "144.8m", "12.3k" for very large counts; full digits otherwise. */
-export function compact(value: number): string {
+function compact(value: number): string {
   const abs = Math.abs(value);
   if (abs >= 1e6) return `${nf(1).format(value / 1e6)}m`;
   if (abs >= 1e5) return `${nf(0).format(value / 1e3)}k`;
@@ -56,4 +56,22 @@ export function formatFact(f: Fact): string {
 
 export function formatDate(iso: string): string {
   return new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+}
+
+/**
+ * A caption printed under "600+ students" should read on from the unit
+ * ("engaged at the STEM Racing World Finals"), not repeat it ("Students
+ * engaged at…"). Drops a leading unit word (singular or plural, any case)
+ * and lower-cases what follows; captions that don't start with the unit
+ * come back unchanged.
+ */
+export function captionAfterUnit(caption: string, unit: string): string {
+  const u = unitLabel(unit).trim().toLowerCase();
+  if (!u || /[%×$£]/.test(u)) return caption;
+  const forms = [u, u.replace(/s$/, ""), `${u}s`];
+  const lower = caption.toLowerCase();
+  const hit = forms.find((f) => f && (lower.startsWith(`${f} `) || lower === f));
+  if (!hit) return caption;
+  const rest = caption.slice(hit.length).trimStart();
+  return rest ? rest.charAt(0).toLowerCase() + rest.slice(1) : caption;
 }

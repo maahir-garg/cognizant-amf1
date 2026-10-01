@@ -1,20 +1,21 @@
 import type { Metadata } from "next";
+import { DeskHeader } from "@/components/partner/desk-header";
 import { StoryKitStudio } from "@/components/partner/story-kit-studio";
 
-export const metadata: Metadata = { title: "Story kit" };
+export const metadata: Metadata = { title: "Impact desk: story kit" };
 
-export default function StoryKitPage() {
+/** `?initiative=stem-racing-world-finals` opens the kit on that programme (linked from This race week). */
+export default async function StoryKitPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const params = await searchParams;
+  const initiative = Array.isArray(params.initiative) ? params.initiative[0] : params.initiative;
   return (
-    <div className="flex flex-col gap-8">
-      <header className="flex flex-col gap-3">
-        <p className="label">Community partner story kit</p>
-        <h1 className="display text-3xl sm:text-5xl">Tell a partner&apos;s story, sourced.</h1>
-        <p className="max-w-2xl text-ink-2">
-          For the team&apos;s community and charity partners rather than Cognizant itself: a grounded social post, a short
-          summary, and a shareable card sized for Instagram and LinkedIn (1080 × 1350 px).
-        </p>
-      </header>
-      <StoryKitStudio />
-    </div>
+    <>
+      <DeskHeader
+        kicker="Impact desk · Story kit for community and charity partners"
+        title="Your programme's story, sourced"
+        dek="For the charities and community partners the team works with: a social post, a funder report paragraph with footnotes, and a co-branded card in three sizes, all from the team's published figures."
+      />
+      <StoryKitStudio key={initiative ?? "default"} initialId={initiative} />
+    </>
   );
 }

@@ -1,21 +1,31 @@
 import type { Metadata } from "next";
+import { DeskHeader } from "@/components/partner/desk-header";
 import { NarrativeStudio } from "@/components/partner/narrative-studio";
+import { NARRATIVE_FORMATS, type NarrativeFormat } from "@/lib/ai/requests";
+import { PILLARS, type Pillar } from "@/lib/data/schemas";
 
-export const metadata: Metadata = { title: "Narratives" };
+export const metadata: Metadata = { title: "Impact desk: narratives" };
 
-export default function NarrativesPage() {
+const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
+
+/** `?format=leadership-update&focus=community` preselects the studio (links from This race week). */
+export default async function NarrativesPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const params = await searchParams;
+  const formatParam = one(params.format);
+  const format: NarrativeFormat = NARRATIVE_FORMATS.includes(formatParam as NarrativeFormat)
+    ? (formatParam as NarrativeFormat)
+    : "linkedin-post";
+  const focus = one(params.focus);
+  const pillars: Pillar[] = focus && PILLARS.includes(focus as Pillar) ? [focus as Pillar] : focus === "all" ? [...PILLARS] : ["community"];
+
   return (
-    <div className="flex flex-col gap-8">
-      <header className="flex flex-col gap-3">
-        <p className="label">Narratives</p>
-        <h1 className="display text-3xl sm:text-5xl">Draft grounded partner copy.</h1>
-        <p className="max-w-2xl text-ink-2">
-          Every draft is grounded only in the facts listed alongside it. The numeric guardrail rejects any figure that
-          isn&apos;t cited to a fact or a documented calculation. Nothing here should be published without a final human
-          read.
-        </p>
-      </header>
-      <NarrativeStudio />
-    </div>
+    <>
+      <DeskHeader
+        kicker="Impact desk · Narratives"
+        title="Drafts you can trace to the page"
+        dek="Pick a format and a focus. The draft uses only the facts listed beside it, cites every figure, and goes to a named reviewer before it can be copied."
+      />
+      <NarrativeStudio key={`${format}-${pillars.join(",")}`} initialFormat={format} initialPillars={pillars} />
+    </>
   );
 }

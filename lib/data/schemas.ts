@@ -19,9 +19,8 @@ export const STATUSES = ["verified", "estimated", "simulated"] as const;
 export const Status = z.enum(STATUSES);
 export type Status = z.infer<typeof Status>;
 
-export const INTERESTS = ["environment", "community", "inclusion", "stem", "tech"] as const;
-export const Interest = z.enum(INTERESTS);
-export type Interest = z.infer<typeof Interest>;
+const INTERESTS = ["environment", "community", "inclusion", "stem", "tech"] as const;
+const Interest = z.enum(INTERESTS);
 
 const Slug = z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "lowercase-kebab id");
 const IsoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "YYYY-MM-DD");
@@ -47,7 +46,7 @@ export type Source = z.infer<typeof Source>;
 
 /* -------------------------------------------------------------------- facts */
 
-export const Derivation = z.object({
+const Derivation = z.object({
   /** Human-readable formula shown in the provenance drawer. */
   formula: z.string(),
   /** Machine expression over input ids in braces, e.g. "{a} / {b} * 100". */
@@ -55,7 +54,6 @@ export const Derivation = z.object({
   inputs: z.array(Slug).min(1),
   assumptions: z.array(z.string()).default([]),
 });
-export type Derivation = z.infer<typeof Derivation>;
 
 export const QUALITY_FLAGS = [
   "source-conflict",
@@ -108,7 +106,12 @@ export const Fact = z
      * no other digits (the verifier checks), so templates can't leak numbers.
      */
     phrase: z.string().optional(),
-    /** Interests and partner tags used by the relevance engine, e.g. "stem", "partner:cognizant". */
+    /**
+     * Plain label shown on fan pages in place of `metric` when the report's
+     * wording is technical or is itself the disputed part (no digits).
+     */
+    fanLabel: z.string().optional(),
+    /** Topic and partner tags used to pick facts for AI copy, e.g. "stem", "partner:cognizant". */
     tags: z.array(z.string()).default([]),
     extractedAt: IsoDate,
     notes: z.string().optional(),
@@ -221,50 +224,18 @@ export const TravelMode = z.object({
 });
 export type TravelMode = z.infer<typeof TravelMode>;
 
-/* --------------------------------------------------------- simulated events */
-
-export const EVENT_TYPES = ["freight", "session", "community", "milestone", "data"] as const;
-
-export const FeedEvent = z.object({
-  id: Slug,
-  raceId: Slug,
-  /** Seconds after the replay starts. */
-  at: z.number().nonnegative(),
-  /** Race-weekend clock label shown in the feed, e.g. "THU 14:10". */
-  clock: z.string(),
-  type: z.enum(EVENT_TYPES),
-  title: z.string(),
-  detail: z.string(),
-  /** Facts the event text relies on (verified background, not the event itself). */
-  factIds: z.array(Slug).default([]),
-  /** Increments a simulated live counter, e.g. { counter: "sg-students-reached", by: 40 }. */
-  increment: z.object({ counter: Slug, by: z.number() }).optional(),
-  status: z.literal("simulated"),
-});
-export type FeedEvent = z.infer<typeof FeedEvent>;
-
-export const Counter = z.object({
-  id: Slug,
-  label: z.string(),
-  unit: z.string(),
-  start: z.number(),
-  /** Milestone thresholds that fire an alert when crossed. */
-  milestones: z.array(z.number()).default([]),
-  status: z.literal("simulated"),
-  notes: z.string(),
-});
-export type Counter = z.infer<typeof Counter>;
-
 /* -------------------------------------------------------------- quiz beats */
 
 export const Quiz = z.object({
   id: Slug,
   pillar: Pillar,
-  /** The fact whose value is the answer. */
+  /** The fact that supports the answer and appears in the reveal. */
   factId: Slug,
   question: z.string(),
   options: z.array(z.string()).min(2).max(4),
   answerIndex: z.number().int().nonnegative(),
+  /** Verbatim fragment from the cited fact for a qualitative correct option. */
+  answerEvidence: z.string().min(1).optional(),
   /** Fan levels that see this beat. New fans see the most. */
   levels: z.array(z.enum(["new", "casual", "die-hard"])).min(1),
   explainer: z.string(),
@@ -273,7 +244,7 @@ export type Quiz = z.infer<typeof Quiz>;
 
 /* -------------------------------------------------------------- fan profile */
 
-export const FAN_LEVELS = ["new", "casual", "die-hard"] as const;
+const FAN_LEVELS = ["new", "casual", "die-hard"] as const;
 export const FanLevel = z.enum(FAN_LEVELS);
 export type FanLevel = z.infer<typeof FanLevel>;
 
@@ -286,13 +257,13 @@ export type FanProfile = z.infer<typeof FanProfile>;
 
 /* ---------------------------------------------------------------- AI layer */
 
-export const AI_TASKS = [
+const AI_TASKS = [
   "fan-story",
   "quiz-reveal",
   "share-caption",
   "linkedin-post",
   "quarterly-brief",
-  "investor-summary",
+  "leadership-update",
   "scenario-explanation",
   "story-kit",
 ] as const;
@@ -314,7 +285,7 @@ export const AiRequest = z.object({
   factIds: z.array(Slug).min(1),
   derived: z.array(DerivedValue).default([]),
   fan: FanProfile.optional(),
-  /** Free-form knobs, e.g. { pillar: "environment", partner: "cognizant", tone: "punchy" }. */
+  /** Free-form knobs, e.g. { chapter: "campus", partner: "cognizant", format: "post" }. */
   params: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({}),
 });
 export type AiRequest = z.infer<typeof AiRequest>;

@@ -1,25 +1,30 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CarbonLogistics, ChangeVsEarlier } from "@/components/fan/carbon-logistics";
-import { DataGapCard, OwnTracksideCard } from "@/components/fan/data-gap-card";
-import { LivePanel } from "@/components/fan/live-panel";
-import { MatchedInitiatives } from "@/components/fan/matched-initiatives";
-import { events, races } from "@/lib/data/load";
-import { decodeProfile } from "@/lib/fan/profile-codec";
-import { formatDate } from "@/lib/format";
-
-function eligibleRaces() {
-  return races.filter((r) => r.hero || r.factIds.length > 0);
-}
+import { CardTeaser } from "@/components/fan/card-teaser";
+import { GettingThere } from "@/components/fan/getting-there";
+import { OtherRaces } from "@/components/fan/other-races";
+import { ProgrammeList } from "@/components/fan/programme-list";
+import { RaceHeader, type RaceSection } from "@/components/fan/race-header";
+import { RacePublished } from "@/components/fan/race-published";
+import { SeasonContext } from "@/components/fan/season-context";
+import { Button } from "@/components/ui/button";
+import { heroRace, races } from "@/lib/data/load";
+import { DEPTH_COPY, QUIZ_BADGE_LABEL } from "@/lib/fan/quiz";
+import { isUpcoming, raceTitle } from "@/lib/fan/race";
+import { hasTripParams, parseTripParams } from "@/lib/fan/trip";
 
 export function generateStaticParams() {
-  return eligibleRaces().map((r) => ({ slug: r.id }));
+  return races.map((r) => ({ slug: r.id }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const race = races.find((r) => r.id === slug);
-  return { title: race ? race.name : "Race weekend" };
+  return {
+    title: race ? `${raceTitle(race)} ${race.season}` : "Race weekend",
+    description: race ? `What Aston Martin Aramco has published for the ${raceTitle(race)}, with every figure sourced.` : undefined,
+  };
 }
 
 export default async function WeekendPage({
@@ -27,43 +32,69 @@ export default async function WeekendPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ p?: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { slug } = await params;
-  const { p } = await searchParams;
-  const race = eligibleRaces().find((r) => r.id === slug);
+  const race = races.find((r) => r.id === slug);
   if (!race) notFound();
 
-  const paramProfile = decodeProfile(p);
-  const hasOwnTrackside = race.factIds.some((id) => id.startsWith("e25-trackside-"));
-  const hasLiveFeed = events.some((e) => e.raceId === race.id);
+  const upcoming = isUpcoming(race);
+  const query = await searchParams;
+  const trip = parseTripParams(query);
+  const explicitTrip = hasTripParams(query);
+  const sections: RaceSection[] = [
+    { id: "published", label: "Published for this race" },
+    { id: "take-part", label: upcoming ? "Take part" : "Programmes" },
+    ...(upcoming
+      ? [
+          { id: "getting-there", label: "Getting there" },
+          { id: "quick-check", label: "Quick check" },
+        ]
+      : []),
+    { id: "season", label: "Season context" },
+  ];
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-10 px-4 py-10 sm:px-6 sm:py-14">
-      <header className="flex flex-col gap-2">
-        <p className="label">
-          {race.season} · Round {race.round ?? "—"}
-        </p>
-        <h1 className="display text-[clamp(2.5rem,9vw,4.5rem)]">{race.name}</h1>
-        {race.start && race.end && (
-          <p className="text-ink-2">
-            {formatDate(race.start)} – {formatDate(race.end)}
-            {race.circuit && ` · ${race.circuit}`}
-          </p>
-        )}
-      </header>
+    <div className="flex flex-col">
+      <RaceHeader race={race} upcoming={upcoming} sections={sections} />
+      <RacePublished race={race} />
+      <ProgrammeList race={race} upcoming={upcoming} />
 
-      <CarbonLogistics />
-      <ChangeVsEarlier />
+      {upcoming ? (
+        <>
+          <GettingThere race={race} initial={trip} explicit={explicitTrip} />
+          {/* One canonical quick check lives at /quiz; the race page points to it rather than embedding a second copy. */}
+          <section aria-labelledby="quick-check-title" id="quick-check" className="scroll-mt-14">
+            <div className="wrap grid gap-6 py-[clamp(64px,10vw,128px)] lg:grid-cols-12 lg:gap-6">
+              <p className="kicker kicker-rule lg:col-span-3">Quick check</p>
+              <div className="flex flex-col items-start gap-5 lg:col-span-8 lg:col-start-5 xl:col-span-7 xl:col-start-5">
+                <h2 id="quick-check-title" className="h2-chapter">
+                  Test yourself: {DEPTH_COPY.new.count} questions
+                </h2>
+                <p className="dek">Pick what sounds right, then see the exact figure and its page. Finish for the {QUIZ_BADGE_LABEL} badge on your card.</p>
+                <Button asChild variant="outline" size="lg">
+                  <Link href="/quiz">Start the quick check →</Link>
+                </Button>
+              </div>
+            </div>
+          </section>
+          <CardTeaser race={race} modeId={trip.modeId} />
+        </>
+      ) : (
+        <section aria-label="Next race" className="border-t border-line">
+          <div className="wrap flex flex-col items-start gap-3 py-12">
+            <p className="kicker">Next race weekend</p>
+            <Link href={`/weekend/${heroRace.id}`} className="link font-serif text-2xl">
+              {raceTitle(heroRace)} {heroRace.season} →
+            </Link>
+          </div>
+        </section>
+      )}
 
-      {hasOwnTrackside ? <OwnTracksideCard raceId={race.id} raceName={race.name} /> : <DataGapCard raceName={race.name} />}
-
-      <section className="flex flex-col gap-4 border-t border-line pt-6">
-        <p className="label">Matched for you</p>
-        <MatchedInitiatives paramProfile={paramProfile} />
-      </section>
-
-      {hasLiveFeed && <LivePanel raceId={race.id} />}
+      <div className="pt-[clamp(48px,6vw,80px)]">
+        <SeasonContext />
+      </div>
+      <OtherRaces current={race} />
     </div>
   );
 }

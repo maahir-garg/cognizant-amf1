@@ -1,9 +1,9 @@
 /** Product constants. Rename the product here and nowhere else. */
-export const APP_NAME = "Impact Lap";
-export const APP_TAGLINE = "Aston Martin Aramco's impact, one lap at a time.";
-export const TEAM_NAME = "Team Growthbeans";
-export const FOOTER_LABEL = "Concept prototype: Team Growthbeans, AMF1 × Cognizant Ideathon 2026";
+export const APP_NAME = "Off Camera";
+export const FOOTER_LABEL = "Concept prototype · Team Growthbeans · Cognizant × Aston Martin Aramco";
 export const HERO_RACE_ID = "singapore-2026";
+/** Short public address printed on the share card, without the scheme. */
+export const SITE_URL = "cognizant-amf1.vercel.app";
 export const PARTNER_ID = "cognizant";
 export const PARTNER_NAME = "Cognizant";
 

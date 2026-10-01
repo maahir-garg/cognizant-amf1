@@ -7,7 +7,7 @@ import { CITATION_RE, parseCitations } from "@/lib/ai/guardrail";
 import { findFact, getSource } from "@/lib/data/load";
 import type { AiResponse, DerivedValue } from "@/lib/data/schemas";
 
-export type Footnote = { n: number; id: string; text: string };
+type Footnote = { n: number; id: string; text: string };
 
 function footnoteText(id: string, derived: DerivedValue[]): string {
   const fact = findFact(id);

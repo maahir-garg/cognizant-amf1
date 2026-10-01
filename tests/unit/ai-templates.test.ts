@@ -15,10 +15,10 @@ function words(text: string): number {
 }
 
 describe("demo request set", () => {
-  it("covers every persona, format, initiative and milestone the offline demo can hit", () => {
+  it("covers every depth, format and story-kit initiative the offline demo can hit", () => {
     // Sanity check that the enumeration itself isn't trivially empty; the
     // exact count moves if data/*.json changes, so just check it's large.
-    expect(requests.length).toBeGreaterThan(100);
+    expect(requests.length).toBeGreaterThan(50);
   });
 });
 
@@ -73,13 +73,6 @@ describe("task shape rules", () => {
     }
   });
 
-  it("linkedin-post says so when the milestone is simulated", () => {
-    for (const req of requests.filter((r) => r.task === "linkedin-post" && r.params.simulated)) {
-      const text = renderTemplate(req, req.factIds.map(getFact));
-      expect(/simulated/i.test(text)).toBe(true);
-    }
-  });
-
   it("quarterly-brief lands between 180 and 260 words", () => {
     for (const req of requests.filter((r) => r.task === "quarterly-brief")) {
       const text = renderTemplate(req, req.factIds.map(getFact));
@@ -89,8 +82,8 @@ describe("task shape rules", () => {
     }
   });
 
-  it("investor-summary has a title, exactly 4 bullets and a so-what line", () => {
-    for (const req of requests.filter((r) => r.task === "investor-summary")) {
+  it("leadership-update has a title, exactly 4 bullets and a so-what line", () => {
+    for (const req of requests.filter((r) => r.task === "leadership-update")) {
       const text = renderTemplate(req, req.factIds.map(getFact));
       const lines = text.trim().split("\n");
       const bullets = lines.filter((l) => l.startsWith("- "));
@@ -115,12 +108,14 @@ describe("task shape rules", () => {
     }
   });
 
-  it("story-kit summary format is 2-3 sentences", () => {
-    for (const req of requests.filter((r) => r.task === "story-kit" && r.params.format === "summary")) {
+  it("story-kit funder format is one third-person paragraph of 40-110 words", () => {
+    for (const req of requests.filter((r) => r.task === "story-kit" && r.params.format === "funder")) {
       const text = renderTemplate(req, req.factIds.map(getFact));
-      const sentences = text.match(/[.!?](?=\s|$)/g)?.length ?? 0;
-      expect(sentences).toBeGreaterThanOrEqual(2);
-      expect(sentences).toBeLessThanOrEqual(3);
+      const n = words(text);
+      expect(n).toBeGreaterThanOrEqual(40);
+      expect(n).toBeLessThanOrEqual(110);
+      expect(text).not.toMatch(/\n/);
+      expect(text).not.toMatch(/\b(we|our|us)\b/i);
     }
   });
 });

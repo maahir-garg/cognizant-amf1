@@ -42,3 +42,6 @@ export function metricsToCsv(metrics: PartnerMetric[]): string {
   const rows = metrics.map((m) => CSV_COLUMNS.map((c) => csvEscape(c.get(m))).join(","));
   return [header, ...rows].join("\r\n") + "\r\n";
 }
+
+/** Column names in export order, for the Export tab's field list. */
+export const CSV_COLUMN_KEYS = CSV_COLUMNS.map((c) => c.key);

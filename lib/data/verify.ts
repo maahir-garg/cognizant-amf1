@@ -4,12 +4,12 @@
  * For every verified fact: the cited page exists and each quote fragment is
  * found on it, and the fact's value appears inside the quote.
  * For every estimated fact: the derivation recomputes to the stored value.
- * For every reference (initiatives, races, quizzes, events): the ids exist.
+ * For every reference (initiatives, races, quizzes): the ids exist.
  */
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { evaluate } from "./derive";
-import { cities, conversionFactors, counters, events, facts, initiatives, quizzes, races, sources, travelModes } from "./load";
+import { cities, conversionFactors, facts, initiatives, quizzes, races, sources, travelModes } from "./load";
 import { extractNumbers, normaliseForQuote, numbersMatch } from "./numbers";
 import type { Fact } from "./schemas";
 
@@ -117,6 +117,10 @@ export function verifyData(): Issue[] {
       }
     }
 
+    if (f.fanLabel && extractNumbers(f.fanLabel).length) {
+      issues.push({ level: "error", where, message: `fanLabel contains numbers: "${f.fanLabel}"` });
+    }
+
     for (const flag of f.flags) {
       for (const id of flag.relatedFactIds) {
         if (!factById.has(id)) issues.push({ level: "error", where, message: `flag references unknown fact "${id}"` });
@@ -162,20 +166,20 @@ export function verifyData(): Issue[] {
       continue;
     }
     if (q.answerIndex >= q.options.length) issues.push({ level: "error", where, message: "answerIndex out of range" });
-    if (fact.value !== null) {
+    if (q.answerEvidence) {
+      const evidence = q.answerEvidence.toLowerCase().replace(/\s+/g, " ").trim();
+      const sourceText = [fact.quote, fact.phrase, fact.metric].filter(Boolean).join(" ").toLowerCase().replace(/\s+/g, " ");
+      if (!sourceText.includes(evidence)) {
+        issues.push({ level: "error", where, message: `answerEvidence "${q.answerEvidence}" is absent from the cited fact` });
+      }
+      if (extractNumbers(q.options[q.answerIndex]).length > 0) {
+        issues.push({ level: "error", where, message: "qualitative correct option must not contain an unbadged number" });
+      }
+    } else if (fact.value !== null) {
       const answer = extractNumbers(q.options[q.answerIndex]);
       if (!answer.some((n) => numbersMatch(n, Math.abs(fact.value!)))) {
         issues.push({ level: "error", where, message: `correct option "${q.options[q.answerIndex]}" does not match fact value ${fact.value}` });
       }
-    }
-  }
-
-  const counterIds = new Set(counters.map((c) => c.id));
-  for (const e of events) {
-    need(`event ${e.id}`, e.factIds);
-    if (!raceIds.has(e.raceId)) issues.push({ level: "error", where: `event ${e.id}`, message: `unknown race "${e.raceId}"` });
-    if (e.increment && !counterIds.has(e.increment.counter)) {
-      issues.push({ level: "error", where: `event ${e.id}`, message: `unknown counter "${e.increment.counter}"` });
     }
   }
 

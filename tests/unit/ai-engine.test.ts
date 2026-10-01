@@ -7,7 +7,7 @@ vi.mock("@/lib/ai/provider", async (importOriginal) => {
 });
 
 import { getFact } from "@/lib/data/load";
-import { fanStoryRequest } from "@/lib/ai/requests";
+import { fanChapterRequest } from "@/lib/ai/requests";
 import { cacheKey, runGeneration } from "@/lib/ai/engine";
 import { getProvider, type ModelProvider } from "@/lib/ai/provider";
 import { formatFact } from "@/lib/format";
@@ -42,7 +42,7 @@ describe("runGeneration", () => {
     const fake = fakeProvider("should never be used");
     mockedGetProvider.mockReturnValue(fake);
 
-    const req = fanStoryRequest(fan, "environment");
+    const req = fanChapterRequest(fan, "supply-chain");
     const res = await runGeneration(req);
 
     expect(fake.generate).not.toHaveBeenCalled();
@@ -60,7 +60,7 @@ describe("runGeneration", () => {
     );
     mockedGetProvider.mockReturnValue(fake);
 
-    const req = fanStoryRequest(fan, "environment");
+    const req = fanChapterRequest(fan, "supply-chain");
     const res = await runGeneration(req);
 
     expect(fake.generate).toHaveBeenCalledTimes(2);
@@ -72,7 +72,7 @@ describe("runGeneration", () => {
   it("uses the model's text once it passes the guardrail", async () => {
     process.env.DEMO_MODE = "false";
     process.env.GEMINI_API_KEY = "test-key";
-    const req = fanStoryRequest(fan, "environment");
+    const req = fanChapterRequest(fan, "supply-chain");
     const facts = req.factIds.map(getFact);
     const goodText = `Here's a genuinely grounded line: ${formatFact(facts[0])} [F:${facts[0].id}].`;
     const fake = fakeProvider(goodText);
@@ -91,7 +91,7 @@ describe("runGeneration", () => {
   it("retries once on failure and accepts a corrected second attempt", async () => {
     process.env.DEMO_MODE = "false";
     process.env.GEMINI_API_KEY = "test-key";
-    const req = fanStoryRequest(fan, "environment");
+    const req = fanChapterRequest(fan, "supply-chain");
     const facts = req.factIds.map(getFact);
     const goodText = `Second time's the charm: ${formatFact(facts[0])} [F:${facts[0].id}].`;
     const fake = fakeProvider("Invented 9,999 tonnes with no citation at all.", goodText);
@@ -111,7 +111,7 @@ describe("runGeneration", () => {
     const generate = vi.fn().mockRejectedValue(new Error("network down"));
     mockedGetProvider.mockReturnValue({ id: "fake:test-model", generate });
 
-    const req = fanStoryRequest(fan, "environment");
+    const req = fanChapterRequest(fan, "supply-chain");
     const res = await runGeneration(req);
 
     expect(res.generator.kind).toBe("template");

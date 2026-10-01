@@ -71,8 +71,9 @@
     "id": "stem-racing-world-finals",
     "name": "STEM Racing World Finals, Singapore",
     "pillar": "community",
-    "summary": "At the STEM Racing World Finals in Singapore the team hosted the Canadian team with Bombardier and launched 'Unearth Your Greatness' with Maaden, reaching students from 35 countries.",
+    "summary": "At the STEM Racing World Finals in Singapore the team hosted the Canadian team with Bombardier and launched 'Unearth Your Greatness' with Maaden, reaching students from around the world.",
     "partners": [
+      "STEM Racing",
       "Maaden",
       "Bombardier"
     ],
@@ -98,7 +99,7 @@
     "id": "unearth-your-greatness",
     "name": "Unearth Your Greatness (with Maaden)",
     "pillar": "community",
-    "summary": "A multi-year youth programme with Maaden that supports STEM Racing through a free online learning platform, aiming to reach 100,000 students over three years.",
+    "summary": "A multi-year youth programme with Maaden that supports STEM Racing through a free online learning platform, with a reach target for its first three years.",
     "partners": [
       "Maaden"
     ],
@@ -119,7 +120,7 @@
   },
   {
     "id": "genai-ideathon",
-    "name": "Cognizant x AMF1 Gen-AI Ideathon",
+    "name": "Cognizant × Aston Martin Aramco Gen-AI Ideathon",
     "pillar": "community",
     "summary": "Cognizant ran a global generative-AI Ideathon with the team for a second year running. University students tackle real team problems; the 2025 winners came from McGill University.",
     "partners": [
@@ -683,81 +684,5 @@
     "status": "verified",
     "sourceId": "esg-2025",
     "page": 37
-  },
-  {
-    "id": "sg-pit-lane-classroom",
-    "name": "Pit Lane Classroom: Singapore (illustrative)",
-    "pillar": "community",
-    "summary": "A race-week STEM session for Singapore secondary students, co-run with Cognizant volunteers: AI in race strategy, then a paddock walk. Modelled on Make A Mark Day.",
-    "partners": [
-      "Cognizant"
-    ],
-    "cityIds": [
-      "singapore",
-      "kuala-lumpur",
-      "jakarta"
-    ],
-    "interests": [
-      "stem",
-      "tech",
-      "community"
-    ],
-    "year": "2026",
-    "factIds": [
-      "c25-mam-day-students",
-      "c25-ai-skills-gap"
-    ],
-    "raceIds": [
-      "singapore-2026"
-    ],
-    "status": "simulated",
-    "notes": "Illustrative concept for the demo. Not an announced AMF1 or Cognizant activity. Grounded in the real Make A Mark Day format and the verified Singapore STEM outreach history."
-  },
-  {
-    "id": "sg-marina-cleanup",
-    "name": "Marina Bay shoreline clean-up (illustrative)",
-    "pillar": "community",
-    "summary": "A fan and colleague volunteering slot on race Thursday, logging litter collected by category.",
-    "partners": [],
-    "cityIds": [
-      "singapore"
-    ],
-    "interests": [
-      "environment",
-      "community"
-    ],
-    "year": "2026",
-    "factIds": [],
-    "raceIds": [
-      "singapore-2026"
-    ],
-    "status": "simulated",
-    "notes": "Illustrative volunteering slot for the demo. Not an announced activity."
-  },
-  {
-    "id": "sg-women-in-engineering",
-    "name": "Women in engineering breakfast, Singapore (illustrative)",
-    "pillar": "belong",
-    "summary": "A race-week mentoring breakfast for women studying engineering in Singapore, modelled on the Accelerate Women and International Women in Engineering Day formats.",
-    "partners": [
-      "Cognizant"
-    ],
-    "cityIds": [
-      "singapore"
-    ],
-    "interests": [
-      "inclusion",
-      "stem"
-    ],
-    "year": "2026",
-    "factIds": [
-      "b25-accelerate-pairs",
-      "b25-women-share"
-    ],
-    "raceIds": [
-      "singapore-2026"
-    ],
-    "status": "simulated",
-    "notes": "Illustrative concept for the demo. Not an announced activity."
   }
 ]

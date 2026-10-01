@@ -1,117 +1,187 @@
-import { expect, test, type Locator, type Page } from "@playwright/test";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { expect, test, type Page } from "@playwright/test";
+import { closeDrawer, expectDrawerWithPage, HERO_RACE, watchConsole } from "./helpers";
 
 /**
- * Fan golden path: onboarding -> lap (sectors + quiz beats) -> weekend view
- * (equivalents, provenance, matched initiatives) -> share card export -> act
- * (log a trip, earn simulated credits). Runs against the production build in
- * demo mode, so this is exactly what the live pitch demo does.
+ * Fan golden path after the overhaul: the Singapore race page (what the team
+ * published, real programmes, getting there, a figure's source) -> the quick
+ * check (badge, a cited figure after every answer) -> the race-week card
+ * (chosen facts with status, PNG export). Runs against the production build
+ * in demo mode, which is what the offline pitch demo serves.
+ *
+ * The story at "/" has its own spec (story.spec.ts).
  */
 
-async function clearStorage(page: Page) {
-  await page.goto("/");
+type Initiative = { id: string; name: string; status: string };
+
+async function initiatives(): Promise<Initiative[]> {
+  const file = path.resolve(__dirname, "../../data/initiatives.json");
+  return JSON.parse(await readFile(file, "utf8")) as Initiative[];
+}
+
+async function fresh(page: Page) {
+  await page.goto("/quiz");
   await page.evaluate(() => window.localStorage.clear());
 }
 
-/** Locates a <QuizBeat> root: the div whose direct child is `<p class="label">Quiz beat</p>`. */
-function quizBeats(page: Page): Locator {
-  return page.locator('div:has(> p.label:text-is("Quiz beat"))');
-}
-
-async function answerQuizBeat(beat: Locator) {
-  await beat.scrollIntoViewIfNeeded();
-  await beat.getByRole("button").first().click();
-  await expect(beat.getByText(/^(Correct|Not quite)$/)).toBeVisible();
-  // The reveal shows the cited fact with its trust status.
-  await expect(beat.getByText(/^(Verified|Estimated|Simulated)$/)).toBeVisible();
-}
-
 test.describe("fan golden path", () => {
-  test("onboarding through lap, weekend, share and act", async ({ page }) => {
-    await clearStorage(page);
+  test("Singapore race page: sections, data gap, programmes and a sourced figure", async ({ page }) => {
+    const errors = watchConsole(page);
+    await page.goto(HERO_RACE);
 
-    // ---- /start: onboard as "New to F1", Singapore, Environment + STEM ----
-    await page.goto("/start");
-    await page.getByRole("button", { name: /New to F1/ }).click();
-    await page.getByRole("combobox", { name: "Home city" }).click();
-    await page.getByRole("option", { name: "Singapore, Singapore" }).click();
-    await page.getByRole("button", { name: "Environment", exact: true }).click();
-    await page.getByRole("button", { name: "STEM", exact: true }).click();
-    await expect(page.getByText(/sectors/)).toBeVisible();
-    await page.getByRole("button", { name: "Start your lap" }).click();
+    await expect(page.getByRole("heading", { level: 1, name: "Singapore Grand Prix" })).toBeVisible();
 
-    // ---- /lap: sector 1 (Environment) has quizzes for a "new" fan ----
-    await expect(page).toHaveURL(/\/lap$/);
-    await expect(page.getByText("S1 · ENVIRONMENT", { exact: true })).toBeVisible();
-
-    // The sector's own AI text renders a "Verified" guardrail badge (a tooltip-triggered
-    // span, distinct from a plain FactValue's status badge, which carries no tabindex).
-    await expect(page.locator('span[tabindex="0"]', { hasText: "Verified" }).first()).toBeVisible({
-      timeout: 15_000,
-    });
-
-    const beats = quizBeats(page);
-    const beatCount = await beats.count();
-    expect(beatCount).toBeGreaterThanOrEqual(3);
-    for (let i = 0; i < 3; i++) {
-      await answerQuizBeat(beats.nth(i));
+    // Every section the page promises is there, and the "On this page" nav points at it.
+    const nav = page.getByRole("navigation", { name: "On this page" });
+    for (const id of ["published", "take-part", "getting-there", "quick-check", "season"]) {
+      await expect(page.locator(`#${id}`)).toHaveCount(1);
+      await expect(nav.locator(`a[href="#${id}"]`)).toHaveCount(1);
     }
 
-    // Walk to the end of the lap (sectors -> scrutineering -> finish).
-    for (let i = 0; i < 4; i++) {
-      await page.getByRole("button", { name: "Next" }).click();
+    // Singapore trackside energy is not published: a gap, not a guess.
+    const published = page.locator("#published");
+    await expect(published.getByText("Data gap: trackside energy")).toBeVisible();
+    await expect(published).toContainText("night race");
+
+    // Take part: only programmes the fact base holds as verified, and at least the two the demo names.
+    const all = await initiatives();
+    const verified = new Set(all.filter((i) => i.status === "verified").map((i) => i.name));
+    const names = await page.locator("#take-part article h3").allInnerTexts();
+    expect(names.length).toBeGreaterThanOrEqual(2);
+    for (const name of names) expect(verified, `"${name}" should be a verified programme`).toContain(name);
+    expect(names.some((n) => /STEM Racing/.test(n))).toBe(true);
+    expect(names.some((n) => /Unearth Your Greatness/.test(n))).toBe(true);
+
+    // A figure opens the provenance drawer on its report page, and closing it hands focus back to the figure.
+    const figure = published.getByRole("button", { name: /Show source\.$/ }).first();
+    await figure.focus();
+    await page.keyboard.press("Enter");
+    await expectDrawerWithPage(page);
+    await closeDrawer(page);
+    await expect(figure).toBeFocused();
+
+    expect(errors, errors.join("\n")).toEqual([]);
+  });
+
+  test("getting there: GET params render an Estimated ratio, never laps", async ({ page }) => {
+    await page.goto(`${HERO_RACE}?km=12&mode=mrt#getting-there`);
+    const section = page.locator("#getting-there");
+    await expect(section.getByRole("group", { name: "How you'll get there" }).getByRole("radio", { name: /MRT/ })).toBeChecked();
+    await expect(page.locator("#trip-km")).toHaveValue("12");
+
+    const result = section.locator('[aria-live="polite"]');
+    await expect(result.getByText("Estimated", { exact: true })).toBeVisible();
+    await expect(result).toContainText(/(of|than) a taxi's emissions/i);
+    await expect(result).toContainText(/driving alone/i);
+    // The result follows every change, so the no-JavaScript Compare button stays hidden.
+    await expect(section.getByRole("button", { name: "Compare" })).toHaveCount(0);
+    await expect(section).not.toContainText(/\blaps?\b/i);
+
+    // Switching mode updates the comparison in place.
+    await section.locator("label", { hasText: "Taxi or ride-hail" }).click();
+    await expect(section.getByRole("radio", { name: /Taxi/ })).toBeChecked();
+    await expect(result).toContainText(/driving alone/i);
+    await expect(section).not.toContainText(/\blaps?\b/i);
+  });
+
+  test("the travel plan survives a trip to the card and back", async ({ page }) => {
+    await fresh(page);
+    const section = page.locator("#getting-there");
+    const preview = page.getByRole("img", { name: /^Card preview/ });
+
+    await page.goto(HERO_RACE);
+    await section.locator("label", { hasText: "Public bus" }).click();
+    await expect(section.getByRole("radio", { name: /Public bus/ })).toBeChecked();
+
+    await page.goto("/share");
+    await expect(preview).toHaveAttribute("aria-label", /the bus to Marina Bay/);
+
+    // Coming back to the race page must start from the saved plan, not reset it to the default.
+    await page.goto(HERO_RACE);
+    await expect(section.getByRole("radio", { name: /Public bus/ })).toBeChecked();
+
+    await page.goto("/share");
+    await expect(preview).toHaveAttribute("aria-label", /the bus to Marina Bay/);
+  });
+
+  test("getting there works without JavaScript", async ({ browser }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const page = await context.newPage();
+    await page.goto(`${HERO_RACE}?km=20&mode=bus#getting-there`);
+    const section = page.locator("#getting-there");
+    await expect(section.getByText("Estimated", { exact: true }).first()).toBeVisible();
+    await expect(section).toContainText(/less than a taxi's emissions/i);
+    await expect(section.getByRole("button", { name: "Compare" })).toBeVisible();
+    await expect(section).not.toContainText(/\blaps?\b/i);
+    await context.close();
+  });
+
+  test("quick check -> badge -> race-week card export", async ({ page }) => {
+    const errors = watchConsole(page);
+    await fresh(page);
+
+    // ---- /quiz: answer every question; each reveal shows the cited figure with its status ----
+    await page.goto("/quiz");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(/Quick check/);
+    const questions = page.locator("ol > li");
+    const total = await questions.count();
+    expect(total).toBeGreaterThanOrEqual(3);
+
+    for (let i = 0; i < total; i++) {
+      const q = questions.nth(i);
+      await q.locator("label").first().click();
+      // The verdict line only: the AI reveal below can also start with "Not quite".
+      await expect(q.getByText(/^(✓ Correct, and the report agrees\.|Not quite\. Here's what the report says\.)$/)).toBeVisible();
+      const figure = q.getByRole("button", { name: /Show source\.$/ });
+      await expect(figure).toBeVisible();
+      await expect(figure).toContainText(/Verified|Estimated/);
+      // The grounded explanation arrives from the offline cache or the template, with its plain check label (fan pages never name the drafter).
+      await expect(q.getByText("Every number checked against the report")).toBeVisible({ timeout: 15_000 });
     }
-    await expect(page.getByText("Lap complete")).toBeVisible();
 
-    // ---- /weekend/singapore-2026: equivalents, provenance, matched initiatives ----
-    await page.getByRole("link", { name: /Your weekend: Singapore GP/ }).click();
-    await expect(page).toHaveURL(/\/weekend\/singapore-2026/);
+    await expect(page.getByText("Badge earned")).toBeVisible();
+    await expect(page.getByText("Pit-wall ready").first()).toBeVisible();
 
-    // Switch the equivalents unit away from the F1-native default; the panel shows the Estimated label.
-    const equivalentsPanel = page.getByRole("radiogroup").locator("xpath=..");
-    const beforeValue = await equivalentsPanel.locator("span.num.text-5xl, span.num.text-6xl").first().innerText();
-    await page.getByRole("radio", { name: "London–New York return flights" }).click();
-    await expect(equivalentsPanel.getByText("Estimated", { exact: true })).toBeVisible();
-    await expect(equivalentsPanel.locator("span.num.text-5xl, span.num.text-6xl").first()).not.toHaveText(beforeValue);
+    // The cited figure after an answer opens its source.
+    await questions
+      .first()
+      .getByRole("button", { name: /Show source\.$/ })
+      .click();
+    await expectDrawerWithPage(page);
+    await closeDrawer(page);
 
-    await expect(page.getByText("Data gap")).toBeVisible();
+    // ---- /share: the preview carries the chosen facts, their status and the badge ----
+    await page.getByRole("link", { name: /Add it to your card/ }).click();
+    await expect(page).toHaveURL(/\/share$/);
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("card");
 
-    await expect(page.getByText("Matched for you")).toBeVisible();
-    await expect(page.locator("article").first()).toBeVisible();
+    const preview = page.getByRole("img", { name: /^Card preview/ });
+    await expect(preview).toBeVisible();
+    await expect(preview.getByText("Pit-wall ready")).toBeVisible();
 
-    // Open a provenance drawer from a number in the page copy.
-    await page.getByRole("button", { name: "14%", exact: true }).click();
-    await expect(page.getByText("Source", { exact: true }).first()).toBeVisible();
-    await expect(page.getByText("Quoted from the page")).toBeVisible();
-    await expect(page.getByText(/travel and logistics emissions/i).first()).toBeVisible();
-    await page.keyboard.press("Escape");
+    // Pick one more figure and check it lands on the card with a status label.
+    const figures = page.getByRole("group", { name: /Team figures/ });
+    const unchecked = figures.locator("label:has(input[type=checkbox]:not(:checked):not(:disabled))").first();
+    const value = (await unchecked.locator("span.num").innerText()).trim();
+    await unchecked.click();
+    await expect(preview).toContainText(value);
+    const statuses = await preview.getByText(/^(Verified|Estimated)$/).count();
+    const shownFigures = await figures.locator("input[type=checkbox]:checked").count();
+    expect(statuses).toBeGreaterThanOrEqual(shownFigures);
 
-    // ---- /share: download the 1080x1920 PNG ----
-    await page.goto("/share?p=new.singapore.environment-stem");
-    const downloadButton = page.getByRole("button", { name: "Download PNG" });
-    await expect(downloadButton).toBeEnabled({ timeout: 15_000 });
-    const [download] = await Promise.all([page.waitForEvent("download"), downloadButton.click()]);
-    const path = await download.path();
-    expect(path).toBeTruthy();
-    const { readFile } = await import("node:fs/promises");
-    const buf = await readFile(path!);
-    // PNG signature (8 bytes) + IHDR chunk length (4) + "IHDR" (4) + width (4, BE) + height (4, BE).
+    // ---- Export: a real 1080 x 1920 PNG, big enough to hold the car image and fonts ----
+    const save = page.getByRole("button", { name: "Save the card" });
+    await expect(save).toBeEnabled();
+    const [download] = await Promise.all([page.waitForEvent("download", { timeout: 30_000 }), save.click()]);
+    expect(download.suggestedFilename()).toMatch(/\.png$/);
+    const file = await download.path();
+    const buf = await readFile(file!);
     expect(buf.subarray(0, 8).toString("hex")).toBe("89504e470d0a1a0a");
-    const width = buf.readUInt32BE(16);
-    const height = buf.readUInt32BE(20);
-    expect(width).toBe(1080);
-    expect(height).toBe(1920);
+    expect(buf.readUInt32BE(16)).toBe(1080);
+    expect(buf.readUInt32BE(20)).toBe(1920);
+    expect(buf.byteLength).toBeGreaterThan(50 * 1024);
 
-    // ---- /act: pick a lower-carbon trip, log it, credits increase and are labelled Simulated ----
-    await page.goto("/act?p=new.singapore.environment-stem");
-    await page.getByRole("tab", { name: "Get to the circuit" }).click();
-    await page.getByRole("button", { name: /Walk or cycle/ }).click();
-    await page.getByRole("button", { name: "Log this trip" }).click();
-    await expect(page.getByText(/impact credit.* logged/)).toBeVisible();
-
-    await page.getByRole("tab", { name: "Your programme" }).click();
-    await expect(page.getByText("Impact credits", { exact: true })).toBeVisible();
-    const total = page.locator("p.num.text-6xl");
-    await expect(total).toHaveText(/[1-9]\d*/);
-    await expect(page.getByText("Simulated", { exact: true }).first()).toBeVisible();
+    expect(errors, errors.join("\n")).toEqual([]);
   });
 });
