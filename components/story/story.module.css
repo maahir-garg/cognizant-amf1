@@ -86,9 +86,6 @@
    */
   background: var(--bg);
 }
-.imageBox[data-image="active-aero"] {
-  background: #b6d3d9;
-}
 .imageBox[data-image="launch-front"] {
   background: #a5a5a6;
 }

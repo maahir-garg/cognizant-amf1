@@ -18,42 +18,42 @@ Tokens and classes live in `app/globals.css`. The shared components live in `com
 
 ### Palette
 
-| Token | Value | Use |
-|---|---|---|
-| `paper` | `#F5F3EC` | Page ground |
-| `paper-2` | `#ECE9E0` | Quiet panels, hover |
-| `white` / `card` | `#FFFFFF` | Story cards, raised surfaces |
-| `racing` | `#00594F` | Brand fill, links and the highlighted mark on paper (7.44:1) |
-| `green` | `#0B3B32` | Immersive ground (footer, green chapters, share card) |
-| `green-2` | `#0F4A3F` | Raised surface on green |
-| `on-green`, `on-green-2`, `on-green-3` | `#F3F1EA`, `#B9CCC5`, `#8FAAA1` | Text on green (11.02, 7.42, 5.00:1) |
-| `green-line`, `green-line-strong` | `#2F6457`, `#5E9183` | Hairlines and axes on green |
-| `lime` | `#CEDC00` | Primary button fill, active markers, highlight on green. Never text on paper (1.36:1) |
-| `lime-ink` | `#15201C` | Text on lime |
-| `lime-tint` | `#EEF3B8` | Selected chip fill |
-| `lime-hover` | `#BCC900` | Primary button hover |
+| Token                                  | Value                           | Use                                                                                   |
+| -------------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------- |
+| `paper`                                | `#F5F3EC`                       | Page ground                                                                           |
+| `paper-2`                              | `#ECE9E0`                       | Quiet panels, hover                                                                   |
+| `white` / `card`                       | `#FFFFFF`                       | Story cards, raised surfaces                                                          |
+| `racing`                               | `#00594F`                       | Brand fill, links and the highlighted mark on paper (7.44:1)                          |
+| `green`                                | `#0B3B32`                       | Immersive ground (footer, green chapters, share card)                                 |
+| `green-2`                              | `#0F4A3F`                       | Raised surface on green                                                               |
+| `on-green`, `on-green-2`, `on-green-3` | `#F3F1EA`, `#B9CCC5`, `#8FAAA1` | Text on green (11.02, 7.42, 5.00:1)                                                   |
+| `green-line`, `green-line-strong`      | `#2F6457`, `#5E9183`            | Hairlines and axes on green                                                           |
+| `lime`                                 | `#CEDC00`                       | Primary button fill, active markers, highlight on green. Never text on paper (1.36:1) |
+| `lime-ink`                             | `#15201C`                       | Text on lime                                                                          |
+| `lime-tint`                            | `#EEF3B8`                       | Selected chip fill                                                                    |
+| `lime-hover`                           | `#BCC900`                       | Primary button hover                                                                  |
 
 ### Semantic tokens and tones
 
 Components use semantic tokens only. `:root` (and `data-tone="paper"`) sets them for paper; `data-tone="green"` redefines the same names for the green ground, so a component works unchanged on either. A tone scope paints its own background and text colour.
 
-| Token | Paper | Green |
-|---|---|---|
-| `bg` | paper | green |
-| `surface` | white | green-2 |
-| `surface-2` | paper-2 | green-2 |
-| `ink` | `#15201C` (15.07:1) | on-green |
-| `ink-2` | `#3F4B46` (8.20:1) | on-green-2 |
-| `ink-3` | `#5C6863` (5.23:1) | on-green-3 |
-| `line` | `#D9D5CA` (decorative only) | green-line |
+| Token         | Paper                               | Green             |
+| ------------- | ----------------------------------- | ----------------- |
+| `bg`          | paper                               | green             |
+| `surface`     | white                               | green-2           |
+| `surface-2`   | paper-2                             | green-2           |
+| `ink`         | `#15201C` (15.07:1)                 | on-green          |
+| `ink-2`       | `#3F4B46` (8.20:1)                  | on-green-2        |
+| `ink-3`       | `#5C6863` (5.23:1)                  | on-green-3        |
+| `line`        | `#D9D5CA` (decorative only)         | green-line        |
 | `line-strong` | `#7F8782` (3.32:1, inputs and axes) | green-line-strong |
-| `highlight` | racing | lime |
-| `link` | racing | lime |
-| `focus` | racing | lime |
-| `verified` | `#4A6B00` | `#CEDC00` |
-| `estimated` | `#8A5300` | `#F2B84B` |
-| `simulated` | `#1D5D8C` | `#7CC6FE` |
-| `conflict` | `#B03A1C` | `#FF8A65` |
+| `highlight`   | racing                              | lime              |
+| `link`        | racing                              | lime              |
+| `focus`       | racing                              | lime              |
+| `verified`    | `#4A6B00`                           | `#CEDC00`         |
+| `estimated`   | `#8A5300`                           | `#F2B84B`         |
+| `simulated`   | `#1D5D8C`                           | `#7CC6FE`         |
+| `conflict`    | `#B03A1C`                           | `#FF8A65`         |
 
 ```tsx
 <section data-tone="green">…</section>          // green chapter
@@ -66,19 +66,19 @@ Story cards are always light, even in green chapters: give them `data-tone="pape
 
 All fonts are self-hosted through `@fontsource-variable` (Newsreader, Archivo, JetBrains Mono). No Google Fonts, no CDN.
 
-| Class | Font | Size | Use |
-|---|---|---|---|
-| `.h1-feature` | Newsreader 500 | clamp(2rem, 1.25rem + 3vw, 4.25rem), lh 1.08, max 18ch | Page title; centred on the story title page only |
-| `.h2-chapter` | Newsreader 500 | clamp(1.75rem, 1.2rem + 2.2vw, 3rem), lh 1.1 | Chapter and section headings |
-| `.h3` | Newsreader 600 | clamp(1.375rem, 1.2rem + .6vw, 1.75rem), lh 1.2 | Sub-heads, card titles |
-| `.dek` | Newsreader 400, ink-2 | clamp(1.25rem, 1.1rem + .5vw, 1.5rem), lh 1.33, max 34ch | One-line summary under a heading |
-| `.prose-body` | Newsreader | clamp(1.125rem, 1.05rem + .3vw, 1.3125rem), lh 1.45, max 65ch | Body and card text (cards set 40ch) |
-| `.kicker` | Archivo 600, 12/16, uppercase, .06em | | Chapter labels, bylines, metadata |
-| `.kicker-rule` | adds a 2px × 32px ink rule above | | Use with `.kicker` above every chapter label |
-| `.label` | as `.kicker`, in ink-3 | | Legacy alias; prefer `.kicker` |
-| `.num` | Archivo, tabular lining figures | | Every number in running UI and tables |
-| `.big-num` | Archivo 75% width 700, clamp(3rem, 2rem + 5vw, 7.5rem), lh .95 | | Hero figures |
-| `.big-num-unit` | .35em, 100% width, 500 | | The unit stacked under a big number |
+| Class           | Font                                                           | Size                                                          | Use                                              |
+| --------------- | -------------------------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------ |
+| `.h1-feature`   | Newsreader 500                                                 | clamp(2rem, 1.25rem + 3vw, 4.25rem), lh 1.08, max 18ch        | Page title; centred on the story title page only |
+| `.h2-chapter`   | Newsreader 500                                                 | clamp(1.75rem, 1.2rem + 2.2vw, 3rem), lh 1.1                  | Chapter and section headings                     |
+| `.h3`           | Newsreader 600                                                 | clamp(1.375rem, 1.2rem + .6vw, 1.75rem), lh 1.2               | Sub-heads, card titles                           |
+| `.dek`          | Newsreader 400, ink-2                                          | clamp(1.25rem, 1.1rem + .5vw, 1.5rem), lh 1.33, max 34ch      | One-line summary under a heading                 |
+| `.prose-body`   | Newsreader                                                     | clamp(1.125rem, 1.05rem + .3vw, 1.3125rem), lh 1.45, max 65ch | Body and card text (cards set 40ch)              |
+| `.kicker`       | Archivo 600, 12/16, uppercase, .06em                           |                                                               | Chapter labels, bylines, metadata                |
+| `.kicker-rule`  | adds a 2px × 32px ink rule above                               |                                                               | Use with `.kicker` above every chapter label     |
+| `.label`        | as `.kicker`, in ink-3                                         |                                                               | Legacy alias; prefer `.kicker`                   |
+| `.num`          | Archivo, tabular lining figures                                |                                                               | Every number in running UI and tables            |
+| `.big-num`      | Archivo 75% width 700, clamp(3rem, 2rem + 5vw, 7.5rem), lh .95 |                                                               | Hero figures                                     |
+| `.big-num-unit` | .35em, 100% width, 500                                         |                                                               | The unit stacked under a big number              |
 
 JetBrains Mono (`font-mono`) is only for fact ids, page references in technical views, API and CSV text, at 12 px. Nav and buttons use Archivo 15 to 16 px at 500 to 600. There are no uppercase headings at scale.
 
@@ -98,32 +98,35 @@ Other helpers: `.wrap` (fan frame, max 1440), `.wrap-desk` (partner frame, max 1
 <section class="chapter" data-tone="paper|green" aria-labelledby="…">
   <header class="chapter-open">kicker, H2, one-line dek</header>
   <div class="scrolly">
-    <div class="stage" aria-hidden>          <!-- sticky; top: 56px; height: calc(100svh - 56px) -->
+    <div class="stage" aria-hidden>
+      <!-- sticky; top: 56px; height: calc(100svh - 56px) -->
       <figure class="layer" data-step="0" data-active>image + visible credit</figure>
     </div>
-    <ol class="steps">                       <!-- margin-top: -100svh; relative; z-1 -->
+    <ol class="steps">
+      <!-- margin-top: -100svh; relative; z-1 -->
       <li class="step" data-step="n">card</li>
     </ol>
   </div>
 </section>
 ```
 
-- **Desktop (1024 and up).** The image box sits at left 30vw, width 70vw; the left 30% is solid chapter ground with a hard edge. Cards are min(420px, 34vw) wide at left 5vw, overlapping the image edge slightly: opaque white, 1px `line-strong` border, 4 px radius, padding 20/20/24, serif text. Each step is at least 100svh tall with its card vertically centred; the last step has 50svh bottom padding.
-- **Mobile.** The image fills the top 60svh of the stage; solid ground below. Cards are calc(100vw − 32px) and scroll over it.
+- **Desktop (1024 and up).** The image box sits at left 30vw, width 70vw; the left 30% is solid chapter ground with a hard edge. Cards are min(420px, 34vw) wide, aligned to the page margin and overlapping the image edge slightly: opaque white, 1px `line-strong` border, 4 px radius, padding 20/20/24, serif text. Steps are 88svh tall from 1024 px with the card vertically centred in the first screen of the step; the last step carries a shorter tail so the stage lingers.
+- **Mobile.** The picture or chart box fills the top of the stage (up to min(58svh, 100vw)); solid ground below. Cards are calc(100vw − 32px) and rest just under the box, so a card never covers the part of a chart its step discusses.
 - **Active step.** One IntersectionObserver with rootMargin "-50% 0px -50% 0px" and threshold 0 sets `data-active-step` on the stage. Cards never animate.
-- **Transitions.** Layers crossfade over 600 ms, cubic-bezier(.4, 0, .2, 1). Within a chapter the image may push in slowly from scale(1) to scale(1.12 to 1.2) over 900 ms, with the transform origin on the step's focal point. With reduced motion there is no scale and a 120 ms opacity swap.
+- **Transitions.** Layers dip to ground: the outgoing layer fades out over 240 ms (cubic-bezier(.4, 0, 1, 1)), the incoming one fades in over 360 ms (cubic-bezier(0, 0, .2, 1)) after 180 ms, so a chart never double-exposes over a photo. Every photo first appears whole at scale 1; a later step may push in to about 1.35 over 1600 ms (`--settle`, cubic-bezier(.22, .61, .36, 1)) after a 200 ms beat, as a composited translate and scale about the step's focal point. Chart marks grow from their axis the first time their layer appears (armed only after hydration). With reduced motion there is no scale and a 120 ms opacity swap.
 - **Without JavaScript.** The server renders layer 0 active and every card in the HTML. No text or number may render below full opacity or displaced before scripts run. No reveal-on-scroll for text or numbers.
 - **Image crops** (object-position desktop / mobile). Every image carries a visible "Image: Aston Martin Aramco" credit.
 
-| Chapter | Image | Desktop | Mobile |
-|---|---|---|---|
-| Title page, campus | `amr26-launch-quarter.jpg` | 45% 55% | 36% 62% |
-| Moving the team | `amr26-launch-rear.jpg` | 45% 60% | 64% 60% |
-| At the circuit | `amr26-render-rear.jpg` (pale blue ground) | 52% 50% | 54% 55% |
-| Supply chain, beyond the track | `amr26-active-aero.png` (square) | 50% 45% | 70% 50% |
-| The finish line | `amr26-launch-front.jpg` | 50% 50% | 50% 50% |
+| Use                                       | Image                                                            | Desktop | Mobile  |
+| ----------------------------------------- | ---------------------------------------------------------------- | ------- | ------- |
+| Title band, at the circuit, share card    | `amr26-launch-quarter.jpg`                                       | 45% 68% | 40% 64% |
+| Campus, the finish line, race page header | `amr26-render-rear.jpg`, contained whole on its pale blue ground | 52% 50% | 54% 55% |
+| Supply chain                              | `amr26-launch-front.jpg`                                         | 50% 40% | 50% 40% |
+| Moving the team, beyond the track         | `amr26-launch-rear.jpg`                                          | 38% 66% | 42% 64% |
 
-- **Title page.** Paper ground, 100svh. The title block is centred in the top 55%; the quarter image is a full-width band at the bottom (max 45svh, object-position 50% 60%). Scroll cue: "Scroll to follow the car" as a 12 px kicker above a 1px × 24px vertical line in ink-3.
+Every use of a photo shares one `sizes` value (`STORY_SIZES` in `lib/story/chapters.ts`), so the browser downloads each photo once; phones stop at 130vw. No sponsor's name is ever the focal point of a push-in beside copy about young people.
+
+- **Title page.** Paper ground, 100svh. The title block is centred in the top 55%; the quarter image is a full-width band at the bottom (max 45svh, object-position 45% 68%, 40% 64% on phones); on phones the title block is left-aligned. Scroll cue: "Scroll to follow the car" as a 12 px kicker above a 1px × 24px vertical line in ink-3.
 - **Chapter tracker.** A 40 px strip below the header, sticky within the story, with five or six labelled segments that are links. Active: ink text at 600 and a 2px lime bar with a 1px ink outline, plus `aria-current="step"`. Mobile shows "2/6 · Moving the team" and a segment bar.
 
 ## Data graphics
@@ -137,17 +140,17 @@ Other helpers: `.wrap` (fan frame, max 1440), `.wrap-desk` (partner frame, max 1
 
 ## Shared components
 
-| Component | Use |
-|---|---|
-| `FactValue` | Every stand-alone figure. `size`: `sm`, `md`, `lg`, `xl` (`lg`/`xl` use `.big-num` with the unit stacked). `caption` for the serif meaning sentence (or `showMetric` to use the fact's metric). `showStatus`, `showSource` default true. `showFlags` defaults false: fan pages never show data-quality flags |
-| `InlineFact` | A figure inside a sentence, with its status mark |
-| `StatusBadge`, `StatusMark` | Trust status. `compact` shows the mark only, label for screen readers |
-| `StatusLegend` | Explains the labels. Defaults to Verified and Estimated; `variant="list"` adds a line of explanation each |
-| `DataGap` | Missing published data. Children are the sentence; `label` overrides "Data gap" |
-| `useProvenance().openFact(id)` | Opens the provenance drawer: metric, value, source and page link, quoted text, formula and assumptions, data-quality notes |
-| `AiText`, `AiMeta` | Generated text with numbered citation chips, the "Figures checked" badge and a line saying what drafted it. Never render model text any other way |
-| `FactTable` | Searchable fact list for `/sources` |
-| `Button` | See controls |
+| Component                      | Use                                                                                                                                                                                                                                                                                                          |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `FactValue`                    | Every stand-alone figure. `size`: `sm`, `md`, `lg`, `xl` (`lg`/`xl` use `.big-num` with the unit stacked). `caption` for the serif meaning sentence (or `showMetric` to use the fact's metric). `showStatus`, `showSource` default true. `showFlags` defaults false: fan pages never show data-quality flags |
+| `InlineFact`                   | A figure inside a sentence, with its status mark                                                                                                                                                                                                                                                             |
+| `StatusBadge`, `StatusMark`    | Trust status. `compact` shows the mark only, label for screen readers                                                                                                                                                                                                                                        |
+| `StatusLegend`                 | Explains the labels. Defaults to Verified and Estimated; `variant="list"` adds a line of explanation each                                                                                                                                                                                                    |
+| `DataGap`                      | Missing published data. Children are the sentence; `label` overrides "Data gap"                                                                                                                                                                                                                              |
+| `useProvenance().openFact(id)` | Opens the provenance drawer: metric, value, source and page link, quoted text, formula and assumptions, data-quality notes                                                                                                                                                                                   |
+| `AiText`, `AiMeta`             | Generated text with numbered citation chips, the "Figures checked" badge and a line saying what drafted it. Never render model text any other way                                                                                                                                                            |
+| `FactTable`                    | Searchable fact list for `/sources`                                                                                                                                                                                                                                                                          |
+| `Button`                       | See controls                                                                                                                                                                                                                                                                                                 |
 
 Source lines come from `factCitation(fact)` and `sourceShortName(id)` in `lib/data/load.ts`, so every page names sources the same way ("2025 report", "2024 report", "Manifesto", "DEFRA 2025"; estimates say "Calculated").
 
@@ -167,7 +170,7 @@ Paper ground only, max width 1680, 12 columns, tabs across the top. KPI tiles si
 
 ## Motion
 
-Opacity changes take 0.5 s ease-in-out; transforms 0.4 to 0.9 s with cubic-bezier(.4, 0, .2, 1). Motion never reveals information that is not already on the page. Everything honours `prefers-reduced-motion` (a global rule in `globals.css` shortens every animation and transition).
+Outside the story, opacity changes take 150 to 300 ms and transforms use cubic-bezier(.22, 1, .36, 1) (the source drawer opens over 260 ms from 24 px and closes over 160 ms; disclosures fade and rise 4 px over 200 ms). The story's own values are under Scrollytelling. Motion never reveals information that is not already on the page. Everything honours `prefers-reduced-motion` (a global rule in `globals.css` shortens every animation and transition).
 
 ## Copy
 

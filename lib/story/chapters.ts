@@ -21,7 +21,7 @@ type Tone = "paper" | "green";
 /** A focal point as percentages of the image box (object-position / zoom centre). */
 type Focal = { x: number; y: number };
 
-export type ImageKey = "launch-quarter" | "launch-rear" | "render-rear" | "active-aero" | "launch-front";
+export type ImageKey = "launch-quarter" | "launch-rear" | "render-rear" | "launch-front";
 
 export type StoryImage = {
   src: string;
@@ -66,16 +66,6 @@ export const STORY_IMAGES: Record<ImageKey, StoryImage> = {
     mobile: { x: 54, y: 55 },
     shape: "landscape",
     fit: "contain",
-  },
-  "active-aero": {
-    src: "/brand/amr26-active-aero.png",
-    width: 1024,
-    height: 1024,
-    alt: "Close-up render of the AMR26 nose and front suspension",
-    // Framed on the nose and suspension rather than the front-wing endplate.
-    desktop: { x: 70, y: 30 },
-    mobile: { x: 78, y: 32 },
-    shape: "square",
   },
   "launch-front": {
     src: "/brand/amr26-launch-front.jpg",

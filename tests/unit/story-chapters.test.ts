@@ -59,11 +59,6 @@ describe("story chapters", () => {
     for (const c of CHAPTERS) for (const s of c.steps) expect(c.layers[s.layer], c.id).toBeDefined();
   });
 
-  it("keep the front-wing close-up (with its drinks sponsor) away from the chapter about young people", () => {
-    const beyond = CHAPTERS.find((c) => c.id === "beyond")!;
-    expect(beyond.layers.some((l) => l.kind === "photo" && l.image === "active-aero")).toBe(false);
-  });
-
   it("never start a caption with its figure's unit word (\"600+ students / students reached…\")", () => {
     const captions: { id: string; text: string }[] = [];
     for (const c of CHAPTERS) {

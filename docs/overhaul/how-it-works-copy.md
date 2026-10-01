@@ -24,7 +24,7 @@ The appetite is already there. ESG posts draw {c24-esg-posts-multiplier} the imp
 
 So fans miss the story, and partners have no safe, fast way to retell it.
 
-**Figures:** `c24-esg-posts-multiplier`, `c24-esg-impressions-partners`. Link "restates earlier years" to the provenance drawer for `g25-restatement`. Link "disagrees with itself" to `/sources?flagged=1` (or the flagged view, confirm against build).
+**Figures:** `c24-esg-posts-multiplier`, `c24-esg-impressions-partners`. Link "restates earlier years" to the provenance drawer for `g25-restatement`. Link "disagrees with itself" to `/sources?flagged=1` (the Flagged only filter on `/sources`).
 
 ---
 
@@ -63,7 +63,7 @@ The desk holds it back. 275 is not in the fact base.
 
 Corrected to {c25-mam-day-students}, it passes, with a suggested citation: {citation for c25-mam-day-students}.
 
-**Figures:** `c25-mam-day-students`, with its citation from `factCitation()` (it reads "2025 report, p. 59"). The 275 is the deliberate error and is shown struck through or in a "Held back" state, never as a fact. If the build allows, render this as a live, read-only example using the Check my draft component with the two lines preloaded (confirm against build); otherwise static text.
+**Figures:** `c25-mam-day-students`, with its citation from `factCitation()` (it reads "2025 report, p. 59"). The 275 is the deliberate error and is shown struck through or in a "Held back" state, never as a fact. The page renders this as a live example running the same checker as Check my draft (`components/explainer/check-demo.tsx`), with a box to try a sentence of your own.
 
 ---
 
