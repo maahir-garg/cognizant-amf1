@@ -54,7 +54,7 @@ export type MetricFilter = {
   ids?: string[] | null;
 };
 
-export function filterFacts(filter: MetricFilter): Fact[] {
+function filterFacts(filter: MetricFilter): Fact[] {
   return facts.filter((f) => {
     if (filter.pillar && f.pillar !== filter.pillar) return false;
     if (filter.status && f.status !== filter.status) return false;

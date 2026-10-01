@@ -12,7 +12,7 @@ import { z } from "zod";
 import { factCitation, findFact } from "@/lib/data/load";
 
 export const APPROVAL_STATES = ["draft", "in-review", "approved"] as const;
-export type ApprovalState = (typeof APPROVAL_STATES)[number];
+type ApprovalState = (typeof APPROVAL_STATES)[number];
 
 export const APPROVAL_LABEL: Record<ApprovalState, string> = {
   draft: "Draft",
@@ -26,14 +26,14 @@ const AuditFact = z.object({
   source: z.string(),
   extractedAt: z.string(),
 });
-export type AuditFact = z.infer<typeof AuditFact>;
+type AuditFact = z.infer<typeof AuditFact>;
 
 const ApprovalEvent = z.object({
   state: z.enum(APPROVAL_STATES),
   at: z.string(),
   by: z.string().nullable(),
 });
-export type ApprovalEvent = z.infer<typeof ApprovalEvent>;
+type ApprovalEvent = z.infer<typeof ApprovalEvent>;
 
 export const ApprovalRecord = z.object({
   key: z.string(),
@@ -49,7 +49,7 @@ export const ApprovalRecord = z.object({
 export type ApprovalRecord = z.infer<typeof ApprovalRecord>;
 
 /** FNV-1a, enough to tell two drafts apart; not a security measure. */
-export function hashText(text: string): string {
+function hashText(text: string): string {
   let h = 0x811c9dc5;
   for (let i = 0; i < text.length; i++) {
     h ^= text.charCodeAt(i);
@@ -118,7 +118,7 @@ export const canCopy = (record: ApprovalRecord | null): boolean => record?.state
 
 /* -------------------------------------------------------------- storage */
 
-export const STORAGE_PREFIX = "impact-desk:approval:";
+const STORAGE_PREFIX = "impact-desk:approval:";
 const CHANGE_EVENT = "impact-desk:approval-change";
 // Fallback for this page view when localStorage is blocked (private mode, previews).
 const memory = new Map<string, string>();

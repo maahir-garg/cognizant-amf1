@@ -111,9 +111,11 @@ export const PARTNER_EXCLUDED_FACT_IDS = new Set([
 ]);
 
 /** Usable in partner copy: usable in any copy, and not excluded above, superseded or a data-quality record. */
-export function partnerUsable(f: Fact): boolean {
+function partnerUsable(f: Fact): boolean {
   if (!usableInCopy(f) || PARTNER_EXCLUDED_FACT_IDS.has(f.id) || f.tags.includes("data-quality")) return false;
   if (f.flags.some((fl) => fl.kind === "inconsistent-equivalence")) return false;
+  // Staff numbers and health and safety records are the team's HR reporting, not partner stories.
+  if (f.topic === "health-safety" || f.topic === "workforce") return false;
   return !/as originally reported/i.test(f.metric);
 }
 
@@ -155,7 +157,7 @@ export function partnerNarrativeFactIds(partnerId: string, pillars: Pillar[], li
  * to their lead. Calendar facts and even-split per-round estimates never
  * qualify.
  */
-export function raceWeekFactIds(partnerId: string, raceId: string): string[] {
+function raceWeekFactIds(partnerId: string, raceId: string): string[] {
   const race = getRace(raceId);
   const tag = `partner:${partnerId}`;
   const role = facts.filter((f) => f.tags.includes(tag) && f.topic === "partners" && partnerUsable(f)).map((f) => f.id);
@@ -165,7 +167,9 @@ export function raceWeekFactIds(partnerId: string, raceId: string): string[] {
   const leans = (id: string) => /^(They|Those|These|It|That)\b/.test(getFact(id).phrase ?? "");
   const ids = local.flatMap((i) => {
     const usable = i.factIds.filter((id) => partnerUsable(getFact(id)) && !id.startsWith("f1-"));
-    const partnerFirst = [...usable].sort((a, b) => Number(getFact(b).tags.includes(tag)) - Number(getFact(a).tags.includes(tag)));
+    // In the partner's own programme its facts are the story; the rest would only crowd the post.
+    const own = usable.filter((id) => getFact(id).tags.includes(tag));
+    const partnerFirst = own.length ? own : usable;
     // Keep a leaning phrase ("Those students came from ...") straight after the fact it follows.
     return usable.some(leans) ? usable : partnerFirst;
   });

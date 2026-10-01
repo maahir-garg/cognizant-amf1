@@ -146,7 +146,7 @@ export function ApprovalPanel({
             under their own name.
           </p>
           <label htmlFor={inputId} className="kicker">
-            Reviewer
+            Reviewer&apos;s name
           </label>
           <input
             id={inputId}
@@ -154,8 +154,13 @@ export function ApprovalPanel({
             onChange={(e) => setReviewer(e.target.value)}
             autoComplete="name"
             placeholder="Full name"
+            aria-describedby={`${inputId}-signin`}
             className="h-12 rounded-[4px] border border-line-strong bg-surface px-3 text-base text-ink placeholder:text-ink-3"
           />
+          <p id={`${inputId}-signin`} className="text-[0.8125rem] text-ink-3">
+            Prototype: there is no sign-in, so any name is accepted. In the pilot, the reviewer signs in and cannot approve their own
+            draft.
+          </p>
           <div className="flex flex-wrap items-center gap-4">
             <Button type="submit" disabled={!reviewer.trim()}>
               Approve

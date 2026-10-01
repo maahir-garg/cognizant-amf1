@@ -205,17 +205,97 @@ const POST_INTRO: Record<string, string> = {
 const POST_CLOSING = "Each figure comes from the team's published report, with the page it is on.";
 
 /** A phrase that leans on the sentence before it ("They came from ..."), so it can't open a bullet or follow an unrelated fact. */
-const leansOnPrevious = (f: Fact) => /^(They|Those|These|It|That's|That)\b/.test(f.phrase ?? "");
+const leansOnPrevious = (f: Fact) => /^(They|Those|These|It|Its|That's|That|The programme)\b/.test(f.phrase ?? "");
+
+/** The programme a fact belongs to, if any. */
+const programmeOf = (f: Fact) => initiatives.find((i) => i.factIds.includes(f.id));
+
+/**
+ * True when a leaning phrase can follow `prev`: the same programme, or the
+ * same page of the same report (a figure the programme list doesn't carry,
+ * like Accelerate Women's interactions), or, outside programmes, the same
+ * topic in the same report.
+ */
+function follows(prev: Fact | undefined, f: Fact): boolean {
+  if (!prev) return false;
+  const a = programmeOf(prev);
+  const b = programmeOf(f);
+  if (a && b) return a.id === b.id;
+  if (prev.sourceId === f.sourceId && prev.page !== undefined && prev.page === f.page && prev.topic === f.topic) return true;
+  if (a || b) return false;
+  return prev.topic === f.topic && prev.sourceId === f.sourceId;
+}
+
+/** "At Make A Mark Day, ..." for an event, "In the Aleto Foundation leadership programme, ..." for a programme. */
+function introduce(programme: Initiative, sentence: string): string {
+  const name = programmeName(programme);
+  const event = /\b(Day|Event|Finals|festival|evening)\b/.test(name);
+  const lead = event ? `At ${name.replace(/^the (Make A Mark)/, "$1")}` : `In ${name}`;
+  return `${lead}, ${lowerFirst(sentence)}`;
+}
 
 /** Facts in order, dropping any leaning phrase whose predecessor is not about the same thing. */
 function flowing(facts: Fact[]): Fact[] {
   const out: Fact[] = [];
   for (const f of facts) {
-    const prev = out.at(-1);
-    if (leansOnPrevious(f) && !(prev && prev.topic === f.topic && prev.pillar === f.pillar)) continue;
+    if (leansOnPrevious(f) && !follows(out.at(-1), f)) continue;
     out.push(f);
   }
   return out;
+}
+
+const GENERIC_NAME_WORDS = new Set(["programme", "partnership", "with", "the", "and", "team", "event", "day", "week", "finals"]);
+
+/** True when the sentence already says which programme it is about. */
+function namesProgramme(sentence: string, programme: Initiative): boolean {
+  const words = `${programme.name} ${programme.partners.join(" ")}`.toLowerCase().match(/[a-z][a-z-]{3,}/g) ?? [];
+  // The citation marker carries the fact id ("[F:b25-aleto-network]"), which must not count as naming it.
+  const text = sentence.replace(/\[(F|D):[^\]]+\]/g, "").toLowerCase();
+  return words.some((w) => !GENERIC_NAME_WORDS.has(w) && text.includes(w));
+}
+
+/**
+ * Partner copy as units of one or more sentences, each of which says what it
+ * is about: a programme figure that doesn't name its programme is introduced
+ * ("In the Aleto Foundation leadership programme, 93% of mentees ..."), "The
+ * programme" becomes its name, "Its"/"It" outside a programme becomes "the
+ * team", and a follow-on line joins the line it follows or is dropped.
+ */
+function partnerUnits(facts: Fact[]): { fact: Fact; text: string }[] {
+  const units: { fact: Fact; text: string }[] = [];
+  let prev: Fact | undefined;
+  for (const f of facts) {
+    const programme = programmeOf(f);
+    let sentence = factSentence(f);
+    // "The programme reached ..." always names the programme, wherever it lands.
+    if (programme && /^The programme\b/.test(sentence)) {
+      const name = programmeName(programme);
+      sentence = sentence.replace(/^The programme/, name.charAt(0).toUpperCase() + name.slice(1));
+    }
+    const startsLeaning = /^(They|Those|These|It|Its|That's|That)\b/.test(sentence);
+    // "found it helpful", "checked it 3 times": a pronoun mid-sentence also needs its antecedent.
+    const midPronoun = /\b(it|they|them)\b/.test(sentence.replace(/^\S+/, ""));
+    const sameProgramme = Boolean(programme && prev && programmeOf(prev)?.id === programme.id);
+    // Consecutive figures from one programme, and follow-on lines, stay in one unit.
+    if (units.length && (sameProgramme || ((startsLeaning || midPronoun) && follows(prev, f)))) {
+      units[units.length - 1].text += ` ${sentence}`;
+      prev = f;
+      continue;
+    }
+    if (programme) {
+      if (startsLeaning) continue;
+      if (!namesProgramme(sentence, programme)) sentence = introduce(programme, sentence);
+    } else if (/^Its\b/.test(sentence)) {
+      sentence = sentence.replace(/^Its\b/, "The team's");
+    } else if (/^It\b/.test(sentence)) {
+      sentence = sentence.replace(/^It\b/, "The team");
+    } else if (startsLeaning || midPronoun) {
+      continue;
+    }
+    units.push({ fact: f, text: sentence });
+    prev = f;
+  }
+  return units;
 }
 
 function linkedinPostTemplate(req: AiRequest, facts: Fact[]): string {
@@ -228,8 +308,10 @@ function linkedinPostTemplate(req: AiRequest, facts: Fact[]): string {
   const parts: string[] = [intro];
   const closing = POST_CLOSING;
 
-  for (const f of flowing(facts)) {
-    parts.push(factSentence(f));
+  for (const unit of partnerUnits(facts)) {
+    // A unit can carry several sentences; never let one push the post past its length.
+    if (words([...parts, unit.text, closing].join(" ")) > 135) break;
+    parts.push(unit.text);
     // A race-week post has two programmes to cover, so it may run a little longer.
     if (words([...parts, closing].join(" ")) >= (race ? 115 : 90)) break;
   }
@@ -272,30 +354,9 @@ function groupForBrief(facts: Fact[]): { title: string; facts: Fact[] }[] {
   return [...topics.slice(0, 3), { title: "Also of note", facts: topics.slice(3).flatMap((g) => g.facts) }];
 }
 
-/** Phrases that lean on the sentence before ("They came from ..."). */
-const LEANS_ON_PREVIOUS = /^(They|Those|These|It|That's|That)\b/;
-
-/**
- * One bullet per fact, except that a phrase leaning on the one before joins
- * its antecedent's bullet (same topic) or is dropped, so no bullet starts
- * with an orphaned "They".
- */
-/** True when both facts belong to the same programme, so "They came from ..." can follow its lead. */
-function sameProgramme(a: Fact, b: Fact): boolean {
-  return initiatives.some((i) => i.factIds.includes(a.id) && i.factIds.includes(b.id));
-}
-
+/** One bullet per unit: a follow-on line joins its lead's bullet, so no bullet starts with an orphaned "They". */
 function briefBullets(facts: Fact[]): string[] {
-  const bullets: { fact: Fact; text: string }[] = [];
-  for (const f of facts) {
-    if (LEANS_ON_PREVIOUS.test(f.phrase ?? "")) {
-      const prev = bullets.at(-1);
-      if (prev && sameProgramme(prev.fact, f)) prev.text += ` ${factSentence(f)}`;
-      continue;
-    }
-    bullets.push({ fact: f, text: factSentence(f) });
-  }
-  return bullets.map((b) => `- ${b.text}`);
+  return partnerUnits(facts).map((u) => `- ${u.text}`);
 }
 
 function quarterlyBriefTemplate(req: AiRequest, facts: Fact[]): string {
@@ -331,13 +392,13 @@ function leadershipUpdateTemplate(req: AiRequest, facts: Fact[]): string {
   const title = narrow
     ? "Leadership update: community impact with Aston Martin Aramco"
     : "Leadership update: the Aston Martin Aramco partnership";
-  // Bullets stand alone, so skip phrases that lean on the one before ("They came from ...").
-  // Leadership already knows the partnership title, so it is not a bullet.
-  const pool = facts.filter((f) => !LEANS_ON_PREVIOUS.test(f.phrase ?? "") && f.topic !== "partners");
+  // Each bullet stands alone and names what it is about. Leadership already
+  // knows the partnership title, so it is not a bullet.
+  const pool = partnerUnits(facts.filter((f) => f.topic !== "partners"));
   // One bullet per topic first, so four bullets don't all describe the same programme.
-  const firstOfTopic = pool.filter((f, i) => pool.findIndex((g) => g.topic === f.topic) === i);
-  const ordered = [...firstOfTopic, ...pool.filter((f) => !firstOfTopic.includes(f))];
-  const bullets = ordered.slice(0, 4).map((f) => `- ${factSentence(f)}`);
+  const firstOfTopic = pool.filter((u, i) => pool.findIndex((g) => g.fact.topic === u.fact.topic) === i);
+  const ordered = [...firstOfTopic, ...pool.filter((u) => !firstOfTopic.includes(u))];
+  const bullets = ordered.slice(0, 4).map((u) => `- ${u.text}`);
   const fillers = [
     "- Every figure is traceable to a page in the team's published reports.",
     "- Estimates are labelled; gaps are shown as gaps.",
@@ -410,18 +471,20 @@ function programmeName(initiative: Initiative): string {
  * so the relationship reads the right way round; programmes outside the kit
  * get a neutral line.
  */
-const STORY_KIT_VOICE: Record<string, { post: string; funder: string }> = {
+const STORY_KIT_VOICE: Record<string, { post: string; funder: string; alias?: [RegExp, string] }> = {
   "stem-racing-world-finals": {
-    post: "The Aston Martin Aramco Formula One Team supports STEM Racing, and was with us at the World Finals in Singapore.",
-    funder: "The Aston Martin Aramco Formula One Team supports STEM Racing and took part in the World Finals in Singapore.",
+    post: "The Aston Martin Aramco Formula One Team supports STEM Racing.",
+    funder: "The Aston Martin Aramco Formula One Team supports STEM Racing.",
   },
   "aleto-leadership": {
     post: "Our leadership programme pairs university students from under-represented backgrounds with mentors at the Aston Martin Aramco Formula One Team.",
     funder: "The Aleto Foundation runs a leadership programme for university students from under-represented backgrounds, with mentoring from the Aston Martin Aramco Formula One Team.",
   },
   "afbe-transition": {
-    post: "Our Transition Event brought engineering and STEM students to the Aston Martin Aramco Formula One Team.",
-    funder: "AFBE-UK held its Transition Event for engineering and STEM students with the Aston Martin Aramco Formula One Team.",
+    post: "As part of our partnership, the Aston Martin Aramco Formula One Team hosted a Transition Event for engineering and STEM students from under-represented backgrounds.",
+    funder: "As part of its partnership with AFBE-UK, the Aston Martin Aramco Formula One Team hosted a Transition Event for engineering and STEM students from under-represented backgrounds.",
+    // The opener has just named the event, so the figure's own "The AFBE-UK Transition Event" becomes "It".
+    alias: [/^The AFBE-UK Transition Event\b/, "It"],
   },
   "racing-pride": {
     post: "We work with the Aston Martin Aramco Formula One Team on inclusion in motorsport, on track and in engineering.",
@@ -449,7 +512,10 @@ function storyKitTemplate(req: AiRequest, facts: Fact[]): string {
   const name = initiative ? programmeName(initiative) : "this programme";
   const partners = initiative?.partners.filter((p) => p !== "Cognizant") ?? [];
   const voice = initiative ? STORY_KIT_VOICE[initiative.id] : undefined;
-  const lines = flowing(facts).map(factSentence);
+  const alias = voice?.alias;
+  const lines = flowing(facts)
+    .map(factSentence)
+    .map((l) => (alias ? l.replace(alias[0], alias[1]) : l));
 
   if (req.params.format === "funder") {
     // One formal, third-person paragraph for a grant or funder report; the

@@ -5,7 +5,7 @@
  * yet, so nothing is shown.
  */
 
-export type Baseline = { factId: string; why: string };
+type Baseline = { factId: string; why: string };
 
 /** Published reach and sentiment, the baseline a partner would compare a pilot with. */
 export const ROI_BASELINES: Baseline[] = [
@@ -17,7 +17,7 @@ export const ROI_BASELINES: Baseline[] = [
   { factId: "b25-accelerate-sentiment", why: "Sentiment on posts about a partner-led programme." },
 ];
 
-export type PilotMetric = {
+type PilotMetric = {
   id: string;
   name: string;
   definition: string;

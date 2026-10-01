@@ -1,15 +1,19 @@
 import { FactValue, InlineFact } from "@/components/shared/fact-value";
 import { factCitation, getFact } from "@/lib/data/load";
+import { deskCaption } from "@/lib/partner/labels";
 import { cn } from "@/lib/utils";
 
 /** Desk tiles set figures at 48 to 64px, smaller than the story's hero numbers. */
-const TILE_NUMBER = "[&_.big-num]:text-[length:clamp(3rem,2.25rem+1.25vw,4rem)]";
+export const TILE_NUMBER = "[&_.big-num]:text-[length:clamp(3rem,2.25rem+1.25vw,4rem)]";
 
 /**
  * KPI tiles in a hairline grid: 1px lines between cells, no boxes. The
- * outer edge is clipped so only the lines between tiles show, including
- * when the last row is short.
+ * first tile of each row sits flush with the section rule (no left line or
+ * padding), and the top line is clipped so only lines between rows show.
  */
+export const TILE_GRID = "-mt-px grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3";
+export const TILE_CELL =
+  "flex min-w-0 flex-col gap-3 border-t border-line py-5 sm:border-l sm:px-5 sm:[&:nth-child(2n+1)]:border-l-0 sm:[&:nth-child(2n+1)]:pl-0 xl:[&:nth-child(2n+1)]:border-l xl:[&:nth-child(2n+1)]:pl-5 xl:[&:nth-child(3n+1)]:border-l-0 xl:[&:nth-child(3n+1)]:pl-0";
 export function FactTiles({
   ids,
   captions = {},
@@ -17,17 +21,17 @@ export function FactTiles({
   className,
 }: {
   ids: string[];
-  /** Short, number-free captions by fact id; the fact's metric otherwise. */
+  /** Number-free captions by fact id that read on from the unit; the desk caption otherwise. */
   captions?: Record<string, string>;
   showFlags?: boolean;
   className?: string;
 }) {
   return (
     <div className={cn("overflow-hidden", className)}>
-      <ul className="-mt-px -ml-px grid grid-cols-[repeat(auto-fill,minmax(min(100%,280px),1fr))]">
+      <ul className={TILE_GRID}>
         {ids.map((id) => (
-          <li key={id} className="flex min-w-0 border-t border-l border-line py-5 sm:px-5">
-            <FactValue id={id} size="lg" caption={captions[id] ?? getFact(id).metric} showFlags={showFlags} className={TILE_NUMBER} />
+          <li key={id} className={TILE_CELL}>
+            <FactValue id={id} size="lg" caption={captions[id] ?? deskCaption(id)} showFlags={showFlags} className={TILE_NUMBER} />
           </li>
         ))}
       </ul>

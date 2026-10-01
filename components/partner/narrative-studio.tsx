@@ -13,7 +13,7 @@ import { footnotedPlainText } from "@/lib/partner/citations";
 import { ApprovalPanel } from "./approval-panel";
 import { CheckChips, ChoiceChips } from "./choice-chips";
 
-export const FORMAT_META: Record<NarrativeFormat, { label: string; hint: string }> = {
+const FORMAT_META: Record<NarrativeFormat, { label: string; hint: string }> = {
   "linkedin-post": { label: "LinkedIn post", hint: "80 to 140 words, co-branded" },
   "quarterly-brief": { label: "Quarterly brief", hint: "Headline and short sections for a partner report" },
   "leadership-update": { label: "Leadership update", hint: "Four points and a so-what line for leadership" },

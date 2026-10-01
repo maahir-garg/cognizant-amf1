@@ -55,11 +55,15 @@ export default function DataQualityPage() {
         {groups.map((g) => (
           <section key={g.kind} aria-labelledby={`${g.kind}-heading`} className="flex flex-col gap-3">
             <div className="flex flex-col gap-1 border-t-2 border-ink pt-3 lg:flex-row lg:items-baseline lg:justify-between lg:gap-8">
-              <h2 id={`${g.kind}-heading`} className="flex items-center gap-3 text-[1.0625rem] font-semibold">
-                {g.kind === "source-conflict" && <StatusBadge status="conflict" compact />}
-                {KIND[g.kind].title}
-                <span className="font-mono text-[0.75rem] font-normal text-ink-3">{g.kind}</span>
-              </h2>
+              <div className="flex flex-col gap-1">
+                <p className="kicker flex items-center gap-2 text-ink-3">
+                  {g.kind === "source-conflict" && <StatusBadge status="conflict" compact />}
+                  Flag · <span className="font-mono text-[0.75rem] font-normal tracking-normal normal-case">{g.kind}</span>
+                </p>
+                <h2 id={`${g.kind}-heading`} className="text-[1.0625rem] font-semibold">
+                  {KIND[g.kind].title}
+                </h2>
+              </div>
               <p className="max-w-[70ch] text-[0.875em] text-ink-2">{KIND[g.kind].advice}</p>
             </div>
             <div className="relative overflow-x-auto">
