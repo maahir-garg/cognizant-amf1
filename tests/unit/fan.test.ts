@@ -2,11 +2,24 @@ import { describe, expect, it } from "vitest";
 import { DEFAULT_SHARE_FACT_IDS } from "@/lib/ai/requests";
 import { getFact, getRace, quizzes, races } from "@/lib/data/load";
 import { quickCheckQuestions } from "@/lib/fan/quiz";
+import { captionAfterUnit } from "@/lib/format";
 import { isUpcoming, raceDates, raceProgrammes } from "@/lib/fan/race";
 import { SHARE_FACT_IDS, shareFactContext, shareFactValue, shareSourceLine } from "@/lib/fan/share";
 import { comparePhrase, hasTripParams, parseTripParams, planLine, tripResult } from "@/lib/fan/trip";
 
 const singapore = getRace("singapore-2026");
+
+describe("captions under a figure", () => {
+  it("read on from the unit instead of repeating it", () => {
+    expect(captionAfterUnit("Students engaged at the STEM Racing World Finals", "students")).toBe("engaged at the STEM Racing World Finals");
+    expect(captionAfterUnit("Young people reached by the STEM learning programme", "young people")).toBe("reached by the STEM learning programme");
+    expect(captionAfterUnit("Countries represented at the finals", "countries")).toBe("represented at the finals");
+  });
+  it("leave other captions alone", () => {
+    expect(captionAfterUnit("Supply chain share of the footprint", "%")).toBe("Supply chain share of the footprint");
+    expect(captionAfterUnit("Solar panels on the campus roof", "panels")).toBe("Solar panels on the campus roof");
+  });
+});
 
 describe("share card facts", () => {
   it("say where and when from data", () => {

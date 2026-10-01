@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { factCitation, getFact } from "@/lib/data/load";
-import { factParts } from "@/lib/format";
+import { captionAfterUnit, factParts } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { useProvenance } from "./provenance";
 import { StatusBadge, StatusMark } from "./status-badge";
@@ -57,7 +57,8 @@ export function FactValue({
   const conflict = showFlags && fact.flags.some((f) => f.kind === "source-conflict");
   const qualitative = fact.value === null;
   const metric = (fan && fact.fanLabel) || fact.metric;
-  const text = caption ?? label ?? (showMetric ? metric : undefined);
+  // A caption taken from the metric reads on from the unit shown above it (never "600+ students / Students engaged…").
+  const text = caption ?? label ?? (showMetric ? (p.unit ? captionAfterUnit(metric, fact.unit) : metric) : undefined);
   const cite = factCitation(fact);
 
   return (

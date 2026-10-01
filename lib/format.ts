@@ -57,3 +57,21 @@ export function formatFact(f: Fact): string {
 export function formatDate(iso: string): string {
   return new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 }
+
+/**
+ * A caption printed under "600+ students" should read on from the unit
+ * ("engaged at the STEM Racing World Finals"), not repeat it ("Students
+ * engaged at…"). Drops a leading unit word (singular or plural, any case)
+ * and lower-cases what follows; captions that don't start with the unit
+ * come back unchanged.
+ */
+export function captionAfterUnit(caption: string, unit: string): string {
+  const u = unitLabel(unit).trim().toLowerCase();
+  if (!u || /[%×$£]/.test(u)) return caption;
+  const forms = [u, u.replace(/s$/, ""), `${u}s`];
+  const lower = caption.toLowerCase();
+  const hit = forms.find((f) => f && (lower.startsWith(`${f} `) || lower === f));
+  if (!hit) return caption;
+  const rest = caption.slice(hit.length).trimStart();
+  return rest ? rest.charAt(0).toLowerCase() + rest.slice(1) : caption;
+}
