@@ -52,6 +52,15 @@ export function sanitiseShareFacts(ids: string[], fallback: string[]): string[] 
   return picked.length ? picked : fallback;
 }
 
+/**
+ * The figures a card starts with: those behind the quick-check questions the
+ * fan answered, where the card can carry them; otherwise the defaults (no
+ * badge yet, or one saved before badges recorded their facts).
+ */
+export function badgeShareFacts(badgeFactIds: readonly string[] | undefined, fallback: string[]): string[] {
+  return sanitiseShareFacts([...(badgeFactIds ?? [])], fallback);
+}
+
 /** "2025 report, pp. 24, 68 · 2024 report, p. 25": one line naming every page the card's figures come from. */
 export function shareSourceLine(ids: string[]): string {
   const pages = new Map<string, number[]>();

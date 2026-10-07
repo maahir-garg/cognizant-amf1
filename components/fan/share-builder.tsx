@@ -16,7 +16,7 @@ import { formatFact } from "@/lib/format";
 import { useFanProfile } from "@/lib/fan/profile";
 import { DEFAULT_FAN, QUIZ_BADGE_LABEL } from "@/lib/fan/quiz";
 import { raceShortName } from "@/lib/fan/race";
-import { SHARE_FACTS, SHARE_MAX_FACTS, sanitiseShareFacts, shareFactValue } from "@/lib/fan/share";
+import { SHARE_FACTS, SHARE_MAX_FACTS, badgeShareFacts, sanitiseShareFacts, shareFactValue } from "@/lib/fan/share";
 import { useQuizBadge, useTripPlan } from "@/lib/fan/storage";
 import { isTravelMode, modeLabel, planLine } from "@/lib/fan/trip";
 import { cn } from "@/lib/utils";
@@ -54,7 +54,12 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
   const [badge] = useQuizBadge();
   const { profile } = useFanProfile();
 
-  const [factIds, setFactIds] = useState<string[]>([...DEFAULT_SHARE_FACT_IDS]);
+  // Until the fan picks for themselves, the card starts from the figures behind the quick check they
+  // answered. The badge is read from storage after hydration, so the start is derived, not set once.
+  const [pickedIds, setPickedIds] = useState<string[] | null>(null);
+  const startIds = badgeShareFacts(badge?.factIds, [...DEFAULT_SHARE_FACT_IDS]);
+  const factIds = pickedIds ?? startIds;
+  const fromQuiz = badgeShareFacts(badge?.factIds, []).length > 0;
   const [modeChoice, setModeChoice] = useState<string | null>(null);
   const [group, setGroup] = useState(false);
   // The card row the fan just changed, so only that row fades in on the preview.
@@ -101,7 +106,8 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
 
   function toggleFact(id: string) {
     setChangedRow(id);
-    setFactIds((current) => {
+    setPickedIds((picked) => {
+      const current = picked ?? startIds;
       if (current.includes(id)) return current.length > 1 ? current.filter((x) => x !== id) : current;
       if (current.length >= SHARE_MAX_FACTS) return current;
       return sanitiseShareFacts([...current, id], current);
@@ -254,6 +260,7 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
             <span className="h3">Team figures</span>
             <span className="font-sans text-[0.9375rem] text-ink-2">
               Every one is printed in the team&apos;s report, and the card names the pages.
+              {fromQuiz && " The card starts with the ones from your quick check."}
             </span>
           </legend>
           <p aria-live="polite" className="font-sans text-[0.9375rem] text-ink-2">

@@ -58,14 +58,21 @@ function makeStore<T>(key: string, schema: z.ZodType<T>) {
 
 /* -------------------------------------------------------------- quiz badge */
 
-const QuizBadge = z.object({
+export const QuizBadge = z.object({
   depth: z.enum(["new", "watched"]),
   answered: z.number().int().nonnegative(),
   /** How many answers matched the report. Shown to the fan only, never on the card. */
   matched: z.number().int().nonnegative(),
   completedAt: z.string(),
+  /**
+   * The facts behind the questions answered, so the card starts from what the
+   * fan just checked. Badges saved before this field existed have none, and a
+   * malformed list is dropped rather than costing the fan their badge. The
+   * share builder still keeps only curated card facts (badgeShareFacts).
+   */
+  factIds: z.array(z.string().max(64)).max(20).optional().catch(undefined),
 });
-type QuizBadge = z.infer<typeof QuizBadge>;
+export type QuizBadge = z.infer<typeof QuizBadge>;
 
 const badgeStore = makeStore(QUICK_CHECK_KEY, QuizBadge);
 
