@@ -15,6 +15,7 @@
  *   brief allows them.
  */
 import type { ChapterId } from "@/lib/ai/requests";
+import { HERO_RACE_ID } from "@/lib/config";
 
 type Tone = "paper" | "green";
 
@@ -120,6 +121,8 @@ export type Step = {
   highlight?: string[];
   /** Push-in on a photo layer while this step is active (scale 1 to 2). */
   zoom?: Zoom;
+  /** One link under the paragraph, for a step that ends on something the fan can do. */
+  cta?: { label: string; href: string };
 };
 
 export type DetailSection = {
@@ -251,15 +254,31 @@ export const CHAPTERS: Chapter[] = [
         highlight: ["freight", "commuting", "business-travel"],
       },
       {
-        copy: "The campus is the thin sliver at the end. That is why the team is working with its suppliers on better data: it shows where cuts are possible.",
+        copy: "The campus is the thin sliver at the end. So the biggest cuts have to come from what the team buys, and it has set a target for exactly that: emissions from the goods and services it buys down {f:e25-target-scope3} by the end of the decade.",
         layer: 1,
         highlight: ["hq-energy", "other"],
+      },
+      // How it could come down further: back to the whole car, which is built from what suppliers make.
+      {
+        copy: "Cutting further starts with data. The team engaged {f:e24-suppliers-engaged} of its key suppliers for better emissions figures. With Base Materials, which makes its tooling board, it is mapping that material's whole life to find where targeted action could cut the impact.",
+        layer: 0,
+        zoom: { scale: 1, origin: { x: 50, y: 50 } },
       },
     ],
     detail: [
       {
         text: "The bar shows the six categories in the report's own breakdown, which add up to the total. Tap any value on it to see the page it comes from.",
         cite: { sourceId: "esg-2025", page: 19 },
+      },
+      {
+        heading: "Working with suppliers",
+        text: "Key suppliers are the ones behind most of the team's spending. Their data lets the team replace estimates based on what it spends with figures based on what it actually buys and moves. So far that has sharpened the logistics figures; the next step is the goods, services and equipment the team buys.",
+        cite: { sourceId: "esg-2024", page: 24 },
+      },
+      {
+        heading: "The tooling board study",
+        text: "Tooling board is used to develop high-performance parts and is hard to recycle at the end of its life. The life-cycle assessment follows it from raw material to disposal. Early findings point to making the material and disposing of it as the hotspots, and the study gives the team a basis for working with its suppliers on both.",
+        cite: { sourceId: "esg-2025", page: 34 },
       },
       {
         heading: "Method",
@@ -304,9 +323,11 @@ export const CHAPTERS: Chapter[] = [
         layer: 1,
       },
       {
-        copy: "What about your own trip to a race? Fans' travel is not part of the team's footprint: the report counts the team's own operations and its suppliers. The race-week section at the end compares ways of getting to Marina Bay.",
+        copy: "What about your own trip to a race? Fans' travel is not part of the team's footprint: the report counts the team's own operations and its suppliers. The last few kilometres to Marina Bay are up to you: see how the MRT, a bus or walking compare with a taxi.",
         layer: 0,
         zoom: { scale: 1, origin: { x: 55, y: 60 } },
+        // The chapter ends on something the fan can do: the race page's trip planner, opened at its section.
+        cta: { label: "Plan a lower-carbon trip to Marina Bay", href: `/weekend/${HERO_RACE_ID}#getting-there` },
       },
     ],
     detail: [
@@ -526,7 +547,7 @@ export function allCopyStrings(): string[] {
       if (l.kind === "tiles") out.push(l.title, ...l.tiles.map((t) => t.label));
       if (l.kind === "quote") out.push(l.quote.text, l.quote.speaker, l.quote.role);
     }
-    for (const s of c.steps) out.push(s.copy, ...(s.facts ?? []).map((f) => f.caption));
+    for (const s of c.steps) out.push(s.copy, ...(s.facts ?? []).map((f) => f.caption), ...(s.cta ? [s.cta.label] : []));
     for (const d of c.detail) out.push(...[d.heading, d.text].filter((x): x is string => Boolean(x)));
   }
   return out;
