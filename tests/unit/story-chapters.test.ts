@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { checkText } from "@/lib/ai/guardrail";
 import { CHAPTER_IDS, DEMO_PERSONAS, FAN_CHAPTER_FACTS, STORY_DEFAULT_FAN, fanChapterRequest } from "@/lib/ai/requests";
 import { renderTemplate } from "@/lib/ai/templates";
-import { findFact, getFact } from "@/lib/data/load";
+import { findFact, getFact, races } from "@/lib/data/load";
 import { CHAPTERS, allCopyStrings, chapterFactIds, parseCopy } from "@/lib/story/chapters";
 import { DEFAULT_FAN } from "@/lib/fan/quiz";
 import { formatDateRange } from "@/lib/story/dates";
@@ -90,6 +90,15 @@ describe("story chapters", () => {
       expect(twice, `${c.id}: printed twice on the cards and stage`).toEqual([]);
       expect(detailFactIds(c).filter((id) => main.includes(id)), `${c.id}: detail repeats the story`).toEqual([]);
     }
+  });
+
+  it("follow the pitch: the supply chain ends on how it could be cut, the travel chapter on a trip the fan can plan", () => {
+    const supply = CHAPTERS.find((c) => c.id === "supply-chain")!;
+    expect(tokenIds(supply.steps.at(-1)!.copy)).toContain("e24-suppliers-engaged");
+    const moving = CHAPTERS.find((c) => c.id === "moving")!;
+    expect(moving.steps.at(-1)!.cta?.href).toBe(`/weekend/${races.find((r) => r.hero)!.id}#getting-there`);
+    // Calls to action stay inside the site: the demo runs offline.
+    for (const s of CHAPTERS.flatMap((c) => c.steps)) if (s.cta) expect(s.cta.href).toMatch(/^\/[^/]/);
   });
 
   it("parses fact tokens", () => {

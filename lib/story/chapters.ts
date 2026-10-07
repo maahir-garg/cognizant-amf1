@@ -15,6 +15,7 @@
  *   brief allows them.
  */
 import type { ChapterId } from "@/lib/ai/requests";
+import { HERO_RACE_ID } from "@/lib/config";
 
 type Tone = "paper" | "green";
 
@@ -120,6 +121,8 @@ export type Step = {
   highlight?: string[];
   /** Push-in on a photo layer while this step is active (scale 1 to 2). */
   zoom?: Zoom;
+  /** One link under the paragraph, for a step that ends on something the fan can do. */
+  cta?: { label: string; href: string };
 };
 
 export type DetailSection = {
@@ -320,9 +323,11 @@ export const CHAPTERS: Chapter[] = [
         layer: 1,
       },
       {
-        copy: "What about your own trip to a race? Fans' travel is not part of the team's footprint: the report counts the team's own operations and its suppliers. The race-week section at the end compares ways of getting to Marina Bay.",
+        copy: "What about your own trip to a race? Fans' travel is not part of the team's footprint: the report counts the team's own operations and its suppliers. The last few kilometres to Marina Bay are up to you: see how the MRT, a bus or walking compare with a taxi.",
         layer: 0,
         zoom: { scale: 1, origin: { x: 55, y: 60 } },
+        // The chapter ends on something the fan can do: the race page's trip planner, opened at its section.
+        cta: { label: "Plan a lower-carbon trip to Marina Bay", href: `/weekend/${HERO_RACE_ID}#getting-there` },
       },
     ],
     detail: [
@@ -542,7 +547,7 @@ export function allCopyStrings(): string[] {
       if (l.kind === "tiles") out.push(l.title, ...l.tiles.map((t) => t.label));
       if (l.kind === "quote") out.push(l.quote.text, l.quote.speaker, l.quote.role);
     }
-    for (const s of c.steps) out.push(s.copy, ...(s.facts ?? []).map((f) => f.caption));
+    for (const s of c.steps) out.push(s.copy, ...(s.facts ?? []).map((f) => f.caption), ...(s.cta ? [s.cta.label] : []));
     for (const d of c.detail) out.push(...[d.heading, d.text].filter((x): x is string => Boolean(x)));
   }
   return out;
