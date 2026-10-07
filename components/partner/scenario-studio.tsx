@@ -256,7 +256,7 @@ export function ScenarioStudio() {
           {error && <p className="text-conflict">Could not explain this scenario: {error}</p>}
           {data && <AiText response={data} derived={request.derived} className="measure text-[1.0625rem]" />}
           <p className="text-[0.875em] text-ink-3">
-            People reached only. Programme costs are not published, so there is no financial figure and no return on spend.
+            People reached only, scaled from the published figures.
           </p>
         </section>
       </div>

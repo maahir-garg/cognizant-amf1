@@ -39,18 +39,18 @@ Other scripts: `npm run warm-cache` (fills `data/ai-cache/` when `GEMINI_API_KEY
 
 ## Routes
 
-| Route                     | What it is                                                                                                   |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `/`                       | The story: title page, six chapters following the team's footprint map, then your Singapore race weekend     |
-| `/weekend/singapore-2026` | The race page: what the team published for it, programmes, getting there, data gaps                          |
-| `/share`                  | Build a 9:16 race-week card and download it as a PNG                                                         |
-| `/quiz`                   | The three-question knowledge check                                                                           |
-| `/partners`               | The Impact desk: This race week, Narratives, Check my draft, Scenarios, Story kit, Data quality, ROI, Export |
-| `/how-it-works`           | For judges and partners: the problem, the AI steps, the guardrail, the pilot and business model              |
-| `/sources`                | Every fact, its source page, quality flags and method                                                        |
-| `/api/partner/metrics`    | Read-only JSON, or CSV with `?format=csv`, for partner BI tools                                              |
+| Route                     | What it is                                                                                                        |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `/`                       | The story: title page, six chapters following the team's footprint map, then your Singapore race weekend          |
+| `/weekend/singapore-2026` | The race page: what the team published for it, programmes, getting there, data gaps                               |
+| `/share`                  | Build a 9:16 race-week card and download it as a PNG                                                              |
+| `/quiz`                   | The three-question knowledge check                                                                                |
+| `/partners`               | The Impact desk: This race week, Narratives, Check my draft, Scenarios, Story kit, Data quality, Measures, Export |
+| `/how-it-works`           | For judges and partners: the problem, the AI steps, the guardrail, impact measures and the pilot                  |
+| `/sources`                | Every fact, its source page, quality flags and method                                                             |
+| `/api/partner/metrics`    | Read-only JSON, or CSV with `?format=csv`, for partner BI tools                                                   |
 
-Old links to `/start`, `/lap` and `/act` redirect to `/`.
+Old links to `/start`, `/lap` and `/act` redirect to `/`, and `/partners/roi` redirects to `/partners/measures`.
 
 ## How trust works
 
@@ -69,7 +69,7 @@ Old links to `/start`, `/lap` and `/act` redirect to `/`.
 | `AGENTS.md`                 | How the repo is organised and the rules for changing it                                                                                |
 | `DESIGN.md`                 | The design system                                                                                                                      |
 | `docs/PRODUCT_RATIONALE.md` | The problem, the two audiences, how AI transforms the data, the story structure, stakeholder guardrails, now versus pilot, positioning |
-| `docs/ROI.md`               | Scorecard, non-sales ROI measures, business model, 2027 pilot, risks                                                                   |
+| `docs/IMPACT.md`            | Impact measures, the 2027 pilot, risks                                                                                                 |
 | `docs/DEMO_SCRIPT.md`       | The timed 15-minute pitch and demo, with fallbacks                                                                                     |
 | `docs/architecture.md`      | System design, routes, layers and how production feeds would plug in                                                                   |
 | `docs/data-sources.md`      | Sources, extraction method and known data-quality issues                                                                               |
