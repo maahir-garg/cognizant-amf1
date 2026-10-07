@@ -117,6 +117,14 @@ function StepCard({ step, layer, fallback }: { step: Step; layer: Layer; fallbac
           </div>
         </noscript>
       )}
+      {/* Tile figures are printed only on the tiles, so the no-JavaScript copy carries them all, none dimmed. */}
+      {fallback && layer.kind === "tiles" && (
+        <noscript>
+          <div className="mt-5 border-t border-line pt-4">
+            <TilesGraphic title={layer.title} tiles={layer.tiles} highlight={[]} />
+          </div>
+        </noscript>
+      )}
       {fallback && layer.kind === "quote" && (
         <noscript>
           <CardQuote quote={layer.quote} />

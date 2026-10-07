@@ -239,34 +239,27 @@ export const CHAPTERS: Chapter[] = [
         layer: 0,
         zoom: { scale: 1.35, origin: { x: 50, y: 70 } },
       },
+      // The bar prints every value, so the cards say what each block is rather than repeat its number.
       {
-        copy: "This bar is the team's whole footprint for the year, {f:e25-ghg-total-sbti}. The highlighted block is the supply chain: {f:e25-supply-chain}.",
+        copy: "This bar is the team's whole footprint for the year. The highlighted block, by far the biggest, is the supply chain: the materials, parts and services the team buys.",
         layer: 1,
         highlight: ["supply-chain"],
       },
       {
-        copy: "The next three blocks are freight and people on the move: moving cars and kit {f:e25-freight-logistics}, colleagues' commutes {f:e25-commuting} and trips to races and events {f:e25-business-travel}.",
+        copy: "The next three blocks are freight and people on the move: moving cars and kit, colleagues' commutes, and trips to races and events.",
         layer: 1,
         highlight: ["freight", "commuting", "business-travel"],
       },
       {
-        copy: "The campus is the thin sliver at the end, {f:e25-hq-energy}. That is why the team is working with its suppliers on better data: it shows where cuts are possible.",
+        copy: "The campus is the thin sliver at the end. That is why the team is working with its suppliers on better data: it shows where cuts are possible.",
         layer: 1,
         highlight: ["hq-energy", "other"],
       },
     ],
     detail: [
       {
-        text: "The bar shows the six categories in the report's own breakdown, which add up to the total.",
-        facts: [
-          "e25-ghg-total-sbti",
-          "e25-supply-chain",
-          "e25-commuting",
-          "e25-freight-logistics",
-          "e25-business-travel",
-          "e25-hq-energy",
-          "e25-other-emissions",
-        ],
+        text: "The bar shows the six categories in the report's own breakdown, which add up to the total. Tap any value on it to see the page it comes from.",
+        cite: { sourceId: "esg-2025", page: 19 },
       },
       {
         heading: "Method",
@@ -287,9 +280,8 @@ export const CHAPTERS: Chapter[] = [
       {
         kind: "tiles",
         title: "Freight and travel in figures",
+        // Only the results: the sea shift and the fuel saving are already on the cards before it.
         tiles: [
-          { key: "sea", factId: "e24-sea-freight-shift", label: "saved by moving freight from air to sea" },
-          { key: "saf", factId: "e25-saf-avoided", label: "of air-freight emissions avoided with cleaner fuel" },
           { key: "saf-cut", factId: "e25-saf-airfreight-cut", label: "cut in the emissions tied to air freight" },
           { key: "travel-cut", factId: "e25-travel-logistics-cut", label: "fall in travel and logistics emissions on the year before" },
         ],
@@ -308,9 +300,8 @@ export const CHAPTERS: Chapter[] = [
         zoom: { scale: 1.3, origin: { x: 68, y: 44 }, mobileOrigin: { x: 70, y: 46 } },
       },
       {
-        copy: "That cut its air-freight emissions by {f:e25-saf-airfreight-cut}; the team likens the saving to {f:e25-saf-laps} of Silverstone in a petrol road car, its own comparison. With tighter planning, travel and logistics emissions fell {f:e25-travel-logistics-cut} on the year before.",
+        copy: "The certificates cut the emissions tied to its air freight, and with tighter planning, travel and logistics emissions fell on the year before. The team likens the fuel saving to {f:e25-saf-laps} of Silverstone in a petrol road car, its own comparison.",
         layer: 1,
-        highlight: ["saf", "saf-cut", "travel-cut"],
       },
       {
         copy: "What about your own trip to a race? Fans' travel is not part of the team's footprint: the report counts the team's own operations and its suppliers. The race-week section at the end compares ways of getting to Marina Bay.",
@@ -320,8 +311,8 @@ export const CHAPTERS: Chapter[] = [
     ],
     detail: [
       {
-        facts: ["e25-freight-logistics", "e25-business-travel"],
-        text: "Freight is shown before Sustainable Aviation Fuel certificates, as in the report's breakdown.",
+        text: "Freight and business travel figures in this story are shown before Sustainable Aviation Fuel certificates, as in the report's breakdown.",
+        cite: { sourceId: "esg-2025", page: 19 },
       },
       {
         heading: "Fans' travel",
@@ -391,13 +382,11 @@ export const CHAPTERS: Chapter[] = [
       {
         kind: "tiles",
         title: "Beyond the track in figures",
+        // The figures for the last two cards only; the students and mentors are on the cards before it.
         tiles: [
-          { key: "stem", factId: "c25-stem-racing-students", label: "met at the STEM Racing World Finals" },
-          { key: "maaden", factId: "c25-maaden-target", label: "the Unearth Your Greatness target" },
           { key: "charity", factId: "c25-charity-2025", label: "raised for charities over the year" },
           { key: "schools", factId: "e25-ethiopia-children", label: "at schools built with the Ethiopia woodland project" },
           { key: "removals", factId: "e25-removals", label: "of carbon removed by projects in Ethiopia, Kenya and the USA" },
-          { key: "mentoring", factId: "b25-accelerate-pairs", label: "of mentors and mentees in Accelerate Women" },
         ],
       },
     ],
@@ -413,12 +402,12 @@ export const CHAPTERS: Chapter[] = [
         layer: 1,
       },
       {
-        copy: "Colleagues raise money too, through hikes, football matches and marathons, with the team matching their efforts. Over the year they raised {f:c25-charity-2025} for charities close to the team.",
+        copy: "Colleagues raise money too, through hikes, football matches and marathons, with the team matching their efforts for charities close to it.",
         layer: 2,
         highlight: ["charity"],
       },
       {
-        copy: "Further away, the team pays for projects that take carbon out of the air, {f:e25-removals} last year. One restores woodland in the Ethiopian highlands and has helped build schools for {f:e25-ethiopia-children}. Removals deal with emissions the team cannot eliminate yet.",
+        copy: "Further away, the team pays for projects that take carbon out of the air. One restores woodland in the Ethiopian highlands and has helped build schools for local children. Removals deal with emissions the team cannot eliminate yet.",
         layer: 2,
         highlight: ["schools", "removals"],
       },
@@ -451,24 +440,25 @@ export const CHAPTERS: Chapter[] = [
       { kind: "graphic", graphic: "targets" },
       { kind: "photo", image: "render-rear" },
     ],
+    // The chart prints every value, so the cards say what each bar means rather than repeat its number.
     steps: [
       {
-        copy: "The chart starts from the restated baseline, {f:e23-ghg-baseline}. Last year's footprint was {f:e25-ghg-total-sbti}, and the end-of-decade target is {f:e25-target-2030-tco2e}.",
+        copy: "The chart runs from the restated baseline year to last year's footprint, then on to the end-of-decade target and the most that may remain at net zero.",
         layer: 0,
         highlight: ["baseline", "current", "target-2030"],
       },
       {
-        copy: "Split it up and progress is uneven. Emissions from the fuel and electricity the team uses directly are already past the end-of-decade target of a {f:e25-target-scope12} cut.",
+        copy: "Split it up and progress is uneven. Emissions from the fuel and electricity the team uses directly are already past their end-of-decade target.",
         layer: 0,
         highlight: ["scope12"],
       },
       {
-        copy: "The supply chain is harder. Emissions across the rest of the value chain have moved much less, against a target of a {f:e25-target-scope3} cut by the end of the decade.",
+        copy: "The supply chain is harder. Emissions across the rest of the value chain have moved much less, and are still short of their end-of-decade target.",
         layer: 0,
         highlight: ["scope3"],
       },
       {
-        copy: "Net zero by {f:e25-target-netzero-year} means cutting absolute emissions by {f:e25-target-netzero-cut}, leaving no more than {f:e25-target-2050-tco2e} for carbon removals. The Science Based Targets initiative has validated these targets.",
+        copy: "Net zero by {f:e25-target-netzero-year} means cutting absolute emissions by {f:e25-target-netzero-cut}, leaving only the small remainder on the chart for carbon removals. The Science Based Targets initiative has validated these targets.",
         layer: 0,
         highlight: ["target-2050"],
       },
@@ -479,16 +469,13 @@ export const CHAPTERS: Chapter[] = [
     ],
     detail: [
       {
-        facts: ["e25-target-scope12", "e25-target-scope3", "e25-target-netzero-cut", "e25-target-2030-tco2e", "e25-target-2050-tco2e"],
-      },
-      {
         heading: "Why this story does not compare years",
         text: "The team restated its earlier carbon figures after its targets were validated. This story uses the report's own progress figures and target chart rather than comparing one year's total with another's.",
         facts: ["g25-restatement"],
       },
       {
         heading: "Checks",
-        facts: ["g25-sbti", "g25-assurance", "g25-cdp"],
+        facts: ["g25-sbti", "g25-assurance"],
       },
     ],
   },
