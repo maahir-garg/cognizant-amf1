@@ -112,11 +112,11 @@ Nothing in Off Camera is live today, and nothing claims to be. Every figure says
 
 ---
 
-## How we would measure the return
+## How we would measure the impact
 
-Return here is broader than sales. None of these are measured yet; each has a published baseline or starts in the first pilot race.
+None of these are measured yet; each has a published baseline or starts in the first pilot race.
 
-| Return                        | Measure                                                    | Baseline                                                           |
+| Outcome                       | Measure                                                    | Baseline                                                           |
 | ----------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------ |
 | Partner amplification         | Impressions from partner posts using Off Camera content    | {c24-esg-impressions-partners}                                     |
 | Comms efficiency              | Time from brief to approved post                           | A baseline week of manual timings                                  |
@@ -130,13 +130,7 @@ Return here is broader than sales. None of these are measured yet; each has a pu
 
 ---
 
-## The 2027 pilot and business model
-
-**Year one.** Cognizant funds a pilot as value-in-kind within its partnership as the team's {g-cognizant-role}. Cognizant gains a client-referenceable, governed Gen-AI case; the team gains the comms tool and the fan story.
-
-**Year two.** The team offers an impact reporting pack to other partners as a sponsorship benefit.
-
-**Year three.** Cognizant packages the pattern (fact base, then guardrail, then cited output) for its clients' ESG, investor and regulatory communications.
+## The 2027 pilot
 
 **The pilot.** One fan story and the Impact desk, for three groups: the team's communications and sustainability staff, Cognizant's communications staff, and two or three Make A Mark charity partners. About six races, including a fly-away.
 
@@ -145,13 +139,13 @@ Return here is broader than sales. None of these are measured yet; each has a pu
 1. Q4 2026: data-sharing agreement, approval workflow, a baseline week of manual timings.
 2. Pre-season to race 6: launch with published facts.
 3. Mid-season: add one approved per-race feed, trackside energy or freight, with a named owner.
-4. Season end: evaluate against the baseline and decide on the sponsor tier.
+4. Season end: evaluate against the baseline and decide whether to continue.
 
-**Team.** A product lead, two engineers, an ESG data analyst, a part-time designer, and named approvers at the team and Cognizant.
+**Approvals.** Named approvers at the team and Cognizant sign off every external post, with an agreed turnaround.
 
-Small print under the section: "Pilot scope, team and phases are assumptions for discussion. No revenue figures are claimed."
+Small print under the section: "Pilot scope, approvals and phases are assumptions for discussion."
 
-**Figures:** `g-cognizant-role` (text fact, rendered inline).
+**Figures:** none; this is a plan. Costing and the business model are presented in the pitch, not on this page.
 
 ---
 
