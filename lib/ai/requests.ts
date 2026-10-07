@@ -49,6 +49,16 @@ export const FAN_CHAPTER_FACTS: Record<ChapterId, string[]> = {
 export const STORY_DEFAULT_FAN: FanProfile = { level: "new", cityId: "singapore", interests: ["environment", "stem"] };
 
 /**
+ * The fan as every request carries them: the city is pinned to the default.
+ * The model is never told the city (lib/ai/prompts.ts) and no template uses
+ * it, so a fan's optional nearest-race choice must not change the cache key
+ * and send a fresh request for the same text.
+ */
+function requestFan(fan: FanProfile): FanProfile {
+  return { ...fan, cityId: STORY_DEFAULT_FAN.cityId };
+}
+
+/**
  * One chapter's generated paragraph. The story has two depths, so any level
  * other than "die-hard" reads as "new".
  */
@@ -61,7 +71,7 @@ export function fanChapterRequest(fan: FanProfile | null, chapterId: ChapterId):
     // New fans get one figure (both progress figures for the targets, so neither reads alone).
     factIds: level === "new" ? ids.slice(0, chapterId === "finish" ? 2 : 1) : [...ids],
     derived: [],
-    fan: { ...base, level },
+    fan: requestFan({ ...base, level }),
     params: { chapter: chapterId },
   };
 }
@@ -70,12 +80,12 @@ export function fanChapterRequest(fan: FanProfile | null, chapterId: ChapterId):
 export function quizRevealRequest(fan: FanProfile, quizId: string, correct: boolean): Built {
   const quiz = quizzes.find((q) => q.id === quizId);
   if (!quiz) throw new Error(`Unknown quiz "${quizId}"`);
-  return { task: "quiz-reveal", factIds: [quiz.factId], derived: [], fan, params: { quizId, correct } };
+  return { task: "quiz-reveal", factIds: [quiz.factId], derived: [], fan: requestFan(fan), params: { quizId, correct } };
 }
 
 /** Caption for the 9:16 share card. `factIds` are the figures printed on the card. */
 export function shareCaptionRequest(fan: FanProfile, factIds: string[], raceId: string): Built {
-  return { task: "share-caption", factIds, derived: [], fan, params: { raceId } };
+  return { task: "share-caption", factIds, derived: [], fan: requestFan(fan), params: { raceId } };
 }
 
 /**

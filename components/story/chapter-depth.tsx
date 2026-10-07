@@ -71,9 +71,10 @@ export function DepthToggle({ className, compact = false, onPick }: { className?
   );
 }
 
+/** The city is left out: requests pin it (lib/ai/requests.ts), so a nearest-race choice keeps the preloaded text. */
 function sameAsDefault(p: FanProfile | null): boolean {
   if (!p) return true;
-  return p.cityId === STORY_DEFAULT_FAN.cityId && [...p.interests].sort().join() === [...STORY_DEFAULT_FAN.interests].sort().join();
+  return [...p.interests].sort().join() === [...STORY_DEFAULT_FAN.interests].sort().join();
 }
 
 /**
