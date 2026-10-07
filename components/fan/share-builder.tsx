@@ -16,8 +16,18 @@ import { formatFact } from "@/lib/format";
 import { useFanProfile } from "@/lib/fan/profile";
 import { DEFAULT_FAN, QUIZ_BADGE_LABEL } from "@/lib/fan/quiz";
 import { raceShortName } from "@/lib/fan/race";
-import { SHARE_FACTS, SHARE_MAX_FACTS, sanitiseShareFacts, shareFactValue } from "@/lib/fan/share";
-import { useQuizBadge, useTripPlan } from "@/lib/fan/storage";
+import {
+  CARD_NAME_MAX,
+  LINKEDIN_SHARE_URL,
+  SHARE_FACTS,
+  SHARE_MAX_FACTS,
+  badgeShareFacts,
+  cardName,
+  cardNameInput,
+  sanitiseShareFacts,
+  shareFactValue,
+} from "@/lib/fan/share";
+import { useCardName, useQuizBadge, useTripPlan } from "@/lib/fan/storage";
 import { isTravelMode, modeLabel, planLine } from "@/lib/fan/trip";
 import { cn } from "@/lib/utils";
 import { SHARE_CARD_HEIGHT, SHARE_CARD_WIDTH, ShareCard } from "./share-card";
@@ -54,7 +64,12 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
   const [badge] = useQuizBadge();
   const { profile } = useFanProfile();
 
-  const [factIds, setFactIds] = useState<string[]>([...DEFAULT_SHARE_FACT_IDS]);
+  // Until the fan picks for themselves, the card starts from the figures behind the quick check they
+  // answered. The badge is read from storage after hydration, so the start is derived, not set once.
+  const [pickedIds, setPickedIds] = useState<string[] | null>(null);
+  const startIds = badgeShareFacts(badge?.factIds, [...DEFAULT_SHARE_FACT_IDS]);
+  const factIds = pickedIds ?? startIds;
+  const fromQuiz = badgeShareFacts(badge?.factIds, []).length > 0;
   const [modeChoice, setModeChoice] = useState<string | null>(null);
   const [group, setGroup] = useState(false);
   // The card row the fan just changed, so only that row fades in on the preview.
@@ -69,6 +84,13 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
   const modeId = modeChoice ?? saved ?? initialMode ?? "mrt";
   const line = modeId === NO_PLAN ? null : planLine(modeId, race, group);
   const hasBadge = Boolean(badge) && showBadge;
+
+  // The field keeps its own draft so typing still works when storage is blocked; the saved name
+  // only seeds it. The name stays on this device: it is never part of the caption request below.
+  const [storedName, setStoredName] = useCardName();
+  const [nameDraft, setNameDraft] = useState<string | null>(null);
+  const nameValue = nameDraft ?? storedName ?? "";
+  const name = cardName(nameValue);
 
   const fan = profile ?? DEFAULT_FAN;
   const { data: caption } = useAiText(shareCaptionRequest(fan, factIds, raceId));
@@ -101,7 +123,8 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
 
   function toggleFact(id: string) {
     setChangedRow(id);
-    setFactIds((current) => {
+    setPickedIds((picked) => {
+      const current = picked ?? startIds;
       if (current.includes(id)) return current.length > 1 ? current.filter((x) => x !== id) : current;
       if (current.length >= SHARE_MAX_FACTS) return current;
       return sanitiseShareFacts([...current, id], current);
@@ -184,7 +207,7 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
         </Link>
         <p className="kicker kicker-rule mt-4">Something worth posting</p>
         <h1 className="h1-feature">Make your race&#8209;week card</h1>
-        <p className="dek">Your plan, a team figure you choose and your badge, sized for stories. No name unless you add one yourself.</p>
+        <p className="dek">Your plan, team figures you choose and your badge, sized for stories. No name unless you add one yourself.</p>
       </div>
 
       {/* Preview first on phones, beside the controls from 1024 px. */}
@@ -196,19 +219,39 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
               className="overflow-hidden rounded-md border border-line-strong"
               style={{ height: SHARE_CARD_HEIGHT * scale }}
               role="img"
-              aria-label={`Card preview: ${[line, ...factIds.map((id) => `${formatFact(getFact(id))}`)].filter(Boolean).join(", ")}`}
+              aria-label={`Card preview: ${[name && `made by ${name}`, line, ...factIds.map((id) => `${formatFact(getFact(id))}`)].filter(Boolean).join(", ")}`}
             >
               <div style={{ width: SHARE_CARD_WIDTH, height: SHARE_CARD_HEIGHT, transform: `scale(${scale})`, transformOrigin: "top left" }}>
-                <ShareCard ref={cardRef} raceShortName={raceShortName(race)} factIds={factIds} planLine={line} badge={hasBadge} enter={changedRow} />
+                <ShareCard
+                  ref={cardRef}
+                  raceShortName={raceShortName(race)}
+                  factIds={factIds}
+                  planLine={line}
+                  badge={hasBadge}
+                  name={name}
+                  enter={changedRow}
+                />
               </div>
             </div>
           </div>
           <div className="mx-auto mt-6 flex w-full max-w-[400px] flex-col gap-3 lg:order-3">
             <p className="kicker">Suggested caption</p>
             {caption ? <AiText response={caption} className="text-lg" /> : <p className="font-serif text-lg text-ink-3">Writing a caption from your figures…</p>}
-            <Button variant="outline" size="lg" className="w-fit" onClick={copyCaption} disabled={!caption}>
-              Copy caption
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" size="lg" onClick={copyCaption} disabled={!caption}>
+                Copy caption
+              </Button>
+              <Button asChild variant="outline" size="lg">
+                <a href={LINKEDIN_SHARE_URL} target="_blank" rel="noopener noreferrer" aria-describedby="linkedin-help">
+                  Share on LinkedIn
+                  <span className="sr-only"> (opens in a new tab)</span>
+                </a>
+              </Button>
+            </div>
+            <p id="linkedin-help" className="font-sans text-sm text-ink-3">
+              LinkedIn opens with a link to this site. Copy the caption and save the card first, then paste the caption into your post and
+              add the card as its image.
+            </p>
           </div>
 
           {/*
@@ -228,7 +271,7 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
               aria-label="Back to the card preview"
             >
               <div aria-hidden style={{ width: SHARE_CARD_WIDTH, height: SHARE_CARD_HEIGHT, transform: `scale(${THUMB_WIDTH / SHARE_CARD_WIDTH})`, transformOrigin: "top left" }}>
-                <ShareCard raceShortName={raceShortName(race)} factIds={factIds} planLine={line} badge={hasBadge} />
+                <ShareCard raceShortName={raceShortName(race)} factIds={factIds} planLine={line} badge={hasBadge} name={name} />
               </div>
             </button>
             <div className="flex flex-1 flex-wrap gap-2 lg:flex-none">
@@ -254,6 +297,7 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
             <span className="h3">Team figures</span>
             <span className="font-sans text-[0.9375rem] text-ink-2">
               Every one is printed in the team&apos;s report, and the card names the pages.
+              {fromQuiz && " The card starts with the ones from your quick check."}
             </span>
           </legend>
           <p aria-live="polite" className="font-sans text-[0.9375rem] text-ink-2">
@@ -337,6 +381,31 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
               </Link>
             </p>
           )}
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label htmlFor="card-name" className="h3">
+            First name on the card
+          </label>
+          <p id="card-name-help" className="font-sans text-[0.9375rem] text-ink-2">
+            Optional. It stays in this browser: it is never uploaded, never used to write the caption and never put in a link.
+          </p>
+          <input
+            id="card-name"
+            type="text"
+            autoComplete="given-name"
+            spellCheck={false}
+            maxLength={CARD_NAME_MAX}
+            value={nameValue}
+            onChange={(e) => {
+              const next = cardNameInput(e.target.value);
+              setNameDraft(next);
+              setStoredName(next ? next : null);
+            }}
+            onBlur={() => setNameDraft((d) => (d === null ? d : d.trim()))}
+            aria-describedby="card-name-help"
+            className="h-12 w-full max-w-[18rem] rounded-md border border-line-strong bg-card px-3 font-sans text-base text-ink"
+          />
         </div>
 
         <p className="font-sans text-sm text-ink-3 lg:hidden">

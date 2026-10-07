@@ -6,6 +6,7 @@
  * beside it to read fairly. The labels are the short card wording, kept to two lines
  * at card size; the figure itself always comes from the fact base.
  */
+import { SITE_URL } from "@/lib/config";
 import { factCitation, getCity, getFact, getSource, initiatives, sourceShortName } from "@/lib/data/load";
 import { factParts } from "@/lib/format";
 
@@ -50,6 +51,48 @@ export function shareFactContext(id: string): string {
 export function sanitiseShareFacts(ids: string[], fallback: string[]): string[] {
   const picked = SHARE_FACT_IDS.filter((id) => ids.includes(id)).slice(0, SHARE_MAX_FACTS);
   return picked.length ? picked : fallback;
+}
+
+export const CARD_NAME_MAX = 24;
+
+/**
+ * The card's optional first name as the fan types it: letters (any script),
+ * spaces, hyphens and apostrophes only, so the card never carries a stray
+ * number, web address or symbol beside the team's sourced figures. Runs of
+ * spaces collapse and the length is capped; a trailing space is kept so
+ * typing "Mary Ann" works.
+ */
+export function cardNameInput(raw: string): string {
+  const cleaned = raw
+    .replace(/\s+/gu, " ")
+    .replace(/[^\p{L}\p{M} '’-]|\p{Variation_Selector}/gu, "")
+    // A combining mark only belongs after a letter (an emoji's leftovers would draw as a blank).
+    .replace(/(^|[^\p{L}\p{M}])\p{M}+/gu, "$1")
+    .replace(/ {2,}/g, " ")
+    .trimStart();
+  return Array.from(cleaned).slice(0, CARD_NAME_MAX).join("");
+}
+
+/** The name as the card prints it, or null when there is none. */
+export function cardName(raw: string | null | undefined): string | null {
+  return cardNameInput(raw ?? "").trim() || null;
+}
+
+/**
+ * LinkedIn's share dialog for the site's public address. A plain link: no
+ * script or SDK, nothing about the fan (no name, figures or plan) in the
+ * URL. LinkedIn takes only the address here, so the fan pastes the copied
+ * caption and adds the saved card image themselves.
+ */
+export const LINKEDIN_SHARE_URL = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`https://${SITE_URL}`)}`;
+
+/**
+ * The figures a card starts with: those behind the quick-check questions the
+ * fan answered, where the card can carry them; otherwise the defaults (no
+ * badge yet, or one saved before badges recorded their facts).
+ */
+export function badgeShareFacts(badgeFactIds: readonly string[] | undefined, fallback: string[]): string[] {
+  return sanitiseShareFacts([...(badgeFactIds ?? [])], fallback);
 }
 
 /** "2025 report, pp. 24, 68 · 2024 report, p. 25": one line naming every page the card's figures come from. */
