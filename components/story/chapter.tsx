@@ -8,11 +8,18 @@ import { STORY_IMAGE_SIZES, STORY_IMAGES, type Chapter, type DetailSection, type
 import { cn } from "@/lib/utils";
 import { ChapterBrief, ChapterDetail } from "./chapter-depth";
 import { StoryCopy } from "./copy";
+import { NearestRaceLink } from "./nearest-race";
 import { QuoteStage, StoryGraphic, TilesGraphic } from "./graphics";
 import { Scrolly, type StageLayer, type StageStep, type StepMeta, type ZoomVars } from "./scrolly";
 import styles from "./story.module.css";
 
 const RHYTHM = "clamp(64px,10vw,128px)";
+
+/** Chapters that end with a pointer to the fan's nearest race page, and the section it opens. */
+const NEAREST_RACE_SECTION: Partial<Record<Chapter["id"], "published" | "take-part">> = {
+  circuit: "published",
+  beyond: "take-part",
+};
 
 /** transform-origin (ox, oy) + scale(s) == translate(ox·(1−s), oy·(1−s)) scale(s) from the corner. */
 function zoomVars(z: Step["zoom"] | undefined): ZoomVars {
@@ -170,6 +177,7 @@ export function StoryChapter({
       : { kind: "graphic", node: <GraphicLayer layer={l} /> },
   );
   const firstUse = chapter.layers.map((_, i) => chapter.steps.findIndex((s) => s.layer === i));
+  const nearestSection = NEAREST_RACE_SECTION[chapter.id];
   const steps: StageStep[] = chapter.steps.map((s, i) => {
     const layer = chapter.layers[s.layer];
     const box = layer.kind !== "photo" ? "graphic" : STORY_IMAGES[layer.image].shape === "landscape" ? "wide" : "tall";
@@ -203,6 +211,11 @@ export function StoryChapter({
       <Scrolly layers={layers} meta={stepMeta(chapter)} steps={steps} />
 
       <div className="wrap" style={{ paddingBottom: "clamp(32px,4vw,56px)" }}>
+        {nearestSection && (
+          <div className="measure pb-6">
+            <NearestRaceLink section={nearestSection} />
+          </div>
+        )}
         <div className="measure border-t border-line">
           <ChapterDetail>
             <DetailBody sections={chapter.detail} />

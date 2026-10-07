@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { getRace, getSource, sourceShortName } from "@/lib/data/load";
 import { formatDate } from "@/lib/format";
 import { formatDateRange } from "@/lib/story/dates";
+import { NearestRaceNote, RaceWeekendHeading } from "./nearest-race";
 import { QuickCheckTitle } from "./quick-check-title";
 
 const EXITS = [
@@ -29,7 +30,11 @@ const EXITS = [
   },
 ];
 
-/** The ending: the Singapore Grand Prix weekend, with three exits and one primary action. */
+/**
+ * The ending: the Singapore Grand Prix weekend, with three exits and one
+ * primary action. A fan who chose another nearest race also gets a pointer
+ * to that race's page; the server renders the Singapore default.
+ */
 export function RaceWeekend({ raceId }: { raceId: string }) {
   const race = getRace(raceId);
   const report = getSource("esg-2025");
@@ -41,11 +46,12 @@ export function RaceWeekend({ raceId }: { raceId: string }) {
           {race.start && ` · ${formatDateRange(race.start, race.end ?? race.start)}`}
         </p>
         <h2 id="race-weekend-title" className="h2-chapter mt-3 max-w-[20ch]">
-          Your race weekend at Marina Bay
+          <RaceWeekendHeading heroId={race.id} mine="Your race weekend at Marina Bay" next="The next race weekend: Marina Bay" />
         </h2>
         <p className="dek mt-4 max-w-[40ch]">
           The car you have followed races under the lights at {race.circuit ? `the ${race.circuit}` : "Marina Bay"}. Here is how to be part of the weekend.
         </p>
+        <NearestRaceNote heroId={race.id} />
 
         <ul className="mt-10 grid gap-x-8 gap-y-8 md:grid-cols-3 lg:mt-14">
           {EXITS.map((x) => {
