@@ -43,7 +43,7 @@ The desk is built around the jobs a partner comms lead does every week:
 - **Approvals and audit trail.** Drafts move from draft to approved with a named reviewer and a timestamp.
 - **What changed.** When the team publishes new figures or restates old ones, the desk shows it, so a partner does not reuse a superseded number.
 
-Around those sit narratives (LinkedIn post, quarterly brief, leadership update), a scenario view for joint programmes, a story kit for charities (a social post and a funder report paragraph), the data-quality flags, an ROI panel and CSV or JSON export.
+Around those sit narratives (LinkedIn post, quarterly brief, leadership update), a scenario view for joint programmes, a story kit for charities (a social post and a funder report paragraph), the data-quality flags, a measures panel and CSV or JSON export.
 
 ## How AI transforms the data
 

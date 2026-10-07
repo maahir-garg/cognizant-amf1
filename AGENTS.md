@@ -40,11 +40,11 @@ npm run extract:sources  # regenerate sources/text/*.json from the PDFs (needs p
 ```
 app/
   page.tsx               the story (flagship fan experience, scrollytelling)
-  how-it-works/          for judges and partners: AI, guardrail, pilot plan, ROI
+  how-it-works/          for judges and partners: AI, guardrail, impact measures, pilot plan
   sources/               fact explorer and data-quality flags (governance showcase)
   (fan)/                 weekend/[slug] race page, share card builder, quiz
   partners/              Impact desk: this race week, narratives, check (my draft),
-                         scenarios, story kit, data quality, ROI, export
+                         scenarios, story kit, data quality, measures, export
   api/ai/generate        POST AiRequest -> AiResponse
   api/partner/metrics    read-only JSON (and ?format=csv) for partner BI tools
                          (/start, /lap and /act redirect to / in next.config.ts)
@@ -71,7 +71,7 @@ lib/
   story/                 chapter copy and beats, graphic rows, race-week dates
   fan/                   profile (reading depth), quiz, race, share, storage and
                          local-keys, trip, trackside rows
-  partner/               race week, approvals, citations, CSV, metrics, ROI, story kit
+  partner/               race week, approvals, citations, CSV, metrics, measures, story kit
   ai/                    guardrail, engine, templates, provider, prompts, cache, client hook,
                          requests and demo-requests, check-draft (Check my draft)
 data/                    facts, sources, initiatives, races, cities, conversion-factors,
@@ -79,7 +79,7 @@ data/                    facts, sources, initiatives, races, cities, conversion-
 sources/                 original PDFs (gitignored), text/<id>.json (committed), external/
 scripts/                 extract-sources, verify-data, warm-cache, record-demo
 tests/unit  tests/e2e    Vitest and Playwright
-docs/                    architecture, data-sources, DECISIONS, DEMO_SCRIPT, ROI, screenshots/,
+docs/                    architecture, data-sources, DECISIONS, DEMO_SCRIPT, IMPACT, screenshots/,
                          overhaul/ (locked brief and design spec for the Oct 2026 rebuild)
 ```
 
