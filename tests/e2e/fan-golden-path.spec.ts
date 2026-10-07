@@ -142,6 +142,12 @@ test.describe("fan golden path", () => {
 
     await expect(page.getByText("Badge earned")).toBeVisible();
     await expect(page.getByText("Pit-wall ready").first()).toBeVisible();
+    await expect(page.getByText(/starts with the figures from these questions/)).toBeVisible();
+
+    // The badge records the facts behind the questions answered.
+    const stored = await page.evaluate(() => JSON.parse(window.localStorage.getItem("off-camera:quick-check") ?? "{}"));
+    expect(stored.factIds).toHaveLength(total);
+    expect(stored.factIds).toContain("e25-supply-chain-share");
 
     // The cited figure after an answer opens its source.
     await questions
@@ -160,15 +166,30 @@ test.describe("fan golden path", () => {
     await expect(preview).toBeVisible();
     await expect(preview.getByText("Pit-wall ready")).toBeVisible();
 
-    // Pick one more figure and check it lands on the card with a status label.
+    // The card starts from the quiz's figures, not the defaults: the supply-chain share is only in the quiz.
     const figures = page.getByRole("group", { name: /Team figures/ });
-    const unchecked = figures.locator("label:has(input[type=checkbox]:not(:checked):not(:disabled))").first();
+    const supplyChain = figures.locator("label", { hasText: "of the team's footprint is its supply chain" });
+    await expect(supplyChain.locator("input")).toBeChecked();
+    await expect(preview).toContainText((await supplyChain.locator("span.num").innerText()).trim());
+    await expect(figures).toContainText("The card starts with the ones from your quick check.");
+
+    // Swap a figure: untick the supply chain, pick another, and check it lands on the card with a status label.
+    await supplyChain.click();
+    await expect(supplyChain.locator("input")).not.toBeChecked();
+    const unchecked = figures
+      .locator("label:has(input[type=checkbox]:not(:checked):not(:disabled))")
+      .filter({ hasNotText: "supply chain" })
+      .first();
     const value = (await unchecked.locator("span.num").innerText()).trim();
     await unchecked.click();
     await expect(preview).toContainText(value);
     const statuses = await preview.getByText(/^(Verified|Estimated)$/).count();
     const shownFigures = await figures.locator("input[type=checkbox]:checked").count();
     expect(statuses).toBeGreaterThanOrEqual(shownFigures);
+
+    // An optional first name goes on the card (and so into the PNG below).
+    await page.getByLabel("First name on the card").fill("Alex");
+    await expect(preview.getByText("Made by Alex")).toBeVisible();
 
     // ---- Export: a real 1080 x 1920 PNG, big enough to hold the car image and fonts ----
     const save = page.getByRole("button", { name: "Save the card" });
@@ -183,5 +204,77 @@ test.describe("fan golden path", () => {
     expect(buf.byteLength).toBeGreaterThan(50 * 1024);
 
     expect(errors, errors.join("\n")).toEqual([]);
+  });
+
+  test("a badge saved before it carried facts still reads, and the card starts from the defaults", async ({ page }) => {
+    const errors = watchConsole(page);
+    await fresh(page);
+    await page.evaluate(() =>
+      window.localStorage.setItem(
+        "off-camera:quick-check",
+        JSON.stringify({ depth: "new", answered: 3, matched: 3, completedAt: "2026-10-01T10:00:00.000Z" }),
+      ),
+    );
+    await page.goto("/share");
+    const preview = page.getByRole("img", { name: /^Card preview/ });
+    await expect(preview.getByText("Pit-wall ready")).toBeVisible();
+    const figures = page.getByRole("group", { name: /Team figures/ });
+    await expect(figures.locator("input[type=checkbox]:checked")).toHaveCount(2);
+    await expect(figures.locator("label", { hasText: "supply chain" }).locator("input")).not.toBeChecked();
+    await expect(figures).not.toContainText("from your quick check");
+    expect(errors, errors.join("\n")).toEqual([]);
+  });
+
+  test("LinkedIn share is a plain link to the site address, with nothing about the fan in it", async ({ page }) => {
+    await fresh(page);
+    await page.goto("/share");
+    await page.getByLabel("First name on the card").fill("Priyanka");
+    const link = page.getByRole("link", { name: /Share on LinkedIn/ });
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute("target", "_blank");
+    await expect(link).toHaveAttribute("rel", "noopener noreferrer");
+    const href = (await link.getAttribute("href")) ?? "";
+    const url = new URL(href);
+    expect(url.origin + url.pathname).toBe("https://www.linkedin.com/sharing/share-offsite/");
+    expect([...url.searchParams.keys()]).toEqual(["url"]);
+    expect(url.searchParams.get("url")).toMatch(/^https:\/\/[a-z0-9.-]+$/);
+    expect(href).not.toMatch(/Priyanka/i);
+    // No LinkedIn script or widget is loaded.
+    await expect(page.locator('script[src*="linkedin"]')).toHaveCount(0);
+  });
+
+  test("the card name stays on the device: on the card and in local storage, never in a request", async ({ page }) => {
+    const NAME = "Zephyrine";
+    await fresh(page);
+    const leaks: string[] = [];
+    page.on("request", (req) => {
+      const body = req.postData() ?? "";
+      if (req.url().includes(NAME) || body.includes(NAME)) leaks.push(`${req.method()} ${req.url()}`);
+    });
+    const captions: string[] = [];
+    page.on("request", (req) => {
+      if (req.url().endsWith("/api/ai/generate")) captions.push(req.postData() ?? "");
+    });
+
+    await page.goto("/share");
+    await page.getByLabel("First name on the card").fill(NAME);
+    const preview = page.getByRole("img", { name: /^Card preview/ });
+    await expect(preview.getByText(`Made by ${NAME}`)).toBeVisible();
+    expect(await page.evaluate(() => window.localStorage.getItem("off-camera:card-name"))).toBe(JSON.stringify(NAME));
+
+    // Change a figure so a fresh caption request goes out with the name already on the card.
+    const before = captions.length;
+    const figures = page.getByRole("group", { name: /Team figures/ });
+    await figures.locator("label:has(input[type=checkbox]:not(:checked):not(:disabled))").first().click();
+    await expect.poll(() => captions.length).toBeGreaterThan(before);
+    await expect(page.getByText("Every number checked against the report").first()).toBeVisible({ timeout: 15_000 });
+
+    // The name comes back on a later visit, from this browser only.
+    await page.reload();
+    await expect(page.getByLabel("First name on the card")).toHaveValue(NAME);
+    await expect(preview.getByText(`Made by ${NAME}`)).toBeVisible();
+    expect(new URL(page.url()).search).toBe("");
+
+    expect(leaks, leaks.join("\n")).toEqual([]);
   });
 });
