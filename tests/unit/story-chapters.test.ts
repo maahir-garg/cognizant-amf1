@@ -6,9 +6,16 @@ import { findFact, getFact } from "@/lib/data/load";
 import { CHAPTERS, allCopyStrings, chapterFactIds, parseCopy } from "@/lib/story/chapters";
 import { DEFAULT_FAN } from "@/lib/fan/quiz";
 import { formatDateRange } from "@/lib/story/dates";
-import { footprintSegments, graphicFactIds, progressRows, targetBars, tracksideStoryRows } from "@/lib/story/graphics";
+import { footprintSegments, graphicFactIds, graphicFactIdsFor, progressRows, targetBars, tracksideStoryRows } from "@/lib/story/graphics";
 
 const everyFactId = [...new Set([...CHAPTERS.flatMap(chapterFactIds), ...graphicFactIds()])];
+
+type StoryChapter = (typeof CHAPTERS)[number];
+const tokenIds = (s?: string) => (s ? parseCopy(s).flatMap((p) => (p.kind === "fact" ? [p.id] : [])) : []);
+/** Figures on the step cards, in order, one entry per printing. */
+const cardFactIds = (c: StoryChapter) => c.steps.flatMap((s) => [...tokenIds(s.copy), ...(s.facts ?? []).map((f) => f.id)]);
+const tileFactIds = (c: StoryChapter) => c.layers.flatMap((l) => (l.kind === "tiles" ? l.tiles.map((t) => t.factId) : []));
+const detailFactIds = (c: StoryChapter) => c.detail.flatMap((d) => [...tokenIds(d.text), ...(d.facts ?? [])]);
 
 describe("story chapters", () => {
   it("follow the brief's order and match the AI chapter ids", () => {
@@ -72,6 +79,17 @@ describe("story chapters", () => {
       return text.toLowerCase().split(/\s+/)[0].startsWith(stem);
     });
     expect(offenders).toEqual([]);
+  });
+
+  it("print each figure once in a chapter: cards, stage and detail never repeat one another", () => {
+    for (const c of CHAPTERS) {
+      const cards = cardFactIds(c);
+      const stage = [...tileFactIds(c), ...c.layers.flatMap((l) => (l.kind === "graphic" ? graphicFactIdsFor(l.graphic) : []))];
+      const main = [...cards, ...stage];
+      const twice = main.filter((id, i) => main.indexOf(id) !== i);
+      expect(twice, `${c.id}: printed twice on the cards and stage`).toEqual([]);
+      expect(detailFactIds(c).filter((id) => main.includes(id)), `${c.id}: detail repeats the story`).toEqual([]);
+    }
   });
 
   it("parses fact tokens", () => {
@@ -176,16 +194,23 @@ describe("fanChapterRequest", () => {
     }
   });
 
-  it("brief figures never repeat a figure printed on the chapter's cards or tiles", () => {
+  it("brief figures never repeat a figure printed on the chapter's cards, tiles or detail", () => {
     for (const c of CHAPTERS) {
-      const onCards = new Set<string>();
-      for (const s of c.steps) {
-        parseCopy(s.copy).forEach((p) => p.kind === "fact" && onCards.add(p.id));
-        s.facts?.forEach((f) => onCards.add(f.id));
-      }
-      for (const l of c.layers) if (l.kind === "tiles") l.tiles.forEach((t) => onCards.add(t.factId));
-      expect(FAN_CHAPTER_FACTS[c.id].filter((id) => onCards.has(id)), c.id).toEqual([]);
+      const printed = new Set([...cardFactIds(c), ...tileFactIds(c), ...detailFactIds(c)]);
+      expect(FAN_CHAPTER_FACTS[c.id].filter((id) => printed.has(id)), c.id).toEqual([]);
     }
+  });
+
+  it("keeps the campus chapter's energy and carbon accounting out of the new-fan path", () => {
+    const campus = CHAPTERS.find((c) => c.id === "campus")!;
+    const newFan = [...cardFactIds(campus), ...tileFactIds(campus), ...fanChapterRequest(STORY_DEFAULT_FAN, "campus").factIds];
+    const technical = newFan.filter((id) => ["tCO2e", "GJ", "kWh", "panels"].includes(getFact(id).unit));
+    expect(technical).toEqual([]);
+    // The car leads: the first two cards are about how it is built and what is left over.
+    expect(campus.steps.slice(0, 2).flatMap((s) => parseCopy(s.copy).flatMap((p) => (p.kind === "fact" ? [p.id] : [])))).toEqual([
+      "e25-circularity",
+      "e25-carbon-fibre-recycled",
+    ]);
   });
 
   it("uses the same default fan as the race page and quick check", () => {
