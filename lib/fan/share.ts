@@ -53,6 +53,31 @@ export function sanitiseShareFacts(ids: string[], fallback: string[]): string[] 
   return picked.length ? picked : fallback;
 }
 
+export const CARD_NAME_MAX = 24;
+
+/**
+ * The card's optional first name as the fan types it: letters (any script),
+ * spaces, hyphens and apostrophes only, so the card never carries a stray
+ * number, web address or symbol beside the team's sourced figures. Runs of
+ * spaces collapse and the length is capped; a trailing space is kept so
+ * typing "Mary Ann" works.
+ */
+export function cardNameInput(raw: string): string {
+  const cleaned = raw
+    .replace(/\s+/gu, " ")
+    .replace(/[^\p{L}\p{M} '’-]|\p{Variation_Selector}/gu, "")
+    // A combining mark only belongs after a letter (an emoji's leftovers would draw as a blank).
+    .replace(/(^|[^\p{L}\p{M}])\p{M}+/gu, "$1")
+    .replace(/ {2,}/g, " ")
+    .trimStart();
+  return Array.from(cleaned).slice(0, CARD_NAME_MAX).join("");
+}
+
+/** The name as the card prints it, or null when there is none. */
+export function cardName(raw: string | null | undefined): string | null {
+  return cardNameInput(raw ?? "").trim() || null;
+}
+
 /**
  * LinkedIn's share dialog for the site's public address. A plain link: no
  * script or SDK, nothing about the fan (no name, figures or plan) in the

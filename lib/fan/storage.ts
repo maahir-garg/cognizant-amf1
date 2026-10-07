@@ -1,16 +1,18 @@
 "use client";
 
 /**
- * Small per-browser conveniences for the fan pages: the quick-check badge
- * and the trip plan, so the share card can pick them up. Nothing here is
- * needed to render a page; every read and write fails quietly when storage
- * is blocked (private mode, quota, sandboxed previews).
+ * Small per-browser conveniences for the fan pages: the quick-check badge,
+ * the trip plan and the card's optional first name, so the share card can
+ * pick them up. Nothing here is needed to render a page; every read and
+ * write fails quietly when storage is blocked (private mode, quota,
+ * sandboxed previews).
  */
 import { useCallback, useSyncExternalStore } from "react";
 import { z } from "zod";
-import { LOCAL_EVENT, QUICK_CHECK_KEY, TRIP_PLAN_KEY, readStored } from "./local-keys";
+import { CARD_NAME_KEY, LOCAL_EVENT, QUICK_CHECK_KEY, TRIP_PLAN_KEY, readStored } from "./local-keys";
 import { useFanProfile } from "./profile";
 import { DEFAULT_FAN, depthFromLevel, levelFromDepth, type Depth } from "./quiz";
+import { cardNameInput } from "./share";
 
 function subscribe(onChange: () => void) {
   window.addEventListener("storage", onChange);
@@ -96,6 +98,18 @@ const planStore = makeStore(TRIP_PLAN_KEY, TripPlan);
 /** The fan's chosen way to the circuit, from the race-page trip planner. */
 export function useTripPlan() {
   return planStore.use();
+}
+
+/* --------------------------------------------------------------- card name */
+
+const cardNameStore = makeStore(CARD_NAME_KEY, z.string().max(200).transform(cardNameInput));
+
+/**
+ * The first name the fan chose to print on their card. It lives only in this
+ * browser: it never goes into an AI request, an API call or a URL.
+ */
+export function useCardName() {
+  return cardNameStore.use();
 }
 
 /* ------------------------------------------------------------------- depth */

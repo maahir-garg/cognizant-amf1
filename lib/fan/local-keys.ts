@@ -10,6 +10,8 @@ const LEGACY_PREFIX = "impact-lap:";
 export const PROFILE_KEY = `${PREFIX}profile`;
 export const QUICK_CHECK_KEY = `${PREFIX}quick-check`;
 export const TRIP_PLAN_KEY = `${PREFIX}trip-plan`;
+/** The optional first name for the share card. Stays in this browser: never sent to an API or put in a URL. */
+export const CARD_NAME_KEY = `${PREFIX}card-name`;
 
 /** Fired in the same tab after a write ('storage' only fires in other tabs). */
 export const LOCAL_EVENT = `${PREFIX}local-storage`;
