@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { toast } from "sonner";
 import { AiText } from "@/components/shared/ai-text";
-import { StatusMark } from "@/components/shared/status-badge";
+import { EstimatedCue } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 import { useAiText } from "@/lib/ai/client";
 import { stripCitations } from "@/lib/ai/guardrail";
@@ -274,8 +274,7 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
                   </span>
                   <span className="num w-14 shrink-0 font-semibold">{shareFactValue(f.id)}</span>
                   <span className="flex-1 leading-snug">{f.label}</span>
-                  <StatusMark status={fact.status} />
-                  <span className="sr-only">{fact.status}</span>
+                  {fact.status === "estimated" ? <EstimatedCue className="ml-0 shrink-0" /> : <span className="sr-only">{fact.status}</span>}
                 </label>
               );
             })}

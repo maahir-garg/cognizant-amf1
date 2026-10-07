@@ -93,7 +93,7 @@ export function RacePublished({ race }: { race: Race }) {
                   {solarGap && <p className="font-sans text-xs text-ink-3">Solar isn&apos;t published for {solarGap}: shown as a gap, not a zero.</p>}
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                     <StatusBadge status="verified" />
-                    <SourceButton id="e25-trackside-gbr-hvo" mark={false} />
+                    <SourceButton id="e25-trackside-gbr-hvo" />
                     <Link href="/weekend/gbr-2025#published" className="link font-sans text-[0.8125rem]">
                       One round in detail: Silverstone →
                     </Link>

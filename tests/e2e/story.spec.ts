@@ -54,6 +54,14 @@ test.describe("the story", () => {
     await closeDrawer(page);
   });
 
+  test("figures in sentences carry no status square", async ({ page }) => {
+    await page.goto("/");
+    const figures = page.locator("article .prose-body button[aria-label$='Show source.']");
+    await expect(figures.first()).toBeAttached();
+    // A bare square after a figure read as a stray full stop. Verified is the default; an estimate says "est." in words.
+    await expect(page.locator("article .prose-body button span[aria-hidden='true']:empty")).toHaveCount(0);
+  });
+
   test("the depth toggle persists across a reload", async ({ page }) => {
     await page.goto("/");
     await page.evaluate(() => window.localStorage.clear());

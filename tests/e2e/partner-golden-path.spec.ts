@@ -121,14 +121,15 @@ test.describe("partner golden path", () => {
     await expect(page.getByRole("button", { name: "Send for review" })).toBeDisabled();
   });
 
-  test("scenarios: every output is labelled Estimated", async ({ page }) => {
+  test("scenarios: every output is marked as an estimate", async ({ page }) => {
     await page.goto("/partners/scenarios");
     await expect(page.getByRole("heading", { level: 1 })).toContainText("joint programmes");
     // Joint programmes only: the SAF lever is gone.
     await expect(page.getByRole("slider", { name: /SAF|aviation fuel/i })).toHaveCount(0);
     const rows = page.locator("table").first().locator("tbody tr:has(td)");
     expect(await rows.count()).toBeGreaterThan(0);
-    for (const row of await rows.all()) await expect(row).toContainText("Estimated");
+    // Each figure carries the visible "est." cue; the section heading carries the Estimated badge.
+    for (const row of await rows.all()) await expect(row).toContainText("est.");
 
     // Moving a lever changes the projection, which stays Estimated.
     const table = page.locator("table").first();
