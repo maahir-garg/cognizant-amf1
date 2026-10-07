@@ -6,6 +6,7 @@
  * beside it to read fairly. The labels are the short card wording, kept to two lines
  * at card size; the figure itself always comes from the fact base.
  */
+import { SITE_URL } from "@/lib/config";
 import { factCitation, getCity, getFact, getSource, initiatives, sourceShortName } from "@/lib/data/load";
 import { factParts } from "@/lib/format";
 
@@ -51,6 +52,14 @@ export function sanitiseShareFacts(ids: string[], fallback: string[]): string[] 
   const picked = SHARE_FACT_IDS.filter((id) => ids.includes(id)).slice(0, SHARE_MAX_FACTS);
   return picked.length ? picked : fallback;
 }
+
+/**
+ * LinkedIn's share dialog for the site's public address. A plain link: no
+ * script or SDK, nothing about the fan (no name, figures or plan) in the
+ * URL. LinkedIn takes only the address here, so the fan pastes the copied
+ * caption and adds the saved card image themselves.
+ */
+export const LINKEDIN_SHARE_URL = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`https://${SITE_URL}`)}`;
 
 /**
  * The figures a card starts with: those behind the quick-check questions the

@@ -16,7 +16,7 @@ import { formatFact } from "@/lib/format";
 import { useFanProfile } from "@/lib/fan/profile";
 import { DEFAULT_FAN, QUIZ_BADGE_LABEL } from "@/lib/fan/quiz";
 import { raceShortName } from "@/lib/fan/race";
-import { SHARE_FACTS, SHARE_MAX_FACTS, badgeShareFacts, sanitiseShareFacts, shareFactValue } from "@/lib/fan/share";
+import { LINKEDIN_SHARE_URL, SHARE_FACTS, SHARE_MAX_FACTS, badgeShareFacts, sanitiseShareFacts, shareFactValue } from "@/lib/fan/share";
 import { useQuizBadge, useTripPlan } from "@/lib/fan/storage";
 import { isTravelMode, modeLabel, planLine } from "@/lib/fan/trip";
 import { cn } from "@/lib/utils";
@@ -212,9 +212,21 @@ export function ShareBuilder({ raceId, initialMode }: { raceId: string; initialM
           <div className="mx-auto mt-6 flex w-full max-w-[400px] flex-col gap-3 lg:order-3">
             <p className="kicker">Suggested caption</p>
             {caption ? <AiText response={caption} className="text-lg" /> : <p className="font-serif text-lg text-ink-3">Writing a caption from your figures…</p>}
-            <Button variant="outline" size="lg" className="w-fit" onClick={copyCaption} disabled={!caption}>
-              Copy caption
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" size="lg" onClick={copyCaption} disabled={!caption}>
+                Copy caption
+              </Button>
+              <Button asChild variant="outline" size="lg">
+                <a href={LINKEDIN_SHARE_URL} target="_blank" rel="noopener noreferrer" aria-describedby="linkedin-help">
+                  Share on LinkedIn
+                  <span className="sr-only"> (opens in a new tab)</span>
+                </a>
+              </Button>
+            </div>
+            <p id="linkedin-help" className="font-sans text-sm text-ink-3">
+              LinkedIn opens with a link to this site. Copy the caption and save the card first, then paste the caption into your post and
+              add the card as its image.
+            </p>
           </div>
 
           {/*
