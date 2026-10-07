@@ -42,3 +42,29 @@ for (const route of ALL) {
     expect(failed, `${route} failed requests:\n${failed.join("\n")}`).toEqual([]);
   });
 }
+
+// How it works and Sources are footer links, not headline tabs (mentor feedback, 6 Oct), and stay one click away.
+test("the header carries three tabs and the footer reaches the method pages", async ({ page }, testInfo) => {
+  await page.goto("/");
+
+  if (testInfo.project.name === "mobile") {
+    await page.locator("header").first().getByRole("button", { name: "Menu" }).click();
+    const sheet = page.getByRole("dialog");
+    await expect(sheet.getByRole("navigation", { name: "Main" }).getByRole("link")).toHaveText(["The story", "Singapore GP", "Partners"]);
+    const method = sheet.getByRole("navigation", { name: "Sources and method" });
+    await expect(method.getByRole("link")).toHaveText(["Every figure and its page", "How the AI is checked"]);
+    await method.getByRole("link", { name: "How the AI is checked" }).click();
+    await expect(page).toHaveURL(/\/how-it-works$/);
+    await expect(page.getByRole("dialog")).toBeHidden();
+  } else {
+    const main = page.locator("header").first().getByRole("navigation", { name: "Main" });
+    await expect(main.getByRole("link")).toHaveText(["The story", "Singapore GP", "Partners"]);
+  }
+
+  await page.locator("footer").getByRole("link", { name: "Every figure and its page" }).click();
+  await expect(page).toHaveURL(/\/sources$/);
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await page.locator("footer").getByRole("link", { name: "How the AI is checked" }).click();
+  await expect(page).toHaveURL(/\/how-it-works$/);
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+});

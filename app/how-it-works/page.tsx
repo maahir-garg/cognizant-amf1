@@ -26,7 +26,7 @@ const CONTENTS = [
   ["statuses", "What every status means"],
   ["rules", "How we handle the report"],
   ["now-and-pilot", "Now and the pilot"],
-  ["return", "Measuring the return"],
+  ["measures", "Measuring the impact"],
   ["pilot", "The 2027 pilot"],
 ] as const;
 
@@ -38,7 +38,7 @@ const NOW_AND_PILOT = [
   ["Carbon inventory (limited assurance)", "Annual", "Annual"],
 ] as const;
 
-const RETURNS: { name: string; measure: string; baseline: string | { id: string; note?: string } }[] = [
+const MEASURES: { name: string; measure: string; baseline: string | { id: string; note?: string } }[] = [
   {
     name: "Partner amplification",
     measure: `Impressions from partner posts using ${APP_NAME} content`,
@@ -72,7 +72,7 @@ const PHASES = [
   ["Q4 2026", "Data-sharing agreement, approval workflow, a baseline week of manual timings."],
   ["Pre-season to race 6", "Launch with published facts."],
   ["Mid-season", "Add one approved per-race feed, trackside energy or freight, with a named owner."],
-  ["Season end", "Evaluate against the baseline and decide on the sponsor tier."],
+  ["Season end", "Evaluate against the baseline and decide whether to continue."],
 ] as const;
 
 export default async function HowItWorksPage() {
@@ -307,18 +307,18 @@ export default async function HowItWorksPage() {
       </ExplainerSection>
 
       <ExplainerSection
-        id="return"
-        kicker="Return"
-        title="How we would measure the return"
-        dek="Return here is broader than sales. None of these are measured yet; each has a published baseline or starts in the first pilot race."
+        id="measures"
+        kicker="Impact"
+        title="How we would measure the impact"
+        dek="None of these are measured yet; each has a published baseline or starts in the first pilot race."
         wide
       >
         <table className={stack.table}>
-          <caption className="sr-only">Return measures and baselines</caption>
+          <caption className="sr-only">Impact measures and baselines</caption>
           <thead className={stack.head}>
             <tr>
               <th scope="col" className={`${stack.headCell} w-[24%]`}>
-                Return
+                Outcome
               </th>
               <th scope="col" className={`${stack.headCell} w-[38%]`}>
                 Measure
@@ -329,7 +329,7 @@ export default async function HowItWorksPage() {
             </tr>
           </thead>
           <tbody className={stack.body}>
-            {RETURNS.map((r) => (
+            {MEASURES.map((r) => (
               <tr key={r.name} className={stack.row}>
                 <th scope="row" className={stack.rowHead}>
                   {r.name}
@@ -354,19 +354,7 @@ export default async function HowItWorksPage() {
         <Assumption>Targets for each measure are agreed with the team and Cognizant after the baseline, not before.</Assumption>
       </ExplainerSection>
 
-      <ExplainerSection id="pilot" kicker="Business model" title="The 2027 pilot and business model" wide>
-        <ol className="grid gap-8 md:grid-cols-3 md:gap-6">
-          <Year name="Year one">
-            Cognizant funds a pilot as value-in-kind within its partnership as the team&apos;s <InlineFact id="g-cognizant-role" />.
-            Cognizant gains a client-referenceable, governed Gen-AI case; the team gains the comms tool and the fan story.
-          </Year>
-          <Year name="Year two">The team offers an impact reporting pack to other partners as a sponsorship benefit.</Year>
-          <Year name="Year three">
-            Cognizant packages the pattern (fact base, then guardrail, then cited output) for its clients&apos; ESG, investor and
-            regulatory communications.
-          </Year>
-        </ol>
-
+      <ExplainerSection id="pilot" kicker="The pilot" title="The 2027 pilot" wide>
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-6">
           <div className="flex flex-col gap-3 lg:col-span-5">
             <h3 className="h3">The pilot</h3>
@@ -376,10 +364,9 @@ export default async function HowItWorksPage() {
               fly-away.
             </p>
             <Assumption />
-            <h3 className="h3 mt-6">Team</h3>
+            <h3 className="h3 mt-6">Approvals</h3>
             <p className="text-base leading-relaxed text-ink">
-              A product lead, two engineers, an ESG data analyst, a part-time designer, and named approvers at the team and
-              Cognizant.
+              Named approvers at the team and Cognizant sign off every external post, with an agreed turnaround.
             </p>
             <Assumption />
           </div>
@@ -400,7 +387,7 @@ export default async function HowItWorksPage() {
           </div>
         </div>
         <p className="border-t border-line pt-4 text-[0.8125rem] text-ink-3">
-          Pilot scope, team and phases are assumptions for discussion. No revenue figures are claimed.
+          Pilot scope, approvals and phases are assumptions for discussion.
         </p>
       </ExplainerSection>
 
@@ -428,14 +415,4 @@ export default async function HowItWorksPage() {
 
 function Rule({ children }: { children: React.ReactNode }) {
   return <li className="border-b border-line py-3 text-ink">{children}</li>;
-}
-
-function Year({ name, children }: { name: string; children: React.ReactNode }) {
-  return (
-    <li className="flex flex-col gap-3 border-t-2 border-ink pt-4">
-      <h3 className="h3">{name}</h3>
-      <p className="text-base leading-relaxed text-ink">{children}</p>
-      <Assumption className="mt-auto" />
-    </li>
-  );
 }

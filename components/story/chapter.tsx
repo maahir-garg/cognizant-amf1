@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { CSSProperties } from "react";
 import { FactValue } from "@/components/shared/fact-value";
 import { getFact, sourceShortName } from "@/lib/data/load";
@@ -116,11 +117,28 @@ function StepCard({ step, layer, fallback }: { step: Step; layer: Layer; fallbac
           ))}
         </div>
       ) : null}
+      {/* A plain link, so it works before scripts run; 44px tall for a thumb. */}
+      {step.cta && (
+        <p className="mt-5 border-t border-line pt-3">
+          <Link href={step.cta.href} className="link inline-flex min-h-11 items-center font-sans text-base font-semibold">
+            {step.cta.label}
+            <span aria-hidden="true">&nbsp;→</span>
+          </Link>
+        </p>
+      )}
       {/* Without JavaScript the stage never leaves layer 0, so the first card on a chart or quote carries a static copy. */}
       {fallback && layer.kind === "graphic" && (
         <noscript>
           <div className="mt-5 border-t border-line pt-4">
             <StoryGraphic graphic={layer.graphic} highlight={step.highlight} />
+          </div>
+        </noscript>
+      )}
+      {/* Tile figures are printed only on the tiles, so the no-JavaScript copy carries them all, none dimmed. */}
+      {fallback && layer.kind === "tiles" && (
+        <noscript>
+          <div className="mt-5 border-t border-line pt-4">
+            <TilesGraphic title={layer.title} tiles={layer.tiles} highlight={[]} />
           </div>
         </noscript>
       )}

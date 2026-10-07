@@ -5,7 +5,7 @@ import { closeDrawer, expectDrawerWithPage, watchConsole } from "./helpers";
  * Impact desk golden path: this race week -> Narratives (LinkedIn draft,
  * citations, approval unlocks copying) -> Check my draft (the demo's 257 vs
  * 275 trust moment) -> Scenarios -> Story kit co-branding -> Data quality ->
- * ROI -> the metrics export. Runs against the production build in demo mode.
+ * Measures -> the metrics export. Runs against the production build in demo mode.
  */
 
 const DEMO_LINE = "Make A Mark Day brought 257 students to the factory for AI, coding and careers sessions with partners including Cognizant.";
@@ -121,14 +121,15 @@ test.describe("partner golden path", () => {
     await expect(page.getByRole("button", { name: "Send for review" })).toBeDisabled();
   });
 
-  test("scenarios: every output is labelled Estimated", async ({ page }) => {
+  test("scenarios: every output is marked as an estimate", async ({ page }) => {
     await page.goto("/partners/scenarios");
     await expect(page.getByRole("heading", { level: 1 })).toContainText("joint programmes");
     // Joint programmes only: the SAF lever is gone.
     await expect(page.getByRole("slider", { name: /SAF|aviation fuel/i })).toHaveCount(0);
     const rows = page.locator("table").first().locator("tbody tr:has(td)");
     expect(await rows.count()).toBeGreaterThan(0);
-    for (const row of await rows.all()) await expect(row).toContainText("Estimated");
+    // Each figure carries the visible "est." cue; the section heading carries the Estimated badge.
+    for (const row of await rows.all()) await expect(row).toContainText("est.");
 
     // Moving a lever changes the projection, which stays Estimated.
     const table = page.locator("table").first();
@@ -154,20 +155,21 @@ test.describe("partner golden path", () => {
     await expect(page.getByText("Figures checked").first()).toBeVisible({ timeout: 15_000 });
   });
 
-  test("data quality lists the flags; ROI shows unmeasured pilot slots", async ({ page }) => {
+  test("data quality lists the flags; Measures shows unmeasured pilot slots", async ({ page }) => {
     await page.goto("/partners/data-quality");
     for (const kind of ["source-conflict", "restated", "inconsistent-equivalence"]) {
       await expect(page.locator(`#${kind}-heading`)).toBeVisible();
     }
     expect(await page.locator("tbody tr").count()).toBeGreaterThan(3);
 
-    await page.goto("/partners/roi");
+    await page.goto("/partners/measures");
     await expect(page.getByRole("heading", { name: "Published baselines" })).toBeVisible();
     const slots = page.getByText(/^Not measured yet · /);
     expect(await slots.count()).toBeGreaterThanOrEqual(3);
     await expect(page.getByText("Charity time saved")).toBeVisible();
-    // The cost range is our assumption, never presented as a team figure.
-    await expect(page.getByText("Assumption · not a team or Cognizant figure")).toBeVisible();
+    // Costing was removed from the prototype: no pounds and no cost range on the page.
+    await expect(page.locator("main")).not.toContainText("£");
+    await expect(page.locator("main")).not.toContainText(/\bcost/i);
     // Baselines are real report figures, each with a status.
     await expect(
       page
@@ -175,6 +177,16 @@ test.describe("partner golden path", () => {
         .getByRole("button", { name: /\. verified\. .*Show source\.$/ })
         .first(),
     ).toBeVisible();
+  });
+
+  test("the old ROI link redirects to Measures", async ({ page, request }) => {
+    const res = await request.get("/partners/roi", { maxRedirects: 0 });
+    expect([301, 307, 308]).toContain(res.status());
+    expect(new URL(res.headers()["location"], "http://x").pathname).toBe("/partners/measures");
+
+    await page.goto("/partners/roi");
+    await expect(page).toHaveURL(/\/partners\/measures$/);
+    await expect(page.getByRole("link", { name: "Measures" })).toHaveAttribute("aria-current", "page");
   });
 
   test("export: CSV and JSON endpoints return the fact base with the right types", async ({ page, request }) => {

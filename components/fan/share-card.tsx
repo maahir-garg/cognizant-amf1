@@ -105,6 +105,8 @@ export type ShareCardProps = {
   factIds: string[];
   planLine: string | null;
   badge: boolean;
+  /** The fan's own first name, if they added one (already cleaned by cardName). */
+  name?: string | null;
   /** The row that just changed in the builder ("plan" or a fact id): only it fades in. */
   enter?: string | null;
   className?: string;
@@ -116,7 +118,7 @@ export type ShareCardProps = {
  * (html-to-image would otherwise draw the card shrunk into a corner).
  */
 export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
-  { raceShortName, factIds, planLine, badge, enter = null, className },
+  { raceShortName, factIds, planLine, badge, name = null, enter = null, className },
   ref,
 ) {
   return (
@@ -135,6 +137,15 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function Sha
 
       <div className="absolute inset-x-0 flex flex-col" style={{ top: SAFE_TOP, height: SOURCE_TOP - SAFE_TOP - 40, gap: 40 }}>
         <div className="flex flex-col" style={{ paddingInline: MARGIN, gap: 24 }}>
+          {/* A byline, not a title: "Made by" reads right for any name, with no possessive to get wrong. */}
+          {name && (
+            <p
+              className="font-sans font-semibold text-ink-2 [overflow-wrap:anywhere]"
+              style={{ fontSize: 30, lineHeight: "36px", fontStretch: "100%" }}
+            >
+              Made by <span className="text-ink">{name}</span>
+            </p>
+          )}
           <h2 className="font-serif font-medium text-ink" style={{ fontSize: 112, lineHeight: 1, letterSpacing: "-0.01em" }}>
             {raceShortName} race week, off camera
           </h2>

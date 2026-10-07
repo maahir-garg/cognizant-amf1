@@ -6,7 +6,7 @@ import { DESK_CAPTION_IDS, deskCaption } from "@/lib/partner/labels";
 /** A caption repeats its unit when the shared helper would still strip something from it. */
 const repeatsUnit = (caption: string, unit: string) => captionAfterUnit(caption, unit) !== caption;
 import { jointCognizantFacts, raceFacts } from "@/lib/partner/race-week";
-import { ROI_BASELINES } from "@/lib/partner/roi";
+import { PUBLISHED_BASELINES } from "@/lib/partner/measures";
 import { cardLabel, storyKitInitiatives } from "@/lib/partner/story-kit";
 
 describe("desk captions read on from the unit", () => {
@@ -14,7 +14,7 @@ describe("desk captions read on from the unit", () => {
     ...DESK_CAPTION_IDS,
     ...raceFacts().filter((f) => f.value !== null).map((f) => f.id),
     ...jointCognizantFacts().filter((f) => f.value !== null).map((f) => f.id),
-    ...ROI_BASELINES.map((b) => b.factId),
+    ...PUBLISHED_BASELINES.map((b) => b.factId),
   ];
 
   it.each([...new Set(tileIds)])("%s", (id) => {

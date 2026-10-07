@@ -3,7 +3,7 @@
 import { Fragment, useEffect, useState } from "react";
 import { AiText } from "@/components/shared/ai-text";
 import { InlineFact } from "@/components/shared/fact-value";
-import { StatusBadge } from "@/components/shared/status-badge";
+import { EstimatedCue, StatusBadge } from "@/components/shared/status-badge";
 import { Slider } from "@/components/ui/slider";
 import { useAiText } from "@/lib/ai/client";
 import { scenarioExplanationRequest } from "@/lib/ai/requests";
@@ -224,7 +224,7 @@ export function ScenarioStudio() {
                         <td className="num py-2.5 pr-4 text-right whitespace-nowrap max-md:p-0 max-md:text-left">
                           <span className="text-[1.0625rem] font-semibold text-ink">{nf.format(o.value)}</span>{" "}
                           <span className="text-ink-2">{o.unit}</span>
-                          <StatusBadge status="estimated" compact className="ml-2 align-middle" />
+                          <EstimatedCue className="ml-1.5 text-xs" />
                         </td>
                         <td className="py-2.5 max-md:p-0">
                           <Formula o={o} byId={byId} />
@@ -256,7 +256,7 @@ export function ScenarioStudio() {
           {error && <p className="text-conflict">Could not explain this scenario: {error}</p>}
           {data && <AiText response={data} derived={request.derived} className="measure text-[1.0625rem]" />}
           <p className="text-[0.875em] text-ink-3">
-            People reached only. Programme costs are not published, so there is no financial figure and no return on spend.
+            People reached only, scaled from the published figures.
           </p>
         </section>
       </div>

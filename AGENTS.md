@@ -15,7 +15,7 @@ Off Camera is a concept prototype for the Cognizant × Aston Martin Aramco F1 (A
 ## Non-negotiables
 
 1. **No fabricated AMF1 data.** Every number on screen comes from `data/facts.json` (verified or estimated) and is rendered through `<FactValue>`, `<InlineFact>` or `<AiText>`. Never type a figure into JSX, copy or a prompt. If you need a number that isn't in the fact base, add a fact (see below) or don't show it.
-2. **Every number shows its status.** Verified and Estimated are always labelled (`<StatusBadge>`), with the source line ("2025 report, p. 42"). Where the team has not published a figure, show `<DataGap>`, never a number.
+2. **Every number shows its status.** Standalone figures carry a labelled `<StatusBadge>` and the source line ("2025 report, p. 42"). In running sentences and chart labels verified is the default and unmarked; estimates carry a visible "est." cue, and every figure opens the provenance drawer with its status and page. Where the team has not published a figure, show `<DataGap>`, never a number.
 3. **No simulated data in the product UI.** No invented counters, live feeds, events, credits or illustrative initiatives. The `simulated` status stays in the schema for completeness (it must say why in `notes`), but nothing shipped uses it. A future capability, such as a trackside feed, is described in words as the pilot plan, never shown as working UI. Never claim "live" or "real time".
 4. **The demo runs offline.** No runtime call may be required to render any page. AI text comes from `data/ai-cache/` in demo mode (the default). Fonts are self-hosted: `@fontsource-variable/newsreader` (headlines and body), `@fontsource-variable/archivo` (UI and numbers) and `@fontsource-variable/jetbrains-mono` (fact ids and code only), never Google Fonts. No CDN scripts or images.
 5. **Authorship.** Do not credit any AI tool or model anywhere: commit messages, code comments, docs, `package.json`, HTML meta, UI copy. No `Co-authored-by` trailers. Use the machine's configured git identity; never change it.
@@ -40,11 +40,11 @@ npm run extract:sources  # regenerate sources/text/*.json from the PDFs (needs p
 ```
 app/
   page.tsx               the story (flagship fan experience, scrollytelling)
-  how-it-works/          for judges and partners: AI, guardrail, pilot plan, ROI
+  how-it-works/          for judges and partners: AI, guardrail, impact measures, pilot plan
   sources/               fact explorer and data-quality flags (governance showcase)
   (fan)/                 weekend/[slug] race page, share card builder, quiz
   partners/              Impact desk: this race week, narratives, check (my draft),
-                         scenarios, story kit, data quality, ROI, export
+                         scenarios, story kit, data quality, measures, export
   api/ai/generate        POST AiRequest -> AiResponse
   api/partner/metrics    read-only JSON (and ?format=csv) for partner BI tools
                          (/start, /lap and /act redirect to / in next.config.ts)
@@ -71,7 +71,7 @@ lib/
   story/                 chapter copy and beats, graphic rows, race-week dates
   fan/                   profile (reading depth), quiz, race, share, storage and
                          local-keys, trip, trackside rows
-  partner/               race week, approvals, citations, CSV, metrics, ROI, story kit
+  partner/               race week, approvals, citations, CSV, metrics, measures, story kit
   ai/                    guardrail, engine, templates, provider, prompts, cache, client hook,
                          requests and demo-requests, check-draft (Check my draft)
 data/                    facts, sources, initiatives, races, cities, conversion-factors,
@@ -79,7 +79,7 @@ data/                    facts, sources, initiatives, races, cities, conversion-
 sources/                 original PDFs (gitignored), text/<id>.json (committed), external/
 scripts/                 extract-sources, verify-data, warm-cache, record-demo
 tests/unit  tests/e2e    Vitest and Playwright
-docs/                    architecture, data-sources, DECISIONS, DEMO_SCRIPT, ROI, screenshots/,
+docs/                    architecture, data-sources, DECISIONS, DEMO_SCRIPT, IMPACT, screenshots/,
                          overhaul/ (locked brief and design spec for the Oct 2026 rebuild)
 ```
 

@@ -10,7 +10,7 @@ Off Camera has one idea at its core: **a fact base with provenance, and nothing 
 | The simulated race-weekend feed: `lib/live`, `/api/events/stream`, `data/events.json`, `data/counters.json` and their schemas | `/how-it-works` for judges and partners (copy in `docs/overhaul/how-it-works-copy.md`) |
 | Impact credits and the milestone post request                                                                                 | Check my draft on the partner desk                                                     |
 | The three illustrative `sg-*` initiatives                                                                                     | Draft to approved state with reviewer and timestamp on narratives                      |
-| Anything with `status: "simulated"` in the product; a unit test now enforces this                                             | "This race week", Data quality, ROI and Export tabs on the desk                        |
+| Anything with `status: "simulated"` in the product; a unit test now enforces this                                             | "This race week", Data quality, Measures and Export tabs on the desk                   |
 
 ## System diagram (prototype)
 
@@ -48,7 +48,7 @@ flowchart LR
 
   subgraph UI
     FAN["Fan: / story · /weekend/[slug] · /share · /quiz"]
-    DESK["Impact desk: /partners<br/>race week · narratives · check · scenarios<br/>story kit · data quality · ROI · export"]
+    DESK["Impact desk: /partners<br/>race week · narratives · check · scenarios<br/>story kit · data quality · measures · export"]
     HOW["/how-it-works"]
     SRC["/sources"]
     API["/api/partner/metrics<br/>JSON · CSV"]
@@ -74,8 +74,8 @@ flowchart LR
 | `/weekend/[slug]`      | Fans                        | One race: what the team published for it (trackside energy by source where it exists, otherwise a data gap), linked programmes, getting there, season context in the detail layer. `singapore-2026` is the hero race.                                       |
 | `/share`               | Fans                        | 9:16 card: travel plan line, one team fact from a curated safe list, quiz badge if earned. PNG export in the browser (`html-to-image`). No name by default.                                                                                                 |
 | `/quiz`                | Fans                        | The three-question knowledge check on its own.                                                                                                                                                                                                              |
-| `/partners`            | Cognizant, charity partners | The Impact desk. Tabs: This race week (`/partners`), Narratives, Check my draft (`/partners/check`), Scenarios, Story kit, Data quality, ROI, Export, each a sub-route.                                                                                     |
-| `/how-it-works`        | Judges, partners            | The problem, the audiences, the four AI steps on a real draft, the guardrail worked on a sentence, what is real now versus the pilot, ROI measures, pilot and business model.                                                                               |
+| `/partners`            | Cognizant, charity partners | The Impact desk. Tabs: This race week (`/partners`), Narratives, Check my draft (`/partners/check`), Scenarios, Story kit, Data quality, Measures (`/partners/measures`), Export, each a sub-route.                                                         |
+| `/how-it-works`        | Judges, partners            | The problem, the audiences, the four AI steps on a real draft, the guardrail worked on a sentence, what is real now versus the pilot, impact measures and the pilot plan.                                                                                   |
 | `/sources`             | Everyone                    | Fact explorer, quality flags and method.                                                                                                                                                                                                                    |
 | `/api/ai/generate`     | App                         | `POST AiRequest` returns a guarded `AiResponse`.                                                                                                                                                                                                            |
 | `/api/partner/metrics` | Partner BI tools            | Read-only JSON, or CSV with `?format=csv`. See `docs/partner-api.md`.                                                                                                                                                                                       |
@@ -105,7 +105,7 @@ In demo mode (the default, see `isDemoMode()` in `lib/config.ts`) responses come
 
 **Approvals.** Narratives move from draft to approved with a reviewer name and timestamp. In the prototype this state is stored in the browser's local storage; in the pilot it moves to a shared store with an audit log.
 
-**No simulated feed.** The earlier simulated race-weekend replay, its counters and milestone posts were removed. A trackside or programme feed is part of the pilot plan, described in words (`docs/ROI.md`), not shown as working UI. Every figure is labelled "Updated when the team publishes".
+**No simulated feed.** The earlier simulated race-weekend replay, its counters and milestone posts were removed. A trackside or programme feed is part of the pilot plan, described in words (`docs/IMPACT.md`), not shown as working UI. Every figure is labelled "Updated when the team publishes".
 
 ## Production: how real feeds would plug in
 
@@ -154,12 +154,8 @@ Principles that carry over unchanged: every datum has a source record; estimates
 
 ## Rollout
 
-The pilot plan, team, phases and risks are in `docs/ROI.md`. In short: a data-sharing agreement and approval workflow in Q4 2026; launch with published facts from pre-season to race 6; one approved per-race feed added mid-season; evaluation at season end.
+The pilot plan, phases and risks are in `docs/IMPACT.md`. In short: a data-sharing agreement and approval workflow in Q4 2026; launch with published facts from pre-season to race 6; one approved per-race feed added mid-season; evaluation at season end.
 
 ### What Cognizant would own
 
 Proposed Cognizant scope: data platform and ingestion, the governed fact base and lineage, the grounded-generation service with guardrail and audit log, the Impact API and the partner desk. Proposed team scope: data ownership, publishing approvals and the fan brand. Final responsibilities need agreement with the team and each source-system owner.
-
-### Cost drivers
-
-Data discovery and the first approved feed are likely to be the main cost. Ongoing cost depends on source quality, assurance, approval cadence and traffic. Generation is kept small by short grounded outputs and caching, and the product still works on templates if the model is unavailable. The prototype does not establish integration licence or support costs; the pilot measures them.

@@ -37,6 +37,8 @@ test.describe("the story", () => {
       ).toBe(true);
     // Every step card is in the HTML.
     await expect(page.locator("li[data-step] article").first()).toBeVisible();
+    // The travel chapter's call to action is a plain link.
+    await expect(page.locator('#moving a[href="/weekend/singapore-2026#getting-there"]')).toBeAttached();
     await context.close();
   });
 
@@ -52,6 +54,14 @@ test.describe("the story", () => {
       .click();
     await expectDrawerWithPage(page);
     await closeDrawer(page);
+  });
+
+  test("figures in sentences carry no status square", async ({ page }) => {
+    await page.goto("/");
+    const figures = page.locator("article .prose-body button[aria-label$='Show source.']");
+    await expect(figures.first()).toBeAttached();
+    // A bare square after a figure read as a stray full stop. Verified is the default; an estimate says "est." in words.
+    await expect(page.locator("article .prose-body button span[aria-hidden='true']:empty")).toHaveCount(0);
   });
 
   test("the depth toggle persists across a reload", async ({ page }) => {
@@ -94,6 +104,17 @@ test.describe("the story", () => {
     await menu.locator("label", { hasText: "Watched for years" }).click();
     await expect(menu).not.toHaveAttribute("open", "");
     await expect(page.getByRole("radio", { name: "Watched for years" }).first()).toBeChecked();
+  });
+
+  test("the travel chapter ends on a link to the trip planner, which opens at its section", async ({ page }) => {
+    await page.goto("/");
+    const cta = page.locator("#moving").getByRole("link", { name: "Plan a lower-carbon trip to Marina Bay" });
+    await expect(cta).toHaveAttribute("href", "/weekend/singapore-2026#getting-there");
+    await cta.scrollIntoViewIfNeeded();
+    await cta.focus();
+    await page.keyboard.press("Enter");
+    await expect(page).toHaveURL(/\/weekend\/singapore-2026#getting-there$/);
+    await expect(page.locator("#getting-there-title")).toBeInViewport();
   });
 
   test("the ending sends fans to the race page, the quiz and the card", async ({ page }) => {

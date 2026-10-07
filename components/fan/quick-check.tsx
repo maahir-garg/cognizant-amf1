@@ -135,7 +135,7 @@ export function QuickCheck({ depthOverride, headingLevel = "h2" }: { depthOverri
 
   useEffect(() => {
     if (!done) return;
-    setBadge({ depth, answered: questions.length, matched, completedAt: new Date().toISOString() });
+    setBadge({ depth, answered: questions.length, matched, completedAt: new Date().toISOString(), factIds: questions.map((q) => q.factId) });
     // Record once per completion; `questions` is derived from `depth`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [done, depth, matched]);
@@ -179,7 +179,12 @@ export function QuickCheck({ depthOverride, headingLevel = "h2" }: { depthOverri
             <p className="kicker">Badge earned</p>
             <p className="font-serif text-[clamp(2rem,1.5rem+2vw,3rem)] leading-none font-medium">{QUIZ_BADGE_LABEL}</p>
             <p className="font-sans text-[0.9375rem] text-ink-2">
-              You answered all {questions.length}; {matched} matched the report. The badge goes on your card, the score doesn&apos;t.
+              You answered all {questions.length}; {matched} matched the report.
+            </p>
+            <p className="max-w-[60ch] font-serif text-[1.0625rem] leading-[1.45] text-ink">
+              Your race-week card now starts with the figures from these questions, each with its report page, so it reminds you what
+              you learnt. Add how you&apos;re getting to the circuit to show what you can do as a fan. The badge goes on the card; your
+              score stays with you.
             </p>
             <div className="flex flex-wrap gap-3">
               <Button asChild size="lg">
