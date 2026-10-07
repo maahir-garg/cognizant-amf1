@@ -34,10 +34,12 @@ export type ChapterId = (typeof CHAPTER_IDS)[number];
  * the order the template tells them. New fans get the first two. Deliberately
  * excluded: the pay gap and workforce share (never in AI personalisation),
  * per-round estimates, the derived renewable share, and the laps comparisons
- * (the story words those itself as the team's own comparison).
+ * (the story words those itself as the team's own comparison). None may be
+ * a figure the chapter already prints on its cards, tiles or detail
+ * (tests/unit/story-chapters.test.ts).
  */
 export const FAN_CHAPTER_FACTS: Record<ChapterId, string[]> = {
-  campus: ["e25-hq-energy", "e24-solar-kwh", "e25-cups-tco2e"],
+  campus: ["e25-waste-recycled-share", "e25-waste-emissions-cut", "e25-solar-gj"],
   "supply-chain": ["e25-supply-chain-share", "g25-scope3-boundary"],
   moving: ["e25-freight-logistics", "e25-business-travel"],
   circuit: ["e25-event-energy-cut", "e25-trackside-gbr-hvo", "e25-trackside-gbr-grid", "e25-trackside-gbr-solar"],
