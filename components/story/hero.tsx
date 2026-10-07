@@ -4,6 +4,7 @@ import { getSource } from "@/lib/data/load";
 import { STORY_DEK, STORY_IMAGE_SIZES, STORY_IMAGES, STORY_TITLE, TRUST_LINE } from "@/lib/story/chapters";
 import { cn } from "@/lib/utils";
 import { DepthToggle } from "./chapter-depth";
+import { NearestRacePicker } from "./nearest-race";
 import styles from "./story.module.css";
 
 /** "2025" from "Make A Mark ESG Report 2025", so the byline follows the source record. */
@@ -35,7 +36,11 @@ export function StoryHero() {
           </span>
           {TRUST_LINE}
         </p>
-        <DepthToggle className="mt-2" />
+        {/* Both choices are optional and start from defaults: nothing here blocks the scroll. */}
+        <div className="mt-2 flex flex-col items-start gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-x-10 sm:gap-y-3">
+          <DepthToggle />
+          <NearestRacePicker />
+        </div>
         <a href="#story" className="mt-1 flex flex-col items-start gap-2 text-ink-3 hover:text-ink sm:items-center">
           <span className="kicker text-current">Scroll to follow the car</span>
           <span aria-hidden className="block h-6 w-px bg-current" />
