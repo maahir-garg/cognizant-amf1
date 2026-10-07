@@ -31,20 +31,23 @@ export type ChapterId = (typeof CHAPTER_IDS)[number];
 
 /**
  * Facts each chapter's "In plain words" / "The detail" paragraph may use, in
- * the order the template tells them. New fans get the first two. Deliberately
- * excluded: the pay gap and workforce share (never in AI personalisation),
- * per-round estimates, the derived renewable share, and the laps comparisons
- * (the story words those itself as the team's own comparison). None may be
- * a figure the chapter already prints on its cards, tiles or detail
- * (tests/unit/story-chapters.test.ts).
+ * the order the template tells them. New fans get the first (the first two
+ * for the targets). Deliberately excluded: the pay gap and workforce share
+ * (never in AI personalisation), per-round estimates, the derived renewable
+ * share, and the laps comparisons (the story words those itself as the team's
+ * own comparison). None may be a figure the chapter already prints on its
+ * cards, tiles, chart or detail (tests/unit/story-chapters.test.ts), so the
+ * brief adds to the chapter: the circuit's food and recycling rather than the
+ * British GP kWh on its chart, and the finish line's absolute totals behind
+ * the progress percentages its chart prints.
  */
 export const FAN_CHAPTER_FACTS: Record<ChapterId, string[]> = {
   campus: ["e25-waste-recycled-share", "e25-waste-emissions-cut", "e25-solar-gj"],
   "supply-chain": ["e25-supply-chain-share", "g25-scope3-boundary"],
   moving: ["e25-freight-logistics", "e25-business-travel"],
-  circuit: ["e25-event-energy-cut", "e25-trackside-gbr-hvo", "e25-trackside-gbr-grid", "e25-trackside-gbr-solar"],
+  circuit: ["e25-event-energy-cut", "m22-food-donated", "m22-materials-recycled"],
   beyond: ["c25-stem-racing-singapore", "c25-charity-since-2023", "b25-iwd-students"],
-  finish: ["e25-progress-scope12", "e25-progress-scope3"],
+  finish: ["e25-scope3", "e25-scope1", "e25-scope2"],
 };
 
 /** The profile the story uses before a fan has chosen anything (matches lib/fan/quiz.ts DEFAULT_FAN). */
@@ -60,7 +63,7 @@ export function fanChapterRequest(fan: FanProfile | null, chapterId: ChapterId):
   const ids = FAN_CHAPTER_FACTS[chapterId];
   return {
     task: "fan-story",
-    // New fans get one figure (both progress figures for the targets, so neither reads alone).
+    // New fans get one figure (two for the targets: the value chain beside the team's direct emissions, so the gap reads).
     factIds: level === "new" ? ids.slice(0, chapterId === "finish" ? 2 : 1) : [...ids],
     derived: [],
     fan: { ...base, level },

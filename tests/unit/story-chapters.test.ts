@@ -194,9 +194,10 @@ describe("fanChapterRequest", () => {
     }
   });
 
-  it("brief figures never repeat a figure printed on the chapter's cards, tiles or detail", () => {
+  it("brief figures never repeat a figure printed on the chapter's cards, tiles, charts or detail", () => {
     for (const c of CHAPTERS) {
-      const printed = new Set([...cardFactIds(c), ...tileFactIds(c), ...detailFactIds(c)]);
+      const charts = c.layers.flatMap((l) => (l.kind === "graphic" ? graphicFactIdsFor(l.graphic) : []));
+      const printed = new Set([...cardFactIds(c), ...tileFactIds(c), ...charts, ...detailFactIds(c)]);
       expect(FAN_CHAPTER_FACTS[c.id].filter((id) => printed.has(id)), c.id).toEqual([]);
     }
   });
