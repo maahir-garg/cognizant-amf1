@@ -109,7 +109,7 @@ function words(s: string): number {
  */
 const CHAPTER_OPENERS: Record<string, { new: string; "die-hard": string; close?: string }> = {
   campus: {
-    new: "The car is designed and built at the team's campus in Silverstone, which is where its most visible changes have happened.",
+    new: "The car is designed and built at the team's campus in Silverstone, and what is left over from building it, from carbon fibre offcuts to everyday waste, is sorted there for reuse or recycling.",
     "die-hard": "The campus is the part of the footprint the team controls most directly, and a small part of the total.",
   },
   "supply-chain": {
@@ -122,7 +122,8 @@ const CHAPTER_OPENERS: Record<string, { new: string; "die-hard": string; close?:
   },
   circuit: {
     new: "At the track the garage needs power from the first practice session to the chequered flag.",
-    "die-hard": "Trackside, the team draws on the sport's shared paddock energy at European rounds.",
+    "die-hard":
+      "At the circuit the team draws on the sport's shared paddock energy at European rounds, and its manifesto looks back at what it donated and recycled after races in an earlier season.",
     close: "The team has not published trackside energy for Singapore.",
   },
   beyond: {
@@ -130,7 +131,7 @@ const CHAPTER_OPENERS: Record<string, { new: string; "die-hard": string; close?:
     "die-hard": "Belong and Community: STEM outreach, mentoring, and what the removal projects give back locally.",
   },
   finish: {
-    new: "The team has set targets to cut its emissions, and it is further along on some than on others.",
+    new: "The team has set targets to cut its emissions, and it is further along on the small share it controls directly than on the far larger rest of its value chain.",
     "die-hard": "Against the restated baseline, progress is uneven between the emissions the team controls and the rest of its value chain.",
   },
 };

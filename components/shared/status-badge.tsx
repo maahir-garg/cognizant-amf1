@@ -31,7 +31,9 @@ const COPY: Record<Mark, { label: string; title: string; legend: string }> = {
  * Trust status mark. Shape carries the meaning as well as colour:
  * verified = filled square, estimated = half-filled, simulated = dashed
  * outline, conflict = rotated square. Always pair it with the label text
- * (StatusBadge) unless the label is right beside it.
+ * (StatusBadge) unless the label is right beside it. Never set it bare after
+ * a figure: in a sentence it reads as a stray full stop. Figures in text and
+ * chart labels use EstimatedCue instead.
  */
 export function StatusMark({ status, className }: { status: Mark; className?: string }) {
   return (
@@ -46,6 +48,22 @@ export function StatusMark({ status, className }: { status: Mark; className?: st
         className,
       )}
     />
+  );
+}
+
+/**
+ * The word cue after an estimated figure in a sentence, a table cell or a
+ * chart label: "est.". A verified figure carries no inline mark; tapping it
+ * opens the drawer with its status and page. Pass `period={false}` when the
+ * sentence's own full stop follows, so it closes the abbreviation ("est.",
+ * never "est..").
+ */
+export function EstimatedCue({ className, period = true }: { className?: string; period?: boolean }) {
+  return (
+    <span title={COPY.estimated.title} className={cn("ml-[0.3em] font-sans text-[0.75em] font-medium tracking-normal text-estimated", className)}>
+      <span aria-hidden>est{period && "."}</span>
+      <span className="sr-only"> (estimated)</span>
+    </span>
   );
 }
 

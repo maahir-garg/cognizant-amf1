@@ -129,13 +129,14 @@ export function tracksideStoryRows(): TracksideStoryRow[] {
   return rows.map((r) => ({ ...r, parts: r.parts.map((p) => ({ ...p, share: (p.fact?.value ?? 0) / max })) }));
 }
 
+/** The facts one graphic prints, so a chapter's cards and detail can avoid repeating them. */
+export function graphicFactIdsFor(graphic: "footprint" | "trackside" | "targets"): string[] {
+  if (graphic === "footprint") return [FOOTPRINT_TOTAL_ID, ...FOOTPRINT_PARTS.map((p) => p.factId)];
+  if (graphic === "targets") return [...targetBars().map((b) => b.factId), ...progressRows().flatMap((r) => [r.progressId, r.targetId])];
+  return tracksideStoryRows().flatMap((r) => r.parts.flatMap((p) => (p.fact ? [p.fact.id] : [])));
+}
+
 /** Every fact a graphic prints, for the tests and the accessible alternatives. */
 export function graphicFactIds(): string[] {
-  return [
-    FOOTPRINT_TOTAL_ID,
-    ...FOOTPRINT_PARTS.map((p) => p.factId),
-    ...targetBars().map((b) => b.factId),
-    ...progressRows().flatMap((r) => [r.progressId, r.targetId]),
-    ...tracksideStoryRows().flatMap((r) => r.parts.flatMap((p) => (p.fact ? [p.fact.id] : []))),
-  ];
+  return (["footprint", "targets", "trackside"] as const).flatMap(graphicFactIdsFor);
 }

@@ -5,7 +5,7 @@ import { factCitation, getFact } from "@/lib/data/load";
 import { captionAfterUnit, factParts } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { useProvenance } from "./provenance";
-import { StatusBadge, StatusMark } from "./status-badge";
+import { EstimatedCue, StatusBadge } from "./status-badge";
 import { useFanSurface } from "./surface";
 
 const SIZES = {
@@ -89,7 +89,7 @@ export function FactValue({
             {p.suffix}
           </span>
           {p.unit && <span className={cn("text-ink-2", s.unit)}>{p.unit}</span>}
-          {!showStatus && <StatusMark status={fact.status} className="ml-1 self-center" />}
+          {!showStatus && fact.status === "estimated" && <EstimatedCue className="ml-0 text-sm" />}
         </span>
       )}
       {text && <span className={cn("max-w-[40ch] font-serif leading-snug text-ink", s.caption)}>{text}</span>}
@@ -125,8 +125,8 @@ export function InlineFact({
   className?: string;
   /**
    * Punctuation that follows the figure in the sentence (".", ",", ")"). It is
-   * kept on the same line as the figure and its status mark, so a full stop
-   * never wraps onto a line of its own.
+   * kept on the same line as the figure, so a full stop never wraps onto a
+   * line of its own, and after an estimate it closes the "est." cue.
    */
   trail?: string;
   /** Drop a word unit the sentence already says, e.g. "Round 17" rather than "Round 17 round". */
@@ -138,9 +138,16 @@ export function InlineFact({
   const { openFact } = useProvenance();
   const p = factParts(fact);
   const cite = factCitation(fact);
-  // The pseudo-element grows the tap target to 44px tall without moving the text around it.
+  // No status mark after the figure: a bare square read as a stray full stop.
+  // Verified is the default; an estimate gets a word cue, and the drawer shows
+  // status and page. The pseudo-element grows the tap target to 44px tall
+  // without moving the text around it.
   const base =
-    "relative inline text-left font-semibold text-ink underline decoration-line-strong decoration-dotted decoration-1 underline-offset-4 before:absolute before:inset-x-0 before:-inset-y-2.5 before:content-[''] hover:decoration-solid hover:decoration-link focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
+    "group/fact relative inline text-left font-semibold text-ink before:absolute before:inset-x-0 before:-inset-y-2.5 before:content-[''] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
+  // The dotted underline is the tap affordance. It sits on the figure only, so it never runs under the cue.
+  const underline =
+    "underline decoration-line-strong decoration-dotted decoration-1 underline-offset-4 group-hover/fact:decoration-solid group-hover/fact:decoration-link";
+  const cue = fact.status === "estimated" && <EstimatedCue period={!trail?.startsWith(".")} />;
   const withTrail = (button: ReactNode) =>
     trail ? (
       <span className="whitespace-nowrap">
@@ -153,8 +160,8 @@ export function InlineFact({
   if (fact.value === null) {
     return withTrail(
       <button type="button" onClick={() => openFact(id)} className={cn(base, className)} aria-label={`${fact.valueText}. ${fact.status}. ${cite.label}. Show source.`}>
-        {fact.valueText}
-        <StatusMark status={fact.status} className="ml-1 align-middle" />
+        <span className={underline}>{fact.valueText}</span>
+        {cue}
       </button>,
     );
   }
@@ -166,11 +173,11 @@ export function InlineFact({
     <button
       type="button"
       onClick={() => openFact(id)}
-      className={cn(base, "num inline-flex items-baseline gap-1 whitespace-nowrap", className)}
+      className={cn(base, "num whitespace-nowrap", className)}
       aria-label={`${value}. ${fact.status}. ${cite.label}. Show source.`}
     >
-      {value}
-      <StatusMark status={fact.status} className="self-center" />
+      <span className={underline}>{value}</span>
+      {cue}
     </button>,
   );
 }

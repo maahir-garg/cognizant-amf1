@@ -16,8 +16,15 @@ const NAV_LINKS = [
     match: (p: string) => p.startsWith("/weekend") || p.startsWith("/share") || p.startsWith("/quiz"),
   },
   { href: "/partners", label: "Partners", match: (p: string) => p.startsWith("/partners") },
-  { href: "/how-it-works", label: "How it works", match: (p: string) => p.startsWith("/how-it-works") },
-  { href: "/sources", label: "Sources", match: (p: string) => p.startsWith("/sources") },
+] as const;
+
+/**
+ * The method pages stay one tap away for judges but are not headline tabs:
+ * the footer carries them, and the phone menu lists them in the same words at footer size.
+ */
+const SECONDARY_LINKS = [
+  { href: "/sources", label: "Every figure and its page" },
+  { href: "/how-it-works", label: "How the AI is checked" },
 ] as const;
 
 /** The header's frame matches the page below it: the partner desk runs wider (1680) than fan pages (1440). */
@@ -102,6 +109,22 @@ export function MobileMenu({ demo, className }: { demo: boolean; className?: str
               </Link>
             );
           })}
+        </nav>
+        <nav aria-label="Sources and method" className="wrap mt-8">
+          <ul className="flex flex-col gap-3 text-[0.9375rem]">
+            {SECONDARY_LINKS.map((l) => (
+              <li key={l.href}>
+                <Link
+                  href={l.href}
+                  onClick={() => setOpen(false)}
+                  aria-current={pathname.startsWith(l.href) ? "page" : undefined}
+                  className="link"
+                >
+                  {l.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </nav>
         {demo && (
           <p className="wrap mt-8 text-sm text-ink-3">

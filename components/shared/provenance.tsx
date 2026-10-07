@@ -156,7 +156,7 @@ function FactDetail({ fact, canGoBack, onBack, onOpen }: { fact: Fact; canGoBack
                       <span className="line-clamp-2 text-sm text-ink-2">{input.metric}</span>
                       <span className="flex shrink-0 items-center gap-2">
                         <span className="num text-sm font-semibold text-ink">{formatFact(input)}</span>
-                        <StatusBadge status={input.status} compact />
+                        <StatusBadge status={input.status} />
                       </span>
                     </button>
                   </li>
