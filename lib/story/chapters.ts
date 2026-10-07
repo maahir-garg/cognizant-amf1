@@ -165,50 +165,54 @@ export const CHAPTERS: Chapter[] = [
     number: 1,
     name: "The campus",
     title: "A car factory with its own bees",
-    dek: "The AMR26, this season's car, is designed, built and tested at the team's campus in Silverstone. Here is what changed there.",
+    dek: "The AMR26, this season's car, was designed, built and tested at the team's campus in Silverstone. Building a car leaves waste behind, and the team is learning to cut it.",
     tone: "paper",
+    // The car first (what it is made of, what is left over), then one light, everyday screen.
+    // Each figure is printed once: the car's on the cards, the factory's on the tiles.
+    // Energy, solar and the carbon accounting sit in the detail for long-time fans.
     layers: [
       { kind: "photo", image: "render-rear" },
       {
         kind: "tiles",
-        title: "The campus in figures",
+        title: "Around the factory",
         tiles: [
-          { key: "solar", factId: "e24-solar-panels", label: "on the campus roof" },
-          { key: "circularity", factId: "e25-circularity", label: "circularity score of last season's car" },
-          { key: "carbon-fibre", factId: "e25-carbon-fibre-recycled", label: "of carbon fibre recycled" },
           { key: "cups", factId: "e25-cups-removed", label: "taken out of the bin" },
-          { key: "meadow", factId: "e25-wild-meadow", label: "of new wild meadow" },
-          { key: "nature", factId: "e25-biodiversity-net-gain", label: "biodiversity net gain on site" },
+          { key: "kit", factId: "e25-kit-recycled", label: "of old team kit recycled into new material" },
+          { key: "meadow", factId: "e25-wild-meadow", label: "of new wild meadow round the campus" },
+          { key: "honey", factId: "e25-honey-jars", label: "of honey from the new hives in their first year" },
         ],
       },
     ],
     steps: [
       {
-        copy: "Everything the team buys, powers and throws away at the campus counts towards its footprint. Start with the roof: it carries {f:e24-solar-panels}, and the rest of the electricity comes from a renewable energy-backed supply.",
+        copy: "Building a race car takes metals, carbon fibre, moulds and tooling, and not all of it ends up on the car. The sport's new circularity score checks how much is used, reused or recovered. Last season's car, the AMR25, scored {f:e25-circularity}; a perfectly circular car would score full marks.",
         layer: 0,
+        zoom: { scale: 1, origin: { x: 50, y: 50 } },
       },
       {
-        copy: "The car is measured too. On the sport's new circularity scale, where a perfectly circular car would score full marks, last season's car scored {f:e25-circularity}. Offcuts of carbon fibre, {f:e25-carbon-fibre-recycled} of them, were recycled.",
-        layer: 1,
-        highlight: ["circularity", "carbon-fibre"],
+        copy: "Much of the car's body is carbon fibre, light and very strong. Cutting the parts leaves offcuts, so the team sorts them at source to reuse or recycle, and is using more recycled fibre in place of new. Last year {f:e25-carbon-fibre-recycled} of it was recycled rather than thrown away.",
+        layer: 0,
+        // In on the engine cover and sidepod: the carbon fibre bodywork the copy is about.
+        zoom: { scale: 1.35, origin: { x: 50, y: 46 }, mobileOrigin: { x: 52, y: 50 } },
       },
       {
-        copy: "Small things add up. Scrapping disposable cups took {f:e25-cups-removed} out of the bin, which the team likens to {f:e25-cups-laps} of Silverstone in a petrol road car, its own comparison. Then came the bees: hives, a beekeeper and {f:e25-wild-meadow} of meadow.",
+        copy: "Away from the car, small things add up: disposable coffee cups gone from the factory, old team kit turned into new material, and beehives in a new wild meadow round the campus.",
         layer: 1,
-        highlight: ["cups", "meadow", "nature"],
       },
     ],
     detail: [
       {
-        text: "Running the campus accounted for {f:e25-hq-energy}. On-site solar generated {f:e25-solar-gj} of electricity; in the previous report the panels produced {f:e24-solar-kwh} and saved {f:e24-solar-saving}.",
+        heading: "Energy",
+        text: "The campus roof carries {f:e24-solar-panels}. In the year of the previous report they generated {f:e24-solar-kwh} and saved {f:e24-solar-saving}. The rest of the campus electricity comes from what the team calls a renewable energy-backed supply.",
       },
       {
-        text: "Losing the disposable cups saved {f:e25-cups-tco2e}. The laps comparison is the team's own and is not a standard conversion.",
+        heading: "Cups and nature",
+        text: "Losing the disposable cups saved {f:e25-cups-tco2e}, which the team likens to {f:e25-cups-laps} of Silverstone in a petrol road car, its own comparison rather than a standard conversion. With the meadow and the hives, the campus grounds now show a {f:e25-biodiversity-net-gain} biodiversity net gain.",
       },
       {
         heading: "Method",
-        text: "Circularity follows the FIA Circularity Handbook and applies to last season's car. The team describes its grid electricity as a renewable energy-backed supply. The solar panel count comes from the team's previous report.",
-        facts: ["e25-circularity"],
+        text: "Circularity follows the FIA Circularity Handbook and applies to last season's car, the AMR25: it compares the materials that flow into building the car with what leaves as waste or reaches the end of its life. The solar figures come from the team's previous report.",
+        cite: { sourceId: "esg-2025", page: 31 },
       },
     ],
   },
