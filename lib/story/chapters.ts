@@ -251,15 +251,31 @@ export const CHAPTERS: Chapter[] = [
         highlight: ["freight", "commuting", "business-travel"],
       },
       {
-        copy: "The campus is the thin sliver at the end. That is why the team is working with its suppliers on better data: it shows where cuts are possible.",
+        copy: "The campus is the thin sliver at the end. So the biggest cuts have to come from what the team buys, and it has set a target for exactly that: emissions from the goods and services it buys down {f:e25-target-scope3} by the end of the decade.",
         layer: 1,
         highlight: ["hq-energy", "other"],
+      },
+      // How it could come down further: back to the whole car, which is built from what suppliers make.
+      {
+        copy: "Cutting further starts with data. The team engaged {f:e24-suppliers-engaged} of its key suppliers for better emissions figures. With Base Materials, which makes its tooling board, it is mapping that material's whole life to find where targeted action could cut the impact.",
+        layer: 0,
+        zoom: { scale: 1, origin: { x: 50, y: 50 } },
       },
     ],
     detail: [
       {
         text: "The bar shows the six categories in the report's own breakdown, which add up to the total. Tap any value on it to see the page it comes from.",
         cite: { sourceId: "esg-2025", page: 19 },
+      },
+      {
+        heading: "Working with suppliers",
+        text: "Key suppliers are the ones behind most of the team's spending. Their data lets the team replace estimates based on what it spends with figures based on what it actually buys and moves. So far that has sharpened the logistics figures; the next step is the goods, services and equipment the team buys.",
+        cite: { sourceId: "esg-2024", page: 24 },
+      },
+      {
+        heading: "The tooling board study",
+        text: "Tooling board is used to develop high-performance parts and is hard to recycle at the end of its life. The life-cycle assessment follows it from raw material to disposal. Early findings point to making the material and disposing of it as the hotspots, and the study gives the team a basis for working with its suppliers on both.",
+        cite: { sourceId: "esg-2025", page: 34 },
       },
       {
         heading: "Method",
