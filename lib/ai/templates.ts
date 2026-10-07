@@ -474,7 +474,7 @@ function scenarioExplanationTemplate(req: AiRequest): string {
       `Extra mentoring cohorts add ${derivedValue(mentees)} a year ${ref(mentees.id)}; if they match this year's outcomes, ${derivedValue(network)} would report a stronger professional network ${ref(network.id)}.`,
     );
   }
-  out.push("Programme costs aren't published, so treat this as a planning aid rather than a forecast.");
+  out.push("These figures scale published reach only, so treat them as a planning aid rather than a forecast.");
   return out.join(" ");
 }
 
