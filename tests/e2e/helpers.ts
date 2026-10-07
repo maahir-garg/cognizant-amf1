@@ -20,7 +20,7 @@ export const DESK_ROUTES = [
   "/partners/scenarios",
   "/partners/story-kit",
   "/partners/data-quality",
-  "/partners/roi",
+  "/partners/measures",
   "/partners/export",
 ] as const;
 

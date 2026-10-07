@@ -262,14 +262,14 @@ async function run() {
   log("desk: export");
   await pause(page, 3500);
 
-  await goto(page, "/partners/roi");
+  await goto(page, "/partners/measures");
   log("desk: published baselines beside the pilot measures");
   await pause(page, 3000);
   await smoothScrollTo(page, page.locator("#pilot"), 3500);
 
   // ------------------------------------------------------ how it works (12:00)
   await goto(page, "/how-it-works");
-  log("how it works: business model and pilot");
+  log("how it works: impact measures and pilot");
   await readStory(page);
 
   await goto(page, "/");
