@@ -8,6 +8,7 @@
  */
 import Link from "next/link";
 import { useId } from "react";
+import { heroRace } from "@/lib/data/load";
 import type { Race } from "@/lib/data/schemas";
 import { nearestRaceLabel, nearestRaceOptions } from "@/lib/fan/nearest-race";
 import { isUpcoming, raceProgrammes, raceTitle } from "@/lib/fan/race";
@@ -23,36 +24,50 @@ const PAST = OPTIONS.filter((r) => !isUpcoming(r)).sort((a, b) => raceTitle(a).l
 export function NearestRacePicker({ className }: { className?: string }) {
   const { race, setRace } = useNearestRace();
   const id = useId();
+  const chosen = race.id !== heroRace.id;
   return (
-    <div className={cn("flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-4", className)}>
-      <label htmlFor={id} className="kicker text-ink-3">
-        Nearest race
-      </label>
-      <select
-        id={id}
-        value={race.id}
-        onChange={(e) => setRace(e.target.value)}
-        aria-describedby={`${id}-hint`}
-        className="h-12 max-w-full rounded-md border border-line-strong bg-card px-3 font-sans text-[0.9375rem] font-medium text-ink focus-visible:border-ink"
-      >
-        <optgroup label="This season">
-          {COMING_UP.map((r) => (
-            <option key={r.id} value={r.id}>
-              {nearestRaceLabel(r)}
-            </option>
-          ))}
-        </optgroup>
-        <optgroup label="Past races: what the team published">
-          {PAST.map((r) => (
-            <option key={r.id} value={r.id}>
-              {nearestRaceLabel(r)}
-            </option>
-          ))}
-        </optgroup>
-      </select>
-      <span id={`${id}-hint`} className="sr-only">
-        Optional. Links the end of the story to that race&apos;s page.
-      </span>
+    <div className={cn("flex flex-col items-start gap-2 sm:items-center", className)}>
+      <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-4">
+        <label htmlFor={id} className="kicker text-ink-3">
+          Nearest race
+        </label>
+        <select
+          id={id}
+          value={race.id}
+          onChange={(e) => setRace(e.target.value)}
+          aria-describedby={`${id}-hint`}
+          className="h-12 max-w-full rounded-md border border-line-strong bg-card px-3 font-sans text-[0.9375rem] font-medium text-ink focus-visible:border-ink"
+        >
+          <optgroup label="This season">
+            {COMING_UP.map((r) => (
+              <option key={r.id} value={r.id}>
+                {nearestRaceLabel(r)}
+              </option>
+            ))}
+          </optgroup>
+          <optgroup label="Past races: what the team published">
+            {PAST.map((r) => (
+              <option key={r.id} value={r.id}>
+                {nearestRaceLabel(r)}
+              </option>
+            ))}
+          </optgroup>
+        </select>
+        <span id={`${id}-hint`} className="sr-only">
+          Optional. Marks that race in the story and links to its page.
+        </span>
+      </div>
+      {/* Answer the choice where it was made, so it never looks as if nothing happened. */}
+      <p aria-live="polite" className="font-sans text-[0.9375rem] text-ink-2">
+        {chosen && (
+          <>
+            Your race is marked as you scroll.{" "}
+            <Link href={`/weekend/${race.id}`} className="link font-semibold text-ink">
+              What the team published for the {raceTitle(race)} →
+            </Link>
+          </>
+        )}
+      </p>
     </div>
   );
 }
@@ -69,7 +84,10 @@ function nearestKicker(race: Race): string {
 export function NearestRaceLink({ section }: { section: "published" | "take-part" }) {
   const { race } = useNearestRace();
   if (section === "take-part" && !raceProgrammes(race).some((p) => p.where !== "online")) return null;
-  const text = section === "published" ? `What the team published for the ${raceTitle(race)}` : `Programmes linked to the ${raceTitle(race)}`;
+  const text =
+    section === "published"
+      ? `What the team published for the ${raceTitle(race)}`
+      : `Programmes linked to the ${raceTitle(race)}`;
   return (
     <p className="flex flex-col gap-1">
       <span className="kicker text-ink-3">{nearestKicker(race)}</span>

@@ -27,6 +27,8 @@ import {
   tracksideStoryRows,
   type TracksideSource,
 } from "@/lib/story/graphics";
+import { raceTitle } from "@/lib/fan/race";
+import { useNearestRace } from "@/lib/fan/use-nearest-race";
 import { cn } from "@/lib/utils";
 import { useStageHighlight } from "./scrolly";
 
@@ -233,6 +235,11 @@ export function TracksideGraphic({ highlight }: { highlight?: string[] }) {
   const showHvo = !(hl.includes("grid") || hl.includes("solar"));
   const gapOn = hl.includes("singapore");
   const firstFact = rows[0].parts[0].fact!;
+  // The fan's nearest race is marked with a glyph and weight, not colour: lime stays the step highlight.
+  const { race: mine } = useNearestRace();
+  const mineIsHero = mine.hero === true;
+  const mineInChart = mineIsHero || rows.some((r) => r.raceId === mine.id);
+  const yours = <span aria-hidden className="mr-1 text-ink">▸</span>;
 
   const values = (r: (typeof rows)[number], keys: TracksideSource[]) => (
     <span className="flex justify-end gap-2">
@@ -269,7 +276,11 @@ export function TracksideGraphic({ highlight }: { highlight?: string[] }) {
       <ul className="flex flex-col">
         {rows.map((r, ri) => (
           <li key={r.raceId} className={cn("grid h-7 items-center gap-x-3 border-t border-line [contain:layout_paint] text-[0.8125rem] sm:text-[0.875rem] lg:h-9 min-[1440px]:text-base", COLS)}>
-            <span className="truncate text-ink-2">{r.label}</span>
+            <span className={cn("truncate", r.raceId === mine.id ? "font-semibold text-ink" : "text-ink-2")}>
+              {r.raceId === mine.id && yours}
+              {r.label}
+              {r.raceId === mine.id && <span className="sr-only"> (your nearest race)</span>}
+            </span>
             <span aria-hidden data-grow="x" className="flex h-3 w-full gap-px lg:h-4" style={{ "--i": ri } as CSSProperties}>
               {r.parts.map((p) =>
                 p.fact ? (
@@ -285,7 +296,11 @@ export function TracksideGraphic({ highlight }: { highlight?: string[] }) {
           </li>
         ))}
         <li className="grid grid-cols-[5rem_1fr] items-center gap-x-3 border-t border-line pt-1.5 text-[0.8125rem] sm:grid-cols-[6.5rem_1fr] sm:text-[0.875rem]">
-          <span className={cn("transition-colors", EASE, gapOn ? "text-ink" : "text-ink-2")}>Marina Bay</span>
+          <span className={cn("transition-colors", EASE, gapOn || mineIsHero ? "text-ink" : "text-ink-2", mineIsHero && "font-semibold")}>
+            {mineIsHero && yours}
+            Marina Bay
+            {mineIsHero && <span className="sr-only"> (your nearest race)</span>}
+          </span>
           <span
             role="note"
             className={cn(
@@ -299,6 +314,15 @@ export function TracksideGraphic({ highlight }: { highlight?: string[] }) {
           </span>
         </li>
       </ul>
+      <p className="mt-2 text-[0.8125rem] text-ink-3">
+        {mineInChart ? (
+          <>
+            <span aria-hidden className="mr-1 text-ink">▸</span>Your nearest race
+          </>
+        ) : (
+          <>The team published this split for European rounds only, so the {raceTitle(mine)} is not in the chart.</>
+        )}
+      </p>
     </figure>
   );
 }

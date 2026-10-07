@@ -17,6 +17,22 @@ test.describe("nearest race", () => {
     await expect(page.getByRole("heading", { name: "Your race weekend at Marina Bay" })).toBeAttached();
     // No pointer to another race at the end when the fan hasn't chosen one.
     await expect(page.locator('#race-weekend a[href^="/weekend/"]:not([href^="/weekend/singapore-2026"])')).toHaveCount(0);
+    // Singapore is the fan's race by default, so the chart marks the Marina Bay gap.
+    await expect(page.locator("#circuit figure").getByText("Marina Bay (your nearest race)")).toBeAttached();
+  });
+
+  test("the choice answers where it was made and marks the race in the chart", async ({ page }) => {
+    await freshStory(page);
+    const picker = page.getByRole("combobox", { name: "Nearest race" });
+    await picker.selectOption("gbr-2025");
+    const answer = page.locator("#top p[aria-live], p[aria-live]").first();
+    await expect(answer).toContainText("Your race is marked as you scroll.");
+    await expect(answer.getByRole("link", { name: /British Grand Prix/ })).toHaveAttribute("href", "/weekend/gbr-2025");
+    await expect(page.locator("#circuit figure").getByText("Silverstone (your nearest race)")).toBeAttached();
+
+    // A round outside the chart says so instead of marking nothing.
+    await picker.selectOption("mia-2025");
+    await expect(page.locator("#circuit figure")).toContainText("the Miami Grand Prix is not in the chart");
   });
 
   test("past races are labelled as past", async ({ page }) => {
