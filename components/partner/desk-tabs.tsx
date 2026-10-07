@@ -11,7 +11,7 @@ const DESK_TABS = [
   { href: "/partners/scenarios", label: "Scenarios" },
   { href: "/partners/story-kit", label: "Story kit" },
   { href: "/partners/data-quality", label: "Data quality" },
-  { href: "/partners/roi", label: "ROI" },
+  { href: "/partners/measures", label: "Measures" },
   { href: "/partners/export", label: "Export" },
 ] as const;
 
