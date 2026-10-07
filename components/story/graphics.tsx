@@ -7,13 +7,13 @@
  * explicit prop (the no-JavaScript copy inside a card).
  *
  * Motion rules: titles, axes and labels never move; only colour, opacity
- * and transform change, so a highlight never reflows text. Status marks
- * take the text colour (the shape carries the status), so lime is only
- * ever the highlight.
+ * and transform change, so a highlight never reflows text. Values carry no
+ * status square (it read as a stray full stop); an estimate gets an "est."
+ * cue in the text colour, so lime is only ever the highlight.
  */
 import type { CSSProperties, ReactNode } from "react";
 import { useProvenance } from "@/components/shared/provenance";
-import { StatusMark } from "@/components/shared/status-badge";
+import { EstimatedCue } from "@/components/shared/status-badge";
 import { factCitation, getFact, sourceShortName } from "@/lib/data/load";
 import { captionAfterUnit, factParts, formatFact } from "@/lib/format";
 import type { GraphicKey, Quote, Tile } from "@/lib/story/chapters";
@@ -37,7 +37,7 @@ function useHighlight(override?: string[]): string[] {
   return override ?? fromStage ?? [];
 }
 
-/** A value on a graphic: the formatted fact plus its status mark in the text colour, opening provenance. */
+/** A value on a graphic: the formatted fact, with "est." after an estimate, opening provenance. */
 function Figure({ id, className, children }: { id: string; className?: string; children?: ReactNode }) {
   const { openFact } = useProvenance();
   const f = getFact(id);
@@ -50,7 +50,7 @@ function Figure({ id, className, children }: { id: string; className?: string; c
       aria-label={`${f.fanLabel ?? f.metric}: ${formatFact(f)}. ${f.status}. ${cite.label}. Show source.`}
     >
       {children ?? formatFact(f)}
-      <StatusMark status={f.status} className={f.status === "verified" ? "bg-current" : undefined} />
+      {f.status === "estimated" && <EstimatedCue className="ml-0 text-current" />}
     </button>
   );
 }
