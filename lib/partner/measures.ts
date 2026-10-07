@@ -1,5 +1,5 @@
 /**
- * The ROI panel: what the team has already published about how far impact
+ * The Measures tab: what the team has already published about how far impact
  * content travels, beside the measures a pilot would add. Pilot measures
  * have a definition and a method, never a value: nothing has been measured
  * yet, so nothing is shown.
@@ -8,7 +8,7 @@
 type Baseline = { factId: string; why: string };
 
 /** Published reach and sentiment, the baseline a partner would compare a pilot with. */
-export const ROI_BASELINES: Baseline[] = [
+export const PUBLISHED_BASELINES: Baseline[] = [
   { factId: "c24-esg-impressions", why: "How far the team's impact stories already travel." },
   { factId: "c24-esg-impressions-partners", why: "Extra reach when partners, Cognizant included, share the team's stories." },
   { factId: "c24-esg-posts-multiplier", why: "Impact posts outperform a typical race-weekend post." },
@@ -101,27 +101,3 @@ export const PILOT_METRICS: PilotMetric[] = [
     audience: "fan",
   },
 ];
-
-/**
- * A first-year cost range for the 2027 pilot. Not a team or Cognizant
- * figure: it is our planning assumption, built from the pilot team in
- * docs/ROI.md and an assumed cost per person, so every step is shown and
- * can be replaced with real rates.
- */
-export const PILOT_COST_ASSUMPTION = {
-  people: [
-    { role: "Product lead", fte: 1 },
-    { role: "Engineers", fte: 2 },
-    { role: "ESG data analyst", fte: 1 },
-    { role: "Designer", fte: 0.5 },
-  ],
-  /** Assumed fully loaded annual cost per full-time person, GBP. */
-  perPerson: { low: 90_000, high: 130_000 },
-  /** Assumed model, hosting and tooling for a season, GBP. */
-  running: { low: 10_000, high: 30_000 },
-} as const;
-
-export function pilotCostRange(a = PILOT_COST_ASSUMPTION): { fte: number; low: number; high: number } {
-  const fte = a.people.reduce((sum, p) => sum + p.fte, 0);
-  return { fte, low: fte * a.perPerson.low + a.running.low, high: fte * a.perPerson.high + a.running.high };
-}
